@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="{{ t.lang | default: 'en' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if title %}{{ title }} - {{ site.name }}{% else %}{{ site.name }} - {{ site.role }}{% endif %}</title>
+<meta name="description" content="{{ description | default: t.description | default: site.description }}">
+<link rel="canonical" href="{{ site.url }}{{ page.url }}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{% if title %}{{ title }} - {{ site.name }}{% else %}{{ site.name }} - {{ site.role }}{% endif %}">
+<meta property="og:description" content="{{ description | default: t.description | default: site.description }}">
+<meta property="og:url" content="{{ site.url }}{{ page.url }}">
+{% if t %}{% for l in i18n.langs %}<link rel="alternate" hreflang="{{ l.lang }}" href="{{ site.url }}{{ l.url }}">
+{% endfor %}<link rel="alternate" hreflang="x-default" href="{{ site.url }}/">
+{% endif %}<link rel="icon" href="/assets/ball.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+{% if game %}<script type="module" src="/assets/game.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{ site.name }}",
+  "url": "{{ site.url }}",
+  "jobTitle": "{{ site.role }}",
+  "description": "{{ t.description }}",
+  "address": { "@type": "PostalAddress", "addressLocality": "Florianópolis", "addressCountry": "BR" },
+  "sameAs": ["https://github.com/tiago-peixoto", "https://www.linkedin.com/in/tiago-peixoto87"]
+}
+</script>{% endif %}
+</head>
+<body>
+<header class="top">
+  <a class="logo" href="{{ t.url | default: '/' }}"><img src="/assets/ball.svg" alt="" width="16" height="16"> tiagop.dev.br</a>
+  {% if t %}
+  <nav class="window lang" aria-label="Language / Idioma">
+    {% for l in i18n.langs %}<a class="menu" href="{{ l.url }}" lang="{{ l.lang }}" hreflang="{{ l.lang }}"{% if l.lang == t.lang %} aria-current="true"{% endif %}>{{ l.name }}</a>
+    {% endfor %}
+  </nav>
+  {% endif %}
+  {% if collections.posts.size > 0 %}
+  <nav aria-label="Main">
+    <a href="/"{% if game %} aria-current="page"{% endif %}>Status</a>
+    <a href="/posts/"{% if page.url contains "/posts/" %} aria-current="page"{% endif %}>Journal</a>
+  </nav>
+  {% endif %}
+</header>
+<main>
+{{ content }}
+</main>
+<footer>
+  <p>{{ t.footer | default: "Game saved in Florianópolis, Brazil." }}</p>
+</footer>
+</body>
+</html>

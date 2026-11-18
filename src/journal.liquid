@@ -1,0 +1,21 @@
+---
+layout: base.liquid
+title: Journal
+permalink: /posts/
+---
+<section class="window">
+  <h1>Journal</h1>
+  <p>Notes about my work and my opinions.</p>
+  {% if collections.posts.size > 0 %}
+  <ul class="entries">
+    {% for post in collections.posts reversed %}
+    <li>
+      <time datetime="{{ post.date | date: '%Y-%m-%d', 'UTC' }}">{{ post.date | date: "%Y-%m-%d", "UTC" }}</time>
+      <a class="menu" href="{{ post.url }}">{{ post.data.title }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">No entries yet. The first one is still loading.</p>
+  {% endif %}
+</section>

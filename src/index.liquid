@@ -1,0 +1,137 @@
+---
+layout: base.liquid
+game: true
+pagination:
+  data: i18n.langs
+  size: 1
+  alias: t
+  addAllPagesToCollections: true
+permalink: "{{ t.path }}"
+---
+<section class="window sheet">
+  {% sprite "hero" %}
+  <div>
+    <h1>Tiago Peixoto</h1>
+    <dl class="stats">
+      <div><dt>{{ t.class_k }}</dt><dd>Product Engineer</dd></div>
+      <div><dt>{{ t.level_k }}</dt><dd>18 <small>{{ t.level_note }}</small></dd></div>
+      <div><dt>{{ t.home_k }}</dt><dd>{{ t.home }}</dd></div>
+      <div><dt>{{ t.guild_k }}</dt><dd>{{ t.guild }}</dd></div>
+      <div><dt>{{ t.party_k }}</dt><dd>{{ t.party }}</dd></div>
+      <div><dt>{{ t.links_k }}</dt><dd><a href="https://github.com/tiago-peixoto">GitHub</a> · <a href="https://www.linkedin.com/in/tiago-peixoto87">LinkedIn</a></dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="scene window" aria-label="{{ t.scene_label }}">
+  <div class="hp bug-hp"><span>BUG</span><div class="bar"><i id="bug-hp"></i></div></div>
+  {% sprite "bug" %}
+  {% sprite "back" %}
+  <div class="hp hero-hp"><span>TIAGO</span><div class="bar"><i id="hero-hp"></i></div><small>{{ t.focus }}</small></div>
+</section>
+
+<div class="hud" hidden>
+  <p class="window" id="log" aria-live="polite">{{ t.intro }}</p>
+  <div class="window commands" role="group" aria-label="{{ t.commands_label }}">
+    <button class="menu" data-move="reproduce">{{ t.move_reproduce }}</button>
+    <button class="menu" data-move="simplest">{{ t.move_simplest }}</button>
+    <button class="menu" data-move="teach">{{ t.move_teach }}</button>
+    <button class="menu" id="again" hidden>{{ t.again }}</button>
+  </div>
+</div>
+
+<section class="window dialog">
+  <p>{{ t.bio1 }}</p>
+  <p>{{ t.bio2 }}</p>
+  <p>{{ t.bio3 }}</p>
+  <p>{{ t.bio4 }}</p>
+</section>
+
+<section class="window" id="open-source">
+  <h2>{{ t.os_h }}</h2>
+  <p class="note">{{ t.os_note }}</p>
+  <ul class="items">
+    <li>
+      <a class="menu" href="https://github.com/kunchenguid/firstmate">firstmate</a>
+      <a class="tag" href="https://github.com/kunchenguid/firstmate/pulls?q=is%3Apr+is%3Amerged+author%3Atiago-peixoto">68 {{ t.merged }} - {{ t.second }}</a>
+      <p>{{ t.firstmate }}</p>
+    </li>
+    <li>
+      <a class="menu" href="https://github.com/kunchenguid/no-mistakes">no-mistakes</a>
+      <a class="tag" href="https://github.com/kunchenguid/no-mistakes/pulls?q=is%3Apr+is%3Amerged+author%3Atiago-peixoto">18 {{ t.merged }}</a>
+      <p>{{ t.nomistakes }}</p>
+    </li>
+    <li>
+      <a class="menu" href="https://github.com/kunchenguid/quota-axi">quota-axi</a>
+      <a class="tag" href="https://github.com/kunchenguid/quota-axi/pulls?q=is%3Apr+is%3Amerged+author%3Atiago-peixoto">8 {{ t.merged }}</a>
+      <p>{{ t.quota }}</p>
+    </li>
+  </ul>
+  <h3>{{ t.own_h }}</h3>
+  <ul class="items">
+    <li>
+      <a class="menu" href="https://github.com/tiago-peixoto/claude-shapeup">claude-shapeup</a>
+      <p>{{ t.shapeup }}</p>
+    </li>
+    <li>
+      <a class="menu" href="https://mesatcg.com.br">MesaTCG</a>
+      <p>{{ t.mesa }}</p>
+    </li>
+    <li>
+      <a class="menu" href="https://github.com/tiago-peixoto/herdr-one-piece">Grand Fleet</a>
+      <p>{{ t.fleet }}</p>
+    </li>
+    <li>
+      <a class="menu" href="https://github.com/tiago-peixoto/pi-codex-accounts">pi-codex-accounts</a>
+      <p>{{ t.pi }}</p>
+    </li>
+  </ul>
+</section>
+
+<section class="window" id="skills">
+  <h2>{{ t.skills_h }}</h2>
+  <ul class="plain">
+    <li><strong>{{ t.s1n }}</strong> {{ t.s1 }}</li>
+    <li><strong>{{ t.s2n }}</strong> {{ t.s2 }}</li>
+    <li><strong>{{ t.s3n }}</strong> {{ t.s3 }}</li>
+  </ul>
+  <p class="note">{{ t.equipment }}: TypeScript, React, Node.js, Rust, Ruby on Rails.</p>
+</section>
+
+<section class="window" id="quests">
+  <h2>{{ t.quests_h }}</h2>
+  <ol class="quests">
+    <li><span class="when">2025 - {{ t.now }}</span><div><strong>Artemis</strong> <span class="tag">{{ t.remote }}</span><br>Senior Software Engineer<p>{{ t.q_artemis }}</p></div></li>
+    <li><span class="when">2025</span><div><strong>Kizzy Labs</strong> <span class="tag">{{ t.remote }}</span><br>Staff Software Engineer<p>{{ t.q_kizzy }}</p></div></li>
+    <li><span class="when">2020 - 2025</span><div><strong>Sora Schools</strong> <span class="tag">{{ t.remote }}</span><br>Head of Software Engineering<p>{{ t.q_sora }}</p></div></li>
+    <li><span class="when">2019 - 2020</span><div><strong>Mobiliza</strong> - Engineering Lead<p>{{ t.q_mobiliza }}</p></div></li>
+    <li><span class="when">2013 - 2020</span><div><strong>Plyom</strong> - Co-Founder<p>{{ t.q_plyom }}</p></div></li>
+    <li><span class="when">2017 - 2019</span><div><strong>Ahgora Sistemas</strong> - {{ t.q_ahgora_t }}<p>{{ t.q_ahgora }}</p></div></li>
+    <li><span class="when">2012 - 2013</span><div><strong>Datacom</strong> - Software Designer<p>{{ t.q_datacom }}</p></div></li>
+    <li><span class="when">2011 - 2012</span><div><strong>Adam Opel AG</strong> - {{ t.q_opel_t }}<p>{{ t.q_opel }}</p></div></li>
+    <li><span class="when">2006 - 2012</span><div><strong>UFSC</strong> - {{ t.q_ufsc_t }}<p>{{ t.q_ufsc }}</p></div></li>
+  </ol>
+</section>
+
+{% if collections.posts.size > 0 %}
+<section class="window">
+  <h2>{{ t.journal_h }}</h2>
+  <ul class="entries">
+    {% for post in collections.posts reversed limit: 3 %}
+    <li>
+      <time datetime="{{ post.date | date: '%Y-%m-%d', 'UTC' }}">{{ post.date | date: "%Y-%m-%d", "UTC" }}</time>
+      <a class="menu" href="{{ post.url }}">{{ post.data.title }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  <p><a class="menu" href="/posts/">{{ t.all_entries }}</a></p>
+</section>
+{% endif %}
+
+<section class="window">
+  <h2>{{ t.continue_h }}</h2>
+  <ul class="plain links">
+    <li><a class="menu" href="https://github.com/tiago-peixoto">GitHub</a></li>
+    <li><a class="menu" href="https://www.linkedin.com/in/tiago-peixoto87">LinkedIn</a></li>
+  </ul>
+</section>
