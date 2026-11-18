@@ -55,7 +55,7 @@ nav { display: flex; gap: 20px; }
   margin: 0 2px 28px;
 }
 
-.sprite { flex: none; }
+.sprite { flex: none; overflow: hidden; image-rendering: pixelated; }
 .stats { margin: 0; }
 .stats div { display: flex; gap: 12px; margin-bottom: 2px; }
 dt { color: var(--accent); width: 64px; flex: none; }

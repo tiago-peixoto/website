@@ -28,6 +28,7 @@ The post appears in the journal and on the home page with no other edit.
 - `src/index.liquid` holds the home page structure, shared by both languages.
 - `src/_data/i18n.json` holds the home page text in English and Portuguese.
 - `src/assets/style.css` holds all the styles.
-- `eleventy.config.js` holds the pixel grids of the hero and the bug.
+- `src/assets/sprites/` holds the burgundy character sheet and green beetle as lossless WebP images.
+- `eleventy.config.js` selects each sprite's region and accessible description.
 - `src/assets/game.js` holds the rules of the battle.
 - `src/_data/site.json` holds the site name and the canonical domain.
