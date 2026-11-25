@@ -15,6 +15,10 @@ const SPRITES = {
 
 export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
+  eleventyConfig.addPassthroughCopy({
+    "node_modules/phaser/dist/phaser.min.js": "assets/phaser.min.js",
+    "node_modules/phaser/LICENSE.md": "assets/phaser-LICENSE.txt",
+  });
 
   eleventyConfig.addShortcode("sprite", (name) => {
     const { file, size, crop, label } = SPRITES[name];

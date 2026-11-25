@@ -1,0 +1,405 @@
+{
+  "cell": [
+    32,
+    48
+  ],
+  "height": 40,
+  "directions": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "columns": [
+    "idle",
+    "contact-a",
+    "passing-a",
+    "lift-a",
+    "contact-b",
+    "passing-b",
+    "lift-b"
+  ],
+  "frameMs": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+  ],
+  "palette": [
+    "#211d2a",
+    "#342233",
+    "#50313a",
+    "#714a3c",
+    "#986148",
+    "#bf855c",
+    "#e0a775",
+    "#f7c58b",
+    "#ffe0a6",
+    "#412533",
+    "#612a40",
+    "#81354d",
+    "#a34c60",
+    "#bf6a73",
+    "#de8890",
+    "#292b40",
+    "#414156",
+    "#5d5969",
+    "#77727d",
+    "#a19b9d",
+    "#c1b8b5",
+    "#e5d5c2",
+    "#fff1d3",
+    "#512e27",
+    "#68412e",
+    "#845537",
+    "#ac7349",
+    "#cf925e",
+    "#f1b77a",
+    "#38505a",
+    "#60777a",
+    "#91a3a0"
+  ],
+  "lockedRows": [
+    0,
+    24
+  ],
+  "method": "Generated model head and shoulders copied exactly; generated limb poses below. Right limbs mirror left, with the independent right model restored. Shirt colors normalized to the model; visible generated skin remains in front.",
+  "checks": [
+    {
+      "direction": "down",
+      "headAndShouldersIdentical": true,
+      "distinctWalkFrames": 6,
+      "soleBaseline": 43
+    },
+    {
+      "direction": "left",
+      "headAndShouldersIdentical": true,
+      "distinctWalkFrames": 6,
+      "soleBaseline": 43
+    },
+    {
+      "direction": "right",
+      "headAndShouldersIdentical": true,
+      "distinctWalkFrames": 6,
+      "soleBaseline": 43
+    },
+    {
+      "direction": "up",
+      "headAndShouldersIdentical": true,
+      "distinctWalkFrames": 6,
+      "soleBaseline": 43
+    }
+  ],
+  "frames": [
+    {
+      "direction": "down",
+      "column": 0,
+      "name": "down-idle",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "down",
+      "column": 1,
+      "name": "down-walk-1",
+      "bounds": [
+        8,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "down",
+      "column": 2,
+      "name": "down-walk-2",
+      "bounds": [
+        7,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "down",
+      "column": 3,
+      "name": "down-walk-3",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "down",
+      "column": 4,
+      "name": "down-walk-4",
+      "bounds": [
+        8,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "down",
+      "column": 5,
+      "name": "down-walk-5",
+      "bounds": [
+        7,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "down",
+      "column": 6,
+      "name": "down-walk-6",
+      "bounds": [
+        7,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "left",
+      "column": 0,
+      "name": "left-idle",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "left",
+      "column": 1,
+      "name": "left-walk-1",
+      "bounds": [
+        7,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "left",
+      "column": 2,
+      "name": "left-walk-2",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "left",
+      "column": 3,
+      "name": "left-walk-3",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "left",
+      "column": 4,
+      "name": "left-walk-4",
+      "bounds": [
+        7,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "left",
+      "column": 5,
+      "name": "left-walk-5",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "left",
+      "column": 6,
+      "name": "left-walk-6",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "right",
+      "column": 0,
+      "name": "right-idle",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "right",
+      "column": 1,
+      "name": "right-walk-1",
+      "bounds": [
+        7,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "right",
+      "column": 2,
+      "name": "right-walk-2",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "right",
+      "column": 3,
+      "name": "right-walk-3",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "right",
+      "column": 4,
+      "name": "right-walk-4",
+      "bounds": [
+        8,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "right",
+      "column": 5,
+      "name": "right-walk-5",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "right",
+      "column": 6,
+      "name": "right-walk-6",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "up",
+      "column": 0,
+      "name": "up-idle",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "up",
+      "column": 1,
+      "name": "up-walk-1",
+      "bounds": [
+        7,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "up",
+      "column": 2,
+      "name": "up-walk-2",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "up",
+      "column": 3,
+      "name": "up-walk-3",
+      "bounds": [
+        7,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "up",
+      "column": 4,
+      "name": "up-walk-4",
+      "bounds": [
+        8,
+        4,
+        25,
+        44
+      ]
+    },
+    {
+      "direction": "up",
+      "column": 5,
+      "name": "up-walk-5",
+      "bounds": [
+        8,
+        4,
+        24,
+        44
+      ]
+    },
+    {
+      "direction": "up",
+      "column": 6,
+      "name": "up-walk-6",
+      "bounds": [
+        7,
+        4,
+        25,
+        44
+      ]
+    }
+  ]
+}
