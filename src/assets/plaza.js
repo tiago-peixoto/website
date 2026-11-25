@@ -62,7 +62,6 @@ if (ctx && typeof dialog.showModal === "function") {
   }
 
   function act(action, opener = document.activeElement) {
-    if (document.hidden) return;
     state = update(state, action);
     if (state.panel && !dialog.open) {
       returnFocus = opener;
@@ -102,5 +101,5 @@ if (ctx && typeof dialog.showModal === "function") {
   document.querySelector("#fallback").hidden = true;
   document.querySelector("#playable").hidden = false;
   document.querySelector("#university-link").hidden = false;
-  enter.hidden = false;
+  document.querySelector("#how").hidden = false;
 }

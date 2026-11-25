@@ -35,21 +35,25 @@ for (const current of queue) {
 }
 assert.equal(seen.size, MAP.join("").replace(/[^.S]/g, "").length, "every walkable tile is reachable");
 
+// C09, the published university entry, copied from the accepted brief and not from the site data.
+const C09 = {
+  en: ["2006 - 2012", "UFSC", "Tutorial level", "Bachelor of Engineering in Mechatronics, Robotics and Automation."],
+  "pt-BR": ["2006 - 2012", "UFSC", "Fase tutorial", "Bacharelado em Engenharia Mecatrônica, Robótica e Automação."],
+};
 const { langs } = JSON.parse(readFileSync("src/_data/i18n.json", "utf8"));
-const university = JSON.parse(readFileSync("src/_data/university.json", "utf8"));
+assert.deepEqual(langs.map((t) => t.lang).sort(), Object.keys(C09).sort());
 for (const t of langs) {
   const html = readFileSync(`_site${t.url}play/index.html`, "utf8");
   const regular = readFileSync(`_site/${t.path}`, "utf8");
-  for (const text of [university.name, university.dates, t.q_ufsc_t, t.q_ufsc]) {
-    assert(html.includes(text), `preview preserves ${t.lang} university wording`);
-    assert(regular.includes(text), `regular page preserves ${t.lang} university wording`);
+  for (const text of C09[t.lang]) {
+    assert(html.includes(text), `preview preserves ${t.lang} university wording: ${text}`);
+    assert(regular.includes(text), `regular page preserves ${t.lang} university wording: ${text}`);
   }
   assert(html.includes(`<html lang="${t.lang}">`));
   assert(html.includes('<dialog aria-labelledby="university-title"'));
   assert(html.includes('<form method="dialog">'));
   assert(html.indexOf('id="portfolio" href="../"') < html.indexOf("<canvas"));
   assert(html.includes('<div id="playable" hidden>'));
-  assert(html.includes("<noscript>"));
 }
 assert(!readFileSync("_site/sitemap.xml", "utf8").includes("/play/"), "preview stays out of the public sitemap");
 console.log("ok: plaza bounds, collisions, reachability, panel state and both languages");

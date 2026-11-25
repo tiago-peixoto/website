@@ -24,8 +24,7 @@
     "close": "Back to plaza",
     "near": "University door: Enter or Space to read.",
     "far": "The university is northwest of the starting point.",
-    "fallback": "Exploration is unavailable until the game loads. You can read everything in the regular portfolio.",
-    "noscript": "Exploration needs JavaScript. The regular portfolio does not."
+    "fallback": "Exploration is unavailable until the game loads. You can read everything in the regular portfolio."
   },
   "pt-BR": {
     "root": "../../",
@@ -52,7 +51,6 @@
     "close": "Voltar à praça",
     "near": "Porta da universidade: Enter ou Espaço para ler.",
     "far": "A universidade fica a noroeste do ponto inicial.",
-    "fallback": "A exploração fica indisponível até o jogo carregar. Você pode ler tudo no portfólio tradicional.",
-    "noscript": "A exploração precisa de JavaScript. O portfólio tradicional não."
+    "fallback": "A exploração fica indisponível até o jogo carregar. Você pode ler tudo no portfólio tradicional."
   }
 }
