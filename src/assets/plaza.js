@@ -144,7 +144,7 @@ export async function startPlaza({ asset, dialog, openPanel }) {
           }
         });
         on(window, "keyup", (event) => pressed.delete(event.code));
-        on(canvas, "blur", clearInput);
+        on(canvas, "blur", () => pressed.clear());
         on(window, "blur", clearInput);
         on(document, "visibilitychange", clearInput);
         on(dialog, "close", clearInput);
@@ -157,7 +157,6 @@ export async function startPlaza({ asset, dialog, openPanel }) {
           on(button, "pointerup", () => { touchDirection = undefined; });
           on(button, "pointercancel", clearInput);
           on(button, "lostpointercapture", clearInput);
-          on(button, "blur", clearInput);
           on(button, "click", (event) => {
             if (!dialog.open && event.detail === 0) step(button.dataset.direction, 4);
           });
