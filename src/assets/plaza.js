@@ -101,6 +101,7 @@ if (ctx && typeof dialog.showModal === "function") {
   document.querySelector("#fallback").hidden = true;
   document.querySelector("#playable").hidden = false;
   document.querySelector("#controls").hidden = false;
+  document.querySelector(".menu").classList.add("beside-map");
   document.querySelector("#university-link").hidden = false;
   document.querySelector("#how").hidden = false;
 }
