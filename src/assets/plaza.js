@@ -16,7 +16,7 @@ export async function startPlaza({ asset, dialog, openPanel }) {
   const tileFor = (object) => collection.tiles.find((tile) => tile.id === object.gid - collection.firstgid);
   let position = { x: spawn.x + spawn.width / 2, y: feet(spawn), facing: "down" };
   const pressed = new Map();
-  let touchDirection;
+  const held = new Map();
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
   const events = new AbortController();
   const on = (target, type, listener) => target.addEventListener(type, listener, { signal: events.signal });
@@ -24,7 +24,7 @@ export async function startPlaza({ asset, dialog, openPanel }) {
   const nearby = document.querySelector("#nearby");
   const host = document.querySelector("#plaza");
   let game, walker, shadow, water;
-  const clearInput = () => { pressed.clear(); touchDirection = undefined; };
+  const clearInput = () => { pressed.clear(); held.clear(); };
 
   document.querySelector("#playable").hidden = false;
   document.querySelector("#controls").hidden = false;
@@ -152,9 +152,9 @@ export async function startPlaza({ asset, dialog, openPanel }) {
           on(button, "pointerdown", (event) => {
             if (dialog.open || (event.pointerType === "mouse" && event.button !== 0)) return;
             button.setPointerCapture(event.pointerId);
-            touchDirection = button.dataset.direction;
+            held.set(event.pointerId, button.dataset.direction);
           });
-          const release = () => { if (touchDirection === button.dataset.direction) touchDirection = undefined; };
+          const release = (event) => held.delete(event.pointerId);
           on(button, "pointerup", release);
           on(button, "pointercancel", release);
           on(button, "lostpointercapture", release);
@@ -164,7 +164,7 @@ export async function startPlaza({ asset, dialog, openPanel }) {
         }
         on(interact, "click", () => readUniversity(interact));
         this.events.on("shutdown", () => events.abort());
-        this.moveDirection = () => touchDirection || [...pressed.values()].at(-1);
+        this.moveDirection = () => [...held.values()].at(-1) || [...pressed.values()].at(-1);
         refresh();
         clearTimeout(timer);
         resolve();
