@@ -88,6 +88,7 @@ The post appears in the journal and on the home page with no other edit.
 
 - `src/index.liquid` holds the home page structure, shared by both languages.
 - `src/_data/i18n.json` holds the home page text in English and Portuguese.
+- `src/_data/university.json` holds the university name and dates, shared by the home page and the plaza panel.
 - `src/assets/style.css` holds the regular portfolio styles.
 - `src/play.liquid` and `src/_data/plaza.json` hold the bilingual plaza interface.
 - `src/assets/plaza.css`, `plaza-entry.js`, `plaza.js`, and `plaza-map.js` hold the plaza styles, entry screen, Phaser scene, and collision rules.
