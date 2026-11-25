@@ -160,8 +160,8 @@ export async function startPlaza({ asset, dialog, openPanel }) {
           on(button, "pointercancel", clearInput);
           on(button, "lostpointercapture", clearInput);
           on(button, "blur", clearInput);
-          on(button, "click", () => {
-            if (!dialog.open) step(button.dataset.direction, 4);
+          on(button, "click", (event) => {
+            if (!dialog.open && event.detail === 0) step(button.dataset.direction, 4);
           });
         }
         on(interact, "click", () => readUniversity(interact));
@@ -189,7 +189,7 @@ export async function startPlaza({ asset, dialog, openPanel }) {
     game = new Phaser.Game({
       type: Phaser.CANVAS, parent: host, backgroundColor: "#153a37", pixelArt: true,
       scale: { mode: Phaser.Scale.RESIZE, width: host.clientWidth, height: host.clientHeight },
-      input: { keyboard: false }, audio: { noAudio: true },
+      input: { keyboard: false, mouse: false, touch: false }, audio: { noAudio: true },
       scene: { preload, create, update },
     });
   });

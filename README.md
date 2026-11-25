@@ -42,12 +42,7 @@ Phaser's documentation warns that image-collection tilesets are unsupported.
 The game therefore loads the map's object images individually, preserves their explicit top-left alignment, and applies the map's `feetY` depth values.
 No art atlas conversion or new art generation is involved.
 
-After building, run `node scripts/plaza-preview.js /absolute/path/plaza.html` for one self-contained English review page.
-It inlines all scripts, styles, maps, and images, and defers engine execution until entry.
-It works in a sandboxed iframe without same-origin access or module imports.
-Its portfolio and Portuguese links navigate to the live regular portfolio inside the same frame.
-The sandbox host must allow scripts to play.
-The ordinary build keeps relative asset URLs for previews under a subdirectory.
+The build keeps relative asset URLs for previews under a subdirectory.
 
 ### Download measurements
 

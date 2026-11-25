@@ -3,7 +3,6 @@ import assert from "node:assert";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import "./check-plaza.js";
-import "./check-preview.js";
 import { START, play } from "./src/assets/game.js";
 
 const out = "_site";
