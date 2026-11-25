@@ -24,7 +24,6 @@ export async function startPlaza({ asset, dialog, openPanel }) {
   const nearby = document.querySelector("#nearby");
   const host = document.querySelector("#plaza");
   let game, walker, shadow, water;
-  let facing = "down";
   const clearInput = () => { pressed.clear(); touchDirection = undefined; };
 
   document.querySelector("#playable").hidden = false;
@@ -51,7 +50,6 @@ export async function startPlaza({ asset, dialog, openPanel }) {
       const next = rules.move(position, direction, distance);
       const moved = next.x !== position.x || next.y !== position.y;
       position = next;
-      facing = direction;
       refresh();
       return moved;
     }
@@ -179,10 +177,10 @@ export async function startPlaza({ asset, dialog, openPanel }) {
     function update(_time, delta) {
       if (!walker) return;
       const direction = !dialog.open && !document.hidden && this.moveDirection();
-      if (direction && step(direction, Math.min(delta, 50) * 0.06)) walker.play(facing, true);
+      if (direction && step(direction, Math.min(delta, 50) * 0.06)) walker.play(position.facing, true);
       else {
         walker.anims.stop();
-        walker.setFrame(layout.directions.indexOf(facing) * 7);
+        walker.setFrame(layout.directions.indexOf(position.facing) * 7);
       }
     }
 

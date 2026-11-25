@@ -54,7 +54,6 @@ Phaser accounted for 1,376,276 transferred bytes, leaving 338,368 bytes when tha
 That subtraction is a size comparison, not a playable build without Phaser.
 The Phaser file itself is 1,375,976 bytes, or 352,441 bytes with local gzip level 9 compression.
 Production compression and cache behavior were not measured.
-The self-contained review page embeds everything up front, so it defers execution rather than download.
 
 ### Documentation read on 2026-11-25
 
