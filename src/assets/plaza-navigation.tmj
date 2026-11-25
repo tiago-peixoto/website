@@ -1,0 +1,41 @@
+{
+  "type": "map", "version": "1.10", "orientation": "orthogonal", "renderorder": "right-down",
+  "width": 24, "height": 16, "tilewidth": 16, "tileheight": 16, "infinite": false,
+  "nextlayerid": 4, "nextobjectid": 5,
+  "tilesets": [{ "firstgid": 1, "name": "blocked", "image": "plaza-art/terrain.png", "imagewidth": 128, "imageheight": 128, "tilewidth": 16, "tileheight": 16, "columns": 8, "tilecount": 64 }],
+  "layers": [
+    {
+      "id": 1, "name": "blocked", "type": "tilelayer", "width": 24, "height": 16, "x": 0, "y": 0, "opacity": 0.4, "visible": true,
+      "data": [
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,
+        1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,
+        1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1
+      ]
+    },
+    {
+      "id": 2, "name": "obstacles", "type": "objectgroup", "x": 0, "y": 0, "opacity": 1, "visible": true,
+      "objects": [
+        { "id": 1, "name": "lamp-base", "x": 261, "y": 205, "width": 7, "height": 8, "rotation": 0, "visible": true },
+        { "id": 2, "name": "tree-trunk", "x": 49, "y": 226, "width": 14, "height": 18, "rotation": 0, "visible": true },
+        { "id": 3, "name": "sign-posts", "x": 69, "y": 142, "width": 12, "height": 13, "rotation": 0, "visible": true }
+      ]
+    },
+    {
+      "id": 3, "name": "doors", "type": "objectgroup", "x": 0, "y": 0, "opacity": 1, "visible": true,
+      "objects": [{ "id": 4, "name": "university", "x": 136, "y": 128, "width": 48, "height": 28, "rotation": 0, "visible": true }]
+    }
+  ]
+}

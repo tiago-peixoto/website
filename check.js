@@ -1,7 +1,9 @@
 // Checks the built site: no em dash, and every internal link points at a file that exists.
 import assert from "node:assert";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import "./check-plaza.js";
+import "./check-preview.js";
 import { START, play } from "./src/assets/game.js";
 
 const out = "_site";
@@ -11,8 +13,11 @@ assert(pages.length >= 3, "expected both home pages and the journal");
 for (const page of pages) {
   const html = readFileSync(join(out, page), "utf8");
   assert(!html.includes("—"), `${page} contains an em dash`);
-  for (const [, url] of html.matchAll(/(?:href|src)="(\/[^"#]*)/g)) {
-    const file = join(out, url.endsWith("/") ? url + "index.html" : url);
+  for (const [, href] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+    if (!href.startsWith("/") && !href.startsWith(".")) continue;
+    const url = href.split(/[?#]/)[0];
+    const base = url.startsWith("/") ? out : join(out, dirname(page));
+    const file = join(base, url.endsWith("/") ? url + "index.html" : url);
     assert(existsSync(file), `${page} links to ${url}, which does not exist`);
   }
 }

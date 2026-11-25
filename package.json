@@ -9,5 +9,8 @@
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.8"
+  },
+  "dependencies": {
+    "phaser": "4.2.1"
   }
 }
