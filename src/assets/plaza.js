@@ -154,9 +154,10 @@ export async function startPlaza({ asset, dialog, openPanel }) {
             button.setPointerCapture(event.pointerId);
             touchDirection = button.dataset.direction;
           });
-          on(button, "pointerup", () => { touchDirection = undefined; });
-          on(button, "pointercancel", clearInput);
-          on(button, "lostpointercapture", clearInput);
+          const release = () => { if (touchDirection === button.dataset.direction) touchDirection = undefined; };
+          on(button, "pointerup", release);
+          on(button, "pointercancel", release);
+          on(button, "lostpointercapture", release);
           on(button, "click", (event) => {
             if (!dialog.open && event.detail === 0) step(button.dataset.direction, 4);
           });
