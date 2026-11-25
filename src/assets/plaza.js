@@ -100,6 +100,7 @@ if (ctx && typeof dialog.showModal === "function") {
   draw();
   document.querySelector("#fallback").hidden = true;
   document.querySelector("#playable").hidden = false;
+  document.querySelector("#controls").hidden = false;
   document.querySelector("#university-link").hidden = false;
   document.querySelector("#how").hidden = false;
 }
