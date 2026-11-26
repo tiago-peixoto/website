@@ -23,7 +23,7 @@ export async function startPlaza({ asset, dialog, openPanel }) {
   const interact = document.querySelector("#interact");
   const nearby = document.querySelector("#nearby");
   const host = document.querySelector("#plaza");
-  let game, walker, shadow, water;
+  let game, walker, shadow, water, tree;
   const clearInput = () => { pressed.clear(); held.clear(); };
 
   document.querySelector("#playable").hidden = false;
@@ -40,6 +40,7 @@ export async function startPlaza({ asset, dialog, openPanel }) {
     function refresh() {
       walker.setPosition(position.x, position.y).setDepth(position.y);
       shadow.setPosition(position.x - 8, position.y - 3);
+      if (tree) tree.setAlpha(position.y < tree.depth && position.x + 10 > tree.x && position.x - 10 < tree.x + tree.width && position.y > tree.y ? 0.45 : 1);
       const near = rules.atDoor(position);
       interact.disabled = !near;
       const message = near ? nearby.dataset.near : nearby.dataset.far;
@@ -89,6 +90,7 @@ export async function startPlaza({ asset, dialog, openPanel }) {
             if (object.name === "walker") continue;
             const image = this.add.sprite(object.x, object.y, tileFor(object).image).setOrigin(0);
             image.setName(object.name);
+            if (object.name === "tree") tree = image;
             image.setDepth(layer.name === "sorted" ? feet(object) : { shadow: -900, back: -500, water: -400, front: 1000 }[layer.name]);
             if (object.name === "walker-shadow") shadow = image;
             if (layer.name === "water") {
