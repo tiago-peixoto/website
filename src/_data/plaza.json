@@ -15,8 +15,8 @@
     "enter": "Enter the plaza",
     "loading": "Loading the plaza…",
     "error": "The plaza could not load. Try again, or use the regular portfolio.",
-    "map": "Plaza and university: the university door leads to a courtyard, with an engineering study room on the left and the library exterior on the right.",
-    "instructions": "Arrows or WASD to walk. Face an object and press Enter or Space to interact. Escape leaves play. Tab reaches the directory.",
+    "map": "Walk right from the plaza to reach the university courtyard. Walk left to return. The left building opens into the engineering study room.",
+    "instructions": "Arrows or WASD to walk. Walk across a path at the edge to change areas. Face an object and press Enter or Space to interact. Escape leaves play. Tab reaches the directory.",
     "touch": "Hold a direction to walk. Tap for a small step.",
     "up": "Walk up",
     "left": "Walk left",
@@ -25,7 +25,7 @@
     "open": "Interact",
     "close": "Close",
     "near": "Enter or Space to interact.",
-    "far": "Walk toward an object, or use the directory.",
+    "far": "Walk toward an object, or follow a path to the next area.",
     "fallback": "Exploration is unavailable until the game loads. You can read everything in the regular portfolio.",
     "places": "Visit without walking",
     "plaza": "Plaza",
@@ -58,7 +58,12 @@
     "boardNext": "Change input",
     "input": "Input",
     "output": "Output",
-    "location": "Location"
+    "location": "Location",
+    "lamp": "Plaza lamp",
+    "lampOn": "Plaza lamp on.",
+    "lampOff": "Plaza lamp off.",
+    "pond": "Watch the pond",
+    "pondJump": "A fish jumps from the pond and splashes back into the water."
   },
   "pt-BR": {
     "root": "../../",
@@ -76,8 +81,8 @@
     "enter": "Entrar na praça",
     "loading": "Carregando a praça…",
     "error": "Não foi possível carregar a praça. Tente novamente ou use o portfólio tradicional.",
-    "map": "Praça e universidade: a porta leva a um pátio, com uma sala de estudos de engenharia à esquerda e a fachada da biblioteca à direita.",
-    "instructions": "Setas ou WASD para caminhar. Olhe para um objeto e pressione Enter ou Espaço para interagir. Escape sai do jogo. Tab acessa o diretório.",
+    "map": "Caminhe à direita da praça para chegar ao pátio da universidade. Volte pela esquerda. O prédio à esquerda leva à sala de estudos de engenharia.",
+    "instructions": "Use as setas ou WASD para caminhar. Atravesse um caminho na borda para mudar de área. Olhe para um objeto e pressione Enter ou Espaço para interagir. Escape sai do jogo. Tab leva ao diretório.",
     "touch": "Segure uma direção para caminhar. Toque para dar um pequeno passo.",
     "up": "Andar para cima",
     "left": "Andar para a esquerda",
@@ -86,7 +91,7 @@
     "open": "Interagir",
     "close": "Fechar",
     "near": "Enter ou Espaço para interagir.",
-    "far": "Caminhe até um objeto ou use o diretório.",
+    "far": "Aproxime-se de um objeto, ou siga um caminho para a próxima área.",
     "fallback": "A exploração fica indisponível até o jogo carregar. Você pode ler tudo no portfólio tradicional.",
     "places": "Visite sem caminhar",
     "plaza": "Praça",
@@ -119,6 +124,11 @@
     "boardNext": "Mudar entrada",
     "input": "Entrada",
     "output": "Saída",
-    "location": "Local"
+    "location": "Local",
+    "lamp": "Poste da praça",
+    "lampOn": "Luz do poste acesa.",
+    "lampOff": "Luz do poste apagada.",
+    "pond": "Observar o lago",
+    "pondJump": "Um peixe salta do lago e mergulha de volta na água."
   }
 }

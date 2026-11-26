@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { DIRECTIONS, navigation, cameraZoom } from "./src/assets/plaza-map.js";
+import { createState, changeState } from "./src/assets/plaza-state.js";
 
 const json = (file) => JSON.parse(readFileSync(file, "utf8"));
 const courtyard = json("src/assets/plaza-art/courtyard.tmj");
@@ -10,9 +11,10 @@ const study = json("src/assets/plaza-art/interior.tmj");
 const layout = json("src/assets/plaza-art/walker-layout.json");
 const areas = { plaza: [courtyard, plazaMap], outside: [outside, outside], study: [study, study] };
 const expectedActions = {
-  plaza: ["outside"], outside: ["study", "plaza", "university"],
-  study: ["paper", "notebook", "sensor", "robot", "computer", "board", "light", "outside"],
+  plaza: ["university", "lamp", "pond"], outside: ["study", "university"],
+  study: ["paper", "notebook", "sensor", "robot", "computer", "board", "light"],
 };
+const expectedExits = { plaza: ["outside"], outside: ["plaza"], study: ["outside"] };
 const allActions = new Set();
 let totalReachable = 0;
 for (const [name, [art, map]] of Object.entries(areas)) {
@@ -47,11 +49,13 @@ for (const [name, [art, map]] of Object.entries(areas)) {
     assert(!rules.walkable(object.x + object.width / 2, object.y + object.height / 2), object.name);
   }
   for (const [x, y] of [[-1, 200], [width, 200], [200, -1], [200, height]]) assert(!rules.walkable(x, y));
-  const seen = new Set([`${start.x},${start.y}`]), queue = [start], reachableActions = new Set();
+  const seen = new Set([`${start.x},${start.y}`]), queue = [start], reachableActions = new Set(), reachableExits = new Set();
   for (const current of queue) {
     for (const direction of Object.keys(DIRECTIONS)) {
       const interaction = rules.nearby({ ...current, facing: direction });
       if (interaction) reachableActions.add(interaction.name);
+      const exit = rules.exit({ ...current, facing: direction });
+      if (exit) reachableExits.add(exit.name);
       const next = rules.move(current, direction, 1);
       const key = `${next.x},${next.y}`;
       assert(rules.walkable(next.x, next.y));
@@ -63,7 +67,9 @@ for (const [name, [art, map]] of Object.entries(areas)) {
   assert.equal(seen.size, walkablePixels, `${name}: every walkable foot position is reachable`);
   for (const spawn of spawns) assert(seen.has(`${spawn.x},${spawn.y}`), `${name}: return spawn reachable`);
   assert.deepEqual([...reachableActions].sort(), expectedActions[name].sort(), `${name}: all interactions reachable with correct facing`);
+  assert.deepEqual([...reachableExits].sort(), expectedExits[name], `${name}: all walking exits reachable`);
   for (const action of reachableActions) allActions.add(action);
+  for (const target of reachableExits) allActions.add(target);
   totalReachable += seen.size;
   for (const [w, h] of [[1280, 720], [1440, 900], [1920, 1080], [2560, 1440], [500, 1000], [390, 844], [320, 568]]) {
     const zoom = cameraZoom(w, h, width, height);
@@ -75,10 +81,42 @@ for (const [name, [art, map]] of Object.entries(areas)) {
 const rules = navigation(plazaMap);
 assert.equal(rules.move({ x: 250, y: 210 }, "right", 200).x, 256, "cannot tunnel through the lamp base");
 assert.equal(rules.move({ x: 160, y: 140 }, "up", 200).y, 132, "cannot cross a blocked tile");
-assert.equal(rules.nearby({ x: 160, y: 140, facing: "up" }).name, "outside");
+assert.equal(rules.nearby({ x: 160, y: 140, facing: "up" }).name, "university");
 assert.equal(rules.nearby({ x: 160, y: 140, facing: "down" }), undefined);
 const plazaReturn = plazaMap.layers.find((layer) => layer.name === "spawns").objects.find((object) => object.name === "return");
-assert.equal(rules.nearby({ ...plazaReturn, facing: "up" }).name, "outside", "leaving the university arrives at its plaza door");
+assert.equal(plazaReturn.x, 366, "leaving the university arrives inside the plaza right edge");
+for (const [map, start, direction, target] of [
+  [plazaMap, { x: 370, y: 204 }, "right", "outside"],
+  [outside, { x: 18, y: 150 }, "left", "plaza"],
+  [study, { x: 192, y: 242 }, "down", "outside"],
+]) {
+  const route = navigation(map);
+  const atEdge = route.move(start, direction, 30);
+  assert.equal(route.exit(atEdge)?.name, target, "walking to the edge selects the destination without an interaction");
+  assert.equal(route.nearby(atEdge), undefined, "edges do not require the interact action");
+  const opposite = { right: "left", left: "right", down: "up" }[direction];
+  assert.equal(route.exit({ ...atEdge, facing: opposite }), undefined, "moving inward does not trigger an exit");
+  assert.equal(route.exit({ ...start, facing: direction }), undefined, "exits trigger only at the edge");
+}
+assert.equal(navigation(outside).exit(navigation(outside).move({ x: 70, y: 180 }, "left", 100)), undefined, "a garden is not an exit");
+assert.equal(rules.nearby({ x: 264, y: 224, facing: "up" }).name, "lamp");
+assert.equal(rules.nearby({ x: 320, y: 184, facing: "up" }).name, "pond");
+const state = createState();
+assert.equal(state.lampOn, false);
+changeState(state, "lamp");
+assert.equal(state.lampOn, true);
+assert.equal(state.lightsOn, true, "the plaza lamp does not switch the room lights");
+changeState(state, "lamp");
+assert.equal(state.lampOn, false);
+changeState(state, "light");
+assert.equal(state.lightsOn, false);
+changeState(state, "pond");
+changeState(state, "pond");
+assert.equal(state.pondJump, 2, "each pond interaction requests a new jump");
+changeState(state, "notebook");
+changeState(state, "notebook");
+changeState(state, "sensor");
+assert.deepEqual([...state.inventory], ["notebook", "sensor"], "pickups stay unique across interactions");
 const waterSet = courtyard.tilesets.find((set) => set.tiles);
 const water = waterSet.tiles.find((tile) => tile.animation).animation;
 assert.equal(water.length, 4);

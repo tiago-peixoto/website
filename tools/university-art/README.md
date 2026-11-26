@@ -18,3 +18,17 @@ Photo sources consulted on 26 November 2026, Europe/Berlin:
 `../export-university.py` generates the production maps and images.
 It preserves the approved appearance while separating collectible objects from the tabletops underneath them.
 The original courtyard exporter supplied the nearest-neighbor reduction and palette method used before approval.
+
+## Interaction effects
+
+`effects-source.png` is the original transparent atlas generated with the built-in ImageGen tool on 26 November 2026.
+`effects-prompt.txt` preserves the exact prompt.
+The approved round-two courtyard reconstruction and `interior.png` served as style references.
+No public photograph or franchise art was supplied.
+
+`../export-effects.py` crops the four generated shapes and exports `lamp-glow.png`, `lamp-pool.png`, `fish.png`, `door-light.png` and `splash.png`.
+It ignores faint generator speckles when choosing crop bounds, reduces with nearest-neighbor sampling, and maps RGB colors to the approved outside scene's 64-color palette.
+It preserves the generated alpha values within each retained crop.
+The exporter gives each sprite its final display dimensions, so the scene never stretches individual sprite pixels.
+The scene places the doorway light at the bottom threshold and draws it over the room shade so sunlight remains visible with the lights off.
+The same generated halo supplies the lamp's bulb glow and its flattened pool of light.

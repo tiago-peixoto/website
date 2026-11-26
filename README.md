@@ -18,9 +18,14 @@ Without JavaScript, the directory and regular portfolio links remain available.
 If loading fails, the entry button offers another attempt.
 
 Use arrows or WASD to walk, or hold a direction button on a touch screen.
-Face the university door and press Enter or Space to enter the university courtyard.
+Walk off the plaza's right path to reach the university courtyard from its left edge.
+Walk back across the courtyard's left edge to return to the plaza.
+Edge crossings happen automatically, without an interaction key.
 The left entrance leads into one engineering study room.
+Daylight marks the study room's bottom exit, including when the room lights are off.
+Walking through that exit returns to the courtyard.
 Face an object and press Enter or Space, or use the interaction button beside the direction controls.
+Switch the plaza lamp on and off, or watch a fish leap from the pond and splash back into the water.
 Read the paper, switch the room lights, collect the notebook and sensor, and inspect the robot, computer and math board.
 The paper and computer reuse published portfolio text.
 The robot gripper and math calculation are small imagined demonstrations, not claims about a real laboratory.
@@ -31,7 +36,10 @@ Tab reaches the links normally.
 Every interaction is also available in the HTML directory before the engine loads.
 Once play starts, the directory can visit any of the three areas without walking.
 Reduced motion pauses the water and walking animation, including when the preference changes during play.
+The pond then shows a brief stationary ripple instead of a moving fish.
+Interaction feedback disappears after four seconds so it does not remain over the floor.
 The canvas fills the area between the header and the controls, so neither bar covers the map, the walker or an exit.
+The final play layout is set before loading the scene, and a size observer keeps the canvas aligned when translated controls wrap.
 The camera uses the smallest whole-number zoom that covers both dimensions of that area, and follows the walker within the map bounds.
 This keeps the approved native 384 by 256 artwork sharp without empty bands or fractional scaling.
 Narrow windows show less of the map at once, and the camera follows movement to reveal the rest.
@@ -42,20 +50,25 @@ These are invented settings inspired by UFSC, not reconstructions of its buildin
 `courtyard.tmj` supplies the terrain, objects, ground-contact depths, starting position, and water frames.
 The walker starts there facing down.
 The art export has no gameplay data.
-The separate, hand-authored `src/assets/plaza-navigation.tmj` supplies blocked tiles, object footprints, the university transition, and the `return` spawn in front of the university door.
-Leaving the university courtyard puts the walker on that spawn, facing away from the door.
+The separate, hand-authored `src/assets/plaza-navigation.tmj` supplies blocked tiles, object footprints, lamp and pond interactions, and the right-edge transition.
+Its `return` spawn places the walker inside that edge, facing left.
+The original plaza building opens the published university information, and no longer transports the walker.
 It uses the same 24 by 16 grid and 16-pixel tiles.
 Keep both maps aligned when moving scenery.
 The collision footprint covers the walker's feet, not the head or tree canopy.
 
-`outside.tmj` and `interior.tmj` contain the new art, collision footprints, interaction rectangles and spawn points.
+`outside.tmj` and `interior.tmj` contain the new art, collision footprints, interaction rectangles, edge exits and spawn points.
 Their interaction rectangles include the direction the walker must face.
+Exit rectangles also specify the outgoing direction, so arriving at an edge does not immediately send the walker back.
 `tools/export-university.py` exports these maps from the approved native images in `tools/university-art/`.
 Run it with Python and Pillow 12.3 or later after changing its source art or map definitions.
 Do not hand-edit its generated maps or atlases.
 It slices each composition into 16-pixel tiles and checks that reconstruction with collectible items matches the approved pixels exactly.
 These compositions have 384 unique tiles each, so the exports are specific to these scenes rather than a general reusable terrain set.
 The notebook and sensor use separate image objects over clean tabletop patches sampled from the generated art.
+`tools/export-effects.py` exports the generated lamp glow, fish, splash and doorway light from `tools/university-art/effects-source.png`.
+It trims faint background speckles, reduces each sprite with nearest-neighbor sampling, and maps its colors to the approved 64-color palette.
+The retained pixels preserve the generated alpha channel.
 
 Phaser 4.2.1 is pinned and copied from npm into the built site's assets.
 The terrain uses Phaser's Tiled loader and tile layer.
@@ -86,8 +99,10 @@ The other references document the existing courtyard implementation.
 - [Phaser Tilemap](https://docs.phaser.io/api-documentation/class/tilemaps-tilemap): Tiled parsing, tilesets, object layers, and image-collection limitation.
 - [Phaser animations](https://docs.phaser.io/phaser/concepts/animations): sprite frames, timing, and repetition.
 - [Phaser depth](https://docs.phaser.io/api-documentation/namespace/gameobjects-components-depth): larger depth values draw in front.
+- [Phaser components](https://docs.phaser.io/phaser/concepts/gameobjects/components): opacity and vertical sprite flipping for the new effects.
 - [Phaser cameras](https://docs.phaser.io/phaser/concepts/cameras): following, bounds, viewport, and zoom.
 - [Phaser scaling](https://docs.phaser.io/phaser/concepts/scale-manager): resizing the canvas to its parent.
+- [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver): observing changes to the canvas container.
 - [Tiled JSON](https://doc.mapeditor.org/en/stable/reference/json-map-format/): tile arrays, image collections, and object layers.
 - [Tiled objects](https://doc.mapeditor.org/en/stable/manual/objects/): rectangle footprints and explicit top-left tile alignment.
 - [Pillow images](https://pillow.readthedocs.io/en/stable/reference/Image.html): palette conversion, image composition and exact pixel comparison.
@@ -96,6 +111,8 @@ The online Phaser API labels itself 4.1.0.
 The installed 4.2.1 loader documentation in `node_modules/phaser/src/loader/filetypes/TilemapJSONFile.js` confirms the object-input loading path used here.
 Its camera documentation confirms that `startFollow(..., true)` rounds rendering positions and that integer zoom enables pixel rounding.
 Its alpha documentation confirms that `setAlpha` applies a single opacity value across the whole tree image.
+The installed ScaleManager documentation confirms that `getParentBounds()` updates parent dimensions and returns whether they changed.
+Its `refresh()` method applies those dimensions in RESIZE mode and emits the resize event.
 The attempted `/phaser/concepts/tilemaps` URL failed with HTTP 403 and 404, so the API page above replaces it.
 
 ## Write a post
@@ -121,7 +138,8 @@ The post appears in the journal and on the home page with no other edit.
 - `src/assets/style.css` holds the regular portfolio styles.
 - `src/play.liquid` and `src/_data/plaza.json` hold the bilingual plaza interface.
 - `src/assets/plaza.css`, `plaza-entry.js`, `plaza.js`, and `plaza-map.js` hold the plaza styles, entry screen, Phaser scene, and collision rules.
-- `check-plaza.js` checks the maps, every walkable position, all interactions, integer viewport coverage and shared university wording.
+- `src/assets/plaza-state.js` holds session state changes for lights, pond interactions and item pickup.
+- `check-plaza.js` checks the maps, every walkable position, all interactions, automatic exits, toggles, integer viewport coverage and shared university wording.
 - `src/assets/sprites/` holds the burgundy character sheet and green beetle as lossless WebP images.
 - `eleventy.config.js` selects each sprite's region and accessible description.
 - `src/assets/game.js` holds the rules of the battle.

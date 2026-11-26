@@ -1,11 +1,20 @@
+import { createState, changeState } from "./plaza-state.js";
+
 const dialog = document.querySelector("dialog");
 const enter = document.querySelector("#enter");
 const loading = document.querySelector("#loading");
 let returnFocus;
-const state = { lightsOn: true, inventory: new Set() };
+const state = createState();
 const messages = document.querySelector("#messages").dataset;
 const actions = Object.fromEntries([...document.querySelectorAll("[data-action]")].map((button) => [button.dataset.action, button]));
 const feedback = document.querySelector("#feedback");
+let feedbackTimer;
+
+function announce(message) {
+  clearTimeout(feedbackTimer);
+  feedback.textContent = message;
+  feedbackTimer = setTimeout(() => { feedback.textContent = ""; }, 4000);
+}
 
 function openPanel(id, opener = document.activeElement) {
   if (dialog.open) return;
@@ -17,22 +26,26 @@ function openPanel(id, opener = document.activeElement) {
 }
 
 function interact(id, opener) {
-  if (id === "light") {
-    state.lightsOn = !state.lightsOn;
-    actions.light.setAttribute("aria-pressed", String(state.lightsOn));
-    feedback.textContent = state.lightsOn ? messages.lightsOn : messages.lightsOff;
+  if (id === "light" || id === "lamp") {
+    changeState(state, id);
+    const on = id === "light" ? state.lightsOn : state.lampOn;
+    actions[id].setAttribute("aria-pressed", String(on));
+    announce(id === "light" ? (on ? messages.lightsOn : messages.lightsOff) : (on ? messages.lampOn : messages.lampOff));
+  } else if (id === "pond") {
+    changeState(state, id);
+    announce(messages.pondJump);
   } else if (id === "notebook" || id === "sensor") {
     const name = actions[id].dataset.itemName;
     const picked = state.inventory.has(id);
     if (!picked) {
-      state.inventory.add(id);
+      changeState(state, id);
       const item = document.createElement("li");
       item.textContent = name;
       document.querySelector("#inventory").append(item);
       document.querySelector("#inventory-count").textContent = state.inventory.size;
       document.querySelector("#empty-inventory").hidden = true;
     }
-    feedback.textContent = `${picked ? messages.alreadyPicked : messages.picked} ${name}`;
+    announce(`${picked ? messages.alreadyPicked : messages.picked} ${name}`);
   } else openPanel(id, opener);
 }
 
@@ -80,6 +93,8 @@ if (typeof dialog.showModal === "function") {
     loading.textContent = loading.dataset.loading;
     try {
       const [{ startPlaza }] = await Promise.all([import("./plaza.js"), loadPhaser()]);
+      document.querySelector("#fallback").hidden = true;
+      document.body.classList.add("playing");
       const game = await startPlaza({
         asset: (name) => new URL(`./${name}`, import.meta.url).href,
         dialog,
@@ -88,9 +103,7 @@ if (typeof dialog.showModal === "function") {
       });
       loading.textContent = "";
       enter.hidden = true;
-      document.querySelector("#fallback").hidden = true;
       document.querySelector("#how").hidden = false;
-      document.body.classList.add("playing");
       document.querySelector("#directory-places").hidden = false;
       for (const button of document.querySelectorAll("[data-travel]")) button.addEventListener("click", () => {
         game.visit(button.dataset.travel);
@@ -106,6 +119,8 @@ if (typeof dialog.showModal === "function") {
       loading.textContent = loading.dataset.error;
       document.querySelector("#playable").hidden = true;
       document.querySelector("#controls").hidden = true;
+      document.querySelector("#fallback").hidden = false;
+      document.body.classList.remove("playing");
       enter.disabled = false;
     }
   });

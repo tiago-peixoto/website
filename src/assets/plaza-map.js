@@ -8,6 +8,7 @@ export function navigation(map) {
   const blocked = map.layers.find((layer) => layer.name === "blocked").data;
   const obstacles = map.layers.find((layer) => layer.name === "obstacles").objects;
   const interactions = map.layers.find((layer) => layer.name === "interactions").objects;
+  const exits = map.layers.find((layer) => layer.name === "exits")?.objects || [];
   const width = map.width * map.tilewidth;
   const height = map.height * map.tileheight;
 
@@ -40,5 +41,9 @@ export function navigation(map) {
     return interactions.find((object) => facing === (object.properties?.find((p) => p.name === "facing")?.value || "up")
       && x >= object.x && x <= object.x + object.width && y >= object.y && y <= object.y + object.height);
   }
-  return { walkable, move, nearby };
+  function exit({ x, y, facing }) {
+    return exits.find((object) => facing === object.properties.find((p) => p.name === "facing").value
+      && x >= object.x && x <= object.x + object.width && y >= object.y && y <= object.y + object.height);
+  }
+  return { walkable, move, nearby, exit };
 }

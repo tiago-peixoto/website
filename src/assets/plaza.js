@@ -9,7 +9,9 @@ export async function startPlaza({ asset, dialog, interact, state }) {
     return response.json();
   }));
   const plazaSpawn = courtyard.layers.flatMap((layer) => layer.objects || []).find((object) => object.name === "walker");
-  const spawns = (map) => Object.fromEntries(map.layers.find((layer) => layer.name === "spawns").objects.map((object) => [object.name, object]));
+  const spawns = (map) => Object.fromEntries(map.layers.find((layer) => layer.name === "spawns").objects.map((object) => [object.name, {
+    ...object, facing: object.properties?.find((p) => p.name === "facing")?.value,
+  }]));
   const areas = {
     plaza: { art: courtyard, rules: navigation(plazaNavigation), spawns: { ...spawns(plazaNavigation), entry: {
       x: plazaSpawn.x + plazaSpawn.width / 2,
@@ -19,7 +21,6 @@ export async function startPlaza({ asset, dialog, interact, state }) {
     outside: { art: outside, rules: navigation(outside), spawns: spawns(outside) },
     study: { art: study, rules: navigation(study), spawns: spawns(study) },
   };
-  const order = Object.keys(areas);
   const pressed = new Map();
   const held = new Map();
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -29,7 +30,8 @@ export async function startPlaza({ asset, dialog, interact, state }) {
   const nearby = document.querySelector("#nearby");
   const host = document.querySelector("#plaza");
   const names = Object.fromEntries([...document.querySelectorAll("[data-action], [data-travel]")].map((button) => [button.dataset.action || button.dataset.travel, button.textContent]));
-  let game, scene, walker, shadow, water, shade, areaId = "plaza", position;
+  let game, scene, walker, shadow, water, shade, lampGlow, lampPool, fish, splash, daylight, areaId = "plaza", position;
+  let seenJump = state.pondJump, jumpTime = Infinity;
   const clearInput = () => { pressed.clear(); held.clear(); };
   const feet = (object) => object.properties?.find((property) => property.name === "feetY")?.value ?? object.y + object.height;
   document.querySelector("#playable").hidden = false;
@@ -53,10 +55,21 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       const label = near ? names[near.name] : interactButton.dataset.idle;
       if (interactButton.disabled !== disabled) interactButton.disabled = disabled;
       if (interactButton.textContent !== label) interactButton.textContent = label;
+      if (near?.name === "lamp" || near?.name === "light") {
+        const value = String(near.name === "lamp" ? state.lampOn : state.lightsOn);
+        if (interactButton.getAttribute("aria-pressed") !== value) interactButton.setAttribute("aria-pressed", value);
+      } else if (interactButton.hasAttribute("aria-pressed")) interactButton.removeAttribute("aria-pressed");
       const message = near ? `${names[near.name]}. ${nearby.dataset.near}` : nearby.dataset.far;
       if (nearby.textContent !== message) nearby.textContent = message;
       for (const id of ["notebook", "sensor"]) areas.study.objects.get(id).setVisible(areaId === "study" && !state.inventory.has(id));
       shade.setVisible(areaId === "study" && !state.lightsOn);
+      lampGlow.setVisible(areaId === "plaza" && state.lampOn);
+      lampPool.setVisible(areaId === "plaza" && state.lampOn);
+      daylight.setVisible(areaId === "study");
+      if (seenJump !== state.pondJump) {
+        seenJump = state.pondJump;
+        jumpTime = areaId === "plaza" ? 0 : Infinity;
+      }
     }
 
     function resize() {
@@ -66,14 +79,18 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       camera.setZoom(cameraZoom(scene.scale.width, scene.scale.height, art.width * 16, art.height * 16));
     }
 
-    function visit(id, returning = false) {
+    function fitHost() {
+      if (scene.scale.getParentBounds()) scene.scale.refresh();
+    }
+
+    function visit(id, spawnName = "entry", keepMoving = false) {
       if (!areas[id]) return;
-      clearInput();
+      if (!keepMoving) clearInput();
       areaId = id;
       for (const [key, area] of Object.entries(areas)) for (const image of area.display) image.setVisible(key === id);
       const area = areas[id];
-      const spawn = area.spawns[returning ? "return" : "entry"];
-      position = { x: spawn.x, y: spawn.y, facing: spawn.facing || (returning ? "down" : "up") };
+      const spawn = area.spawns[spawnName];
+      position = { x: spawn.x, y: spawn.y, facing: spawn.facing };
       walker.anims.stop();
       walker.setFrame(layout.directions.indexOf(position.facing) * 7);
       scene.cameras.main.setBounds(0, 0, area.art.width * 16, area.art.height * 16);
@@ -81,14 +98,23 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       host.setAttribute("aria-label", names[id]);
       game.canvas.setAttribute("aria-label", names[id]);
       document.querySelector("#feedback").textContent = "";
+      jumpTime = Infinity;
+      fish.setVisible(false);
+      splash.setVisible(false);
       resize();
       refresh();
+      fitHost();
     }
 
     function step(direction, distance) {
       const next = areas[areaId].rules.move(position, direction, distance);
       const moved = next.x !== position.x || next.y !== position.y;
       position = next;
+      const exit = areas[areaId].rules.exit(position);
+      if (exit) {
+        visit(exit.name, exit.name === "outside" && areaId === "plaza" ? "entry" : "return", true);
+        return false;
+      }
       refresh();
       return moved;
     }
@@ -97,7 +123,7 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       const near = areas[areaId].rules.nearby(position);
       if (!near) return;
       clearInput();
-      if (areas[near.name]) visit(near.name, order.indexOf(near.name) < order.indexOf(areaId));
+      if (areas[near.name]) visit(near.name);
       else interact(near.name, opener);
       refresh();
     }
@@ -107,7 +133,7 @@ export async function startPlaza({ asset, dialog, interact, state }) {
         clearTimeout(timer);
         fail(new Error(`Unable to load ${file.key}`));
       });
-      const images = new Set(["walker-shadow.png"]);
+      const images = new Set(["walker-shadow.png", "lamp-glow.png", "lamp-pool.png", "fish.png", "splash.png", "door-light.png"]);
       for (const [id, { art }] of Object.entries(areas)) {
         // Phaser does not load image-collection tilesets, so their objects use individual textures.
         this.load.tilemapTiledJSON(id, {
@@ -156,10 +182,20 @@ export async function startPlaza({ asset, dialog, interact, state }) {
         }));
         shadow = this.add.image(0, 0, "walker-shadow.png").setOrigin(0).setDepth(-200);
         walker = this.add.sprite(0, 0, "walker", 0).setOrigin(0.5, 44 / 48).setName("walker");
+        lampGlow = this.add.image(264, 163, "lamp-glow.png").setDepth(500).setAlpha(0.8).setName("lamp-glow");
+        lampPool = this.add.image(264, 211, "lamp-pool.png").setDepth(-250).setAlpha(0.45);
+        fish = this.add.image(318, 145, "fish.png").setDepth(500).setName("fish");
+        splash = this.add.image(330, 145, "splash.png").setDepth(500).setName("splash");
         shade = this.add.rectangle(0, 0, 384, 256, 0x10192f, 0.62).setOrigin(0).setDepth(1500);
+        daylight = this.add.image(192, 232, "door-light.png").setDepth(1600).setAlpha(0.5).setName("daylight");
         this.cameras.main.startFollow(walker, true, 1, 1, 0, 20);
         this.scale.on("resize", resize);
-        const setMotion = () => motion.matches ? water.anims.pause() : water.anims.resume();
+        const sizeObserver = new ResizeObserver(fitHost);
+        sizeObserver.observe(host);
+        const setMotion = () => {
+          if (motion.matches) { water.anims.pause(); jumpTime = Infinity; }
+          else water.anims.resume();
+        };
         setMotion();
         on(motion, "change", setMotion);
         const canvas = game.canvas;
@@ -195,7 +231,7 @@ export async function startPlaza({ asset, dialog, interact, state }) {
           on(button, "click", (event) => { if (!dialog.open && event.detail === 0) step(button.dataset.direction, 4); });
         }
         on(interactButton, "click", () => activate(interactButton));
-        this.events.on("shutdown", () => events.abort());
+        this.events.on("shutdown", () => { events.abort(); sizeObserver.disconnect(); });
         this.moveDirection = () => [...held.values()].at(-1) || [...pressed.values()].at(-1);
         interactButton.dataset.idle = interactButton.textContent;
         visit("plaza");
@@ -206,6 +242,17 @@ export async function startPlaza({ asset, dialog, interact, state }) {
 
     function update(_time, delta) {
       if (!walker) return;
+      jumpTime += delta;
+      const jumping = areaId === "plaza" && jumpTime < 900 && !motion.matches;
+      fish.setVisible(jumping);
+      if (jumping) {
+        const progress = jumpTime / 900;
+        fish.setPosition(Math.round(304 + 26 * progress), Math.round(145 - 28 * Math.sin(Math.PI * progress)));
+        fish.setFlipY(progress > 0.5);
+      }
+      const splashing = areaId === "plaza" && (motion.matches ? jumpTime < 1000 : jumpTime >= 900 && jumpTime < 1250);
+      splash.setVisible(splashing);
+      if (splashing) splash.setAlpha(motion.matches ? 1 : 1 - (jumpTime - 900) / 350);
       const direction = !dialog.open && !document.hidden && this.moveDirection();
       if (direction && step(direction, Math.min(delta, 50) * 0.06) && !motion.matches) walker.play(position.facing, true);
       else {

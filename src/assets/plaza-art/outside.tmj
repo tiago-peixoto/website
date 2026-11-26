@@ -8,7 +8,7 @@
   "height": 16,
   "tilewidth": 16,
   "tileheight": 16,
-  "nextlayerid": 7,
+  "nextlayerid": 8,
   "nextobjectid": 14,
   "tilesets": [
     {
@@ -951,23 +951,6 @@
           "id": 9
         },
         {
-          "name": "plaza",
-          "x": 80,
-          "y": 236,
-          "width": 42,
-          "height": 20,
-          "rotation": 0,
-          "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "down"
-            }
-          ],
-          "id": 10
-        },
-        {
           "name": "university",
           "x": 274,
           "y": 128,
@@ -982,7 +965,7 @@
               "value": "up"
             }
           ],
-          "id": 11
+          "id": 10
         }
       ],
       "visible": false,
@@ -997,14 +980,20 @@
       "objects": [
         {
           "name": "entry",
-          "x": 104,
-          "y": 222,
+          "x": 18,
+          "y": 150,
           "width": 0,
           "height": 0,
           "rotation": 0,
           "visible": true,
-          "properties": [],
-          "id": 12
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "right"
+            }
+          ],
+          "id": 11
         },
         {
           "name": "return",
@@ -1014,12 +1003,46 @@
           "height": 0,
           "rotation": 0,
           "visible": true,
-          "properties": [],
-          "id": 13
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "down"
+            }
+          ],
+          "id": 12
         }
       ],
       "visible": false,
       "id": 6,
+      "x": 0,
+      "y": 0,
+      "opacity": 1
+    },
+    {
+      "name": "exits",
+      "type": "objectgroup",
+      "objects": [
+        {
+          "name": "plaza",
+          "x": 5,
+          "y": 142,
+          "width": 1,
+          "height": 17,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "left"
+            }
+          ],
+          "id": 13
+        }
+      ],
+      "visible": false,
+      "id": 7,
       "x": 0,
       "y": 0,
       "opacity": 1

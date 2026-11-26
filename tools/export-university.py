@@ -51,9 +51,9 @@ for name in ['outside', 'interior']:
             ('right-garden', (310, 202, 74, 54)), ('bottom-garden', (128, 240, 96, 16)),
             ('lamp', (51, 187, 7, 18)), ('bicycle-rack', (229, 128, 33, 12))]]
         interactions = [rectangle('study', (88, 128, 32, 22), facing='up'),
-                        rectangle('plaza', (80, 236, 42, 20), facing='down'),
                         rectangle('university', (274, 128, 36, 22), facing='up')]
-        spawns = [rectangle('entry', (104, 222, 0, 0)), rectangle('return', (104, 148, 0, 0))]
+        spawns = [rectangle('entry', (18, 150, 0, 0), facing='right'), rectangle('return', (104, 148, 0, 0), facing='down')]
+        exits = [rectangle('plaza', (5, 142, 1, 17), facing='left')]
         blocked = [int(i // 24 < 8) for i in range(384)]
     else:
         obstacles = [rectangle(n, b) for n, b in [
@@ -67,14 +67,15 @@ for name in ['outside', 'interior']:
                         rectangle('robot', (306, 212, 62, 20), facing='up'),
                         rectangle('computer', (270, 127, 37, 30), facing='up'),
                         rectangle('board', (145, 100, 95, 28), facing='up'),
-                        rectangle('light', (25, 108, 25, 27), facing='left'),
-                        rectangle('outside', (160, 234, 64, 22), facing='down')]
-        spawns = [rectangle('entry', (192, 222, 0, 0))]
+                        rectangle('light', (25, 108, 25, 27), facing='left')]
+        spawns = [rectangle('entry', (192, 222, 0, 0), facing='up')]
+        exits = [rectangle('outside', (160, 255, 64, 1), facing='down')]
         blocked = [int(i // 24 < 6) for i in range(384)]
     layers.extend([dict(name='blocked', type='tilelayer', width=24, height=16, data=blocked, visible=False),
                    dict(name='obstacles', type='objectgroup', objects=obstacles, visible=False),
                    dict(name='interactions', type='objectgroup', objects=interactions, visible=False),
-                   dict(name='spawns', type='objectgroup', objects=spawns, visible=False)])
+                   dict(name='spawns', type='objectgroup', objects=spawns, visible=False),
+                   dict(name='exits', type='objectgroup', objects=exits, visible=False)])
     object_id = 1
     for i, layer in enumerate(layers, 1):
         layer.update(id=i, x=0, y=0, opacity=1, visible=layer.get('visible', True))

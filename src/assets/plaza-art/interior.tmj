@@ -8,7 +8,7 @@
   "height": 16,
   "tilewidth": 16,
   "tileheight": 16,
-  "nextlayerid": 7,
+  "nextlayerid": 8,
   "nextobjectid": 19,
   "tilesets": [
     {
@@ -1088,23 +1088,6 @@
             }
           ],
           "id": 16
-        },
-        {
-          "name": "outside",
-          "x": 160,
-          "y": 234,
-          "width": 64,
-          "height": 22,
-          "rotation": 0,
-          "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "down"
-            }
-          ],
-          "id": 17
         }
       ],
       "visible": false,
@@ -1125,12 +1108,46 @@
           "height": 0,
           "rotation": 0,
           "visible": true,
-          "properties": [],
-          "id": 18
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "up"
+            }
+          ],
+          "id": 17
         }
       ],
       "visible": false,
       "id": 6,
+      "x": 0,
+      "y": 0,
+      "opacity": 1
+    },
+    {
+      "name": "exits",
+      "type": "objectgroup",
+      "objects": [
+        {
+          "name": "outside",
+          "x": 160,
+          "y": 255,
+          "width": 64,
+          "height": 1,
+          "rotation": 0,
+          "visible": true,
+          "properties": [
+            {
+              "name": "facing",
+              "type": "string",
+              "value": "down"
+            }
+          ],
+          "id": 18
+        }
+      ],
+      "visible": false,
+      "id": 7,
       "x": 0,
       "y": 0,
       "opacity": 1
