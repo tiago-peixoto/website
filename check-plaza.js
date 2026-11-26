@@ -66,6 +66,10 @@ for (const [name, [art, map]] of Object.entries(areas)) {
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (rules.walkable(x, y)) walkablePixels++;
   assert.equal(seen.size, walkablePixels, `${name}: every walkable foot position is reachable`);
   for (const spawn of spawns) assert(seen.has(`${spawn.x},${spawn.y}`), `${name}: return spawn reachable`);
+  for (const spawn of map.layers.find((layer) => layer.name === "spawns").objects) {
+    const facing = spawn.properties.find((p) => p.name === "facing").value;
+    assert.equal(rules.exit({ x: spawn.x, y: spawn.y, facing }), undefined, `${name}: arriving at ${spawn.name} does not send the walker back`);
+  }
   assert.deepEqual([...reachableActions].sort(), expectedActions[name].sort(), `${name}: all interactions reachable with correct facing`);
   assert.deepEqual([...reachableExits].sort(), expectedExits[name], `${name}: all walking exits reachable`);
   for (const action of reachableActions) allActions.add(action);
@@ -83,8 +87,12 @@ assert.equal(rules.move({ x: 250, y: 210 }, "right", 200).x, 256, "cannot tunnel
 assert.equal(rules.move({ x: 160, y: 140 }, "up", 200).y, 132, "cannot cross a blocked tile");
 assert.equal(rules.nearby({ x: 160, y: 140, facing: "up" }).name, "university");
 assert.equal(rules.nearby({ x: 160, y: 140, facing: "down" }), undefined);
-const plazaReturn = plazaMap.layers.find((layer) => layer.name === "spawns").objects.find((object) => object.name === "return");
-assert.equal(plazaReturn.x, 366, "leaving the university arrives inside the plaza right edge");
+for (const [map, x, facing, target] of [[plazaMap, 378, "right", "outside"], [outside, 5, "left", "plaza"]]) {
+  const route = navigation(map);
+  for (let y = 0; y < 256; y += 0.5) {
+    if (route.walkable(x, y)) assert.equal(route.exit({ x, y, facing })?.name, target, `pressing into the ${facing} edge at y ${y} changes area`);
+  }
+}
 for (const [map, start, direction, target] of [
   [plazaMap, { x: 370, y: 204 }, "right", "outside"],
   [outside, { x: 18, y: 150 }, "left", "plaza"],

@@ -48,12 +48,13 @@ for name in ['outside', 'interior']:
         obstacles = [rectangle(n, b) for n, b in [
             ('left-bed', (0, 128, 84, 10)), ('middle-bed', (121, 128, 104, 10)),
             ('left-garden', (0, 160, 62, 80)), ('bench', (319, 145, 65, 31)),
-            ('right-garden', (310, 202, 74, 54)), ('bottom-garden', (128, 240, 96, 16)),
+            ('right-garden', (310, 202, 74, 54)), ('bottom-left-garden', (0, 240, 90, 16)),
+            ('bottom-garden', (128, 240, 96, 16)),
             ('lamp', (51, 187, 7, 18)), ('bicycle-rack', (229, 128, 33, 12))]]
         interactions = [rectangle('study', (88, 128, 32, 22), facing='up'),
                         rectangle('university', (274, 128, 36, 22), facing='up')]
         spawns = [rectangle('entry', (18, 150, 0, 0), facing='right'), rectangle('return', (104, 148, 0, 0), facing='down')]
-        exits = [rectangle('plaza', (5, 142, 1, 17), facing='left')]
+        exits = [rectangle('plaza', (5, 142, 1, 18), facing='left')]
         blocked = [int(i // 24 < 8) for i in range(384)]
     else:
         obstacles = [rectangle(n, b) for n, b in [

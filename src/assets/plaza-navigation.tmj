@@ -90,7 +90,7 @@
       "opacity": 1,
       "visible": false,
       "objects": [
-        {"id": 8, "name": "outside", "x": 378, "y": 180, "width": 6, "height": 55, "rotation": 0, "visible": true, "properties": [{"name": "facing", "type": "string", "value": "right"}]}
+        {"id": 8, "name": "outside", "x": 378, "y": 180, "width": 6, "height": 60, "rotation": 0, "visible": true, "properties": [{"name": "facing", "type": "string", "value": "right"}]}
       ]
     }
   ]
