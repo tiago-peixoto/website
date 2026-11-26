@@ -1,9 +1,13 @@
 export const DIRECTIONS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 
+export function cameraZoom(width, height, mapWidth, mapHeight) {
+  return Math.max(1, Math.ceil(Math.max(width / mapWidth, height / mapHeight)));
+}
+
 export function navigation(map) {
   const blocked = map.layers.find((layer) => layer.name === "blocked").data;
   const obstacles = map.layers.find((layer) => layer.name === "obstacles").objects;
-  const door = map.layers.find((layer) => layer.name === "doors").objects[0];
+  const interactions = map.layers.find((layer) => layer.name === "interactions").objects;
   const width = map.width * map.tilewidth;
   const height = map.height * map.tileheight;
 
@@ -32,8 +36,9 @@ export function navigation(map) {
     return { x, y, facing: direction };
   }
 
-  function atDoor({ x, y, facing }) {
-    return facing === "up" && x >= door.x && x <= door.x + door.width && y >= door.y && y <= door.y + door.height;
+  function nearby({ x, y, facing }) {
+    return interactions.find((object) => facing === (object.properties?.find((p) => p.name === "facing")?.value || "up")
+      && x >= object.x && x <= object.x + object.width && y >= object.y && y <= object.y + object.height);
   }
-  return { walkable, move, atDoor };
+  return { walkable, move, nearby };
 }

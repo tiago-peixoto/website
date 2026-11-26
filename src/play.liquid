@@ -39,7 +39,23 @@ eleventyExcludeFromCollections: true
       <p id="loading" role="status" data-loading="{{ p.loading }}" data-error="{{ p.error }}"></p>
       <nav aria-label="{{ p.directory }}">
         <h2>{{ p.directory }}</h2>
-        <button id="university-link" hidden>{{ p.university }} · {{ university.name }}</button>
+        <div id="directory-actions" hidden>
+          <button data-action="university">{{ p.university }} · {{ university.name }}</button>
+          <button data-action="paper">{{ p.paper }}</button>
+          <button data-action="light" aria-pressed="true">{{ p.light }}</button>
+          <button data-action="notebook" data-item-name="{{ p.notebookName }}">{{ p.notebook }}</button>
+          <button data-action="sensor" data-item-name="{{ p.sensorName }}">{{ p.sensor }}</button>
+          <button data-action="robot">{{ p.robot }}</button>
+          <button data-action="computer">{{ p.computer }}</button>
+          <button data-action="board">{{ p.board }}</button>
+          <button data-action="inventory">{{ p.inventory }} (<span id="inventory-count">0</span>)</button>
+        </div>
+        <div id="directory-places" hidden>
+          <h2>{{ p.places }}</h2>
+          <button data-travel="plaza">{{ p.plaza }}</button>
+          <button data-travel="outside">{{ p.outside }}</button>
+          <button data-travel="study">{{ p.study }}</button>
+        </div>
         <a href="../">{{ p.about }}</a>
         <a href="../#open-source">{{ t.os_h }} / {{ t.own_h }}</a>
         <a href="../#skills">{{ t.skills_h }}</a>
@@ -51,9 +67,11 @@ eleventyExcludeFromCollections: true
       <p id="instructions" class="sr-only">{{ p.instructions }}</p>
       <div id="plaza" role="group" aria-label="{{ p.map }}" aria-describedby="instructions"></div>
     </div>
+    <p id="feedback" role="status"></p>
   </div>
   <p id="fallback">{{ p.fallback }} <a href="../">{{ p.portfolio }}</a></p>
   <div id="controls" hidden>
+    <p id="location" aria-label="{{ p.location }}"></p>
     <p id="nearby" role="status" data-near="{{ p.near }}" data-far="{{ p.far }}">{{ p.far }}</p>
     <button id="interact" disabled>{{ p.open }}</button>
     <div class="pad" role="group" aria-label="{{ p.touch }}">
@@ -64,12 +82,42 @@ eleventyExcludeFromCollections: true
     </div>
   </div>
 </main>
-<dialog aria-labelledby="university-title" aria-describedby="degree">
+<dialog aria-labelledby="panel-title">
+  <h2 id="panel-title" tabindex="-1"></h2>
+  <section data-panel="university" hidden>
   <p class="eyebrow">{{ p.university }} · {{ university.dates }}</p>
-  <h2 id="university-title" tabindex="-1">{{ university.name }}</h2>
+  <h3>{{ university.name }}</h3>
   <p>{{ t.q_ufsc_t }}</p>
-  <p id="degree">{{ t.q_ufsc }}</p>
+  <p id="degree">{{ university.degree[t.lang] }}</p>
+  </section>
+  <section data-panel="paper" hidden>
+    <p class="eyebrow">{{ p.paperTitle }} · {{ university.name }}</p>
+    <p>{{ university.dates }}</p>
+    <p>{{ university.degree[t.lang] }}</p>
+    <p><strong>{{ t.s3n }}</strong> {{ t.s3 }}</p>
+  </section>
+  <section data-panel="inventory" hidden>
+    <p>{{ p.session }}</p>
+    <p id="empty-inventory">{{ p.empty }}</p>
+    <ul id="inventory"></ul>
+  </section>
+  <section data-panel="robot" hidden>
+    <p>{{ p.robotText }}</p>
+    <button id="robot-toggle" aria-pressed="false">{{ p.robotToggle }}</button>
+    <p id="robot-status" role="status" data-open="{{ p.robotOpen }}" data-closed="{{ p.robotClosed }}">{{ p.robotOpen }}</p>
+  </section>
+  <section data-panel="computer" hidden>
+    <p>{{ p.computerText }}</p>
+    <button id="computer-toggle" aria-expanded="false" aria-controls="terminal">{{ p.computerToggle }}</button>
+    <div id="terminal" hidden><p><strong>{{ t.s1n }}</strong></p><p>{{ t.s1 }}</p></div>
+  </section>
+  <section data-panel="board" hidden>
+    <p>{{ p.boardText }}</p>
+    <p class="calculation" role="status"><span>{{ p.input }}: <b id="board-input">0</b></span><span> + 1 → </span><span>{{ p.output }}: <b id="board-output">1</b></span></p>
+    <button id="board-next">{{ p.boardNext }}</button>
+  </section>
   <form method="dialog"><button>{{ p.close }}</button></form>
 </dialog>
+<div id="messages" hidden data-lights-on="{{ p.lightsOn }}" data-lights-off="{{ p.lightsOff }}" data-picked="{{ p.picked }}" data-already-picked="{{ p.alreadyPicked }}"></div>
 </body>
 </html>

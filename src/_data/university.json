@@ -1,4 +1,8 @@
 {
   "name": "UFSC",
-  "dates": "2006 - 2012"
+  "dates": "2006 - 2012",
+  "degree": {
+    "en": "Bachelor of Engineering in Control and Automation Engineering.",
+    "pt-BR": "Bacharelado em Engenharia de Controle e Automação."
+  }
 }

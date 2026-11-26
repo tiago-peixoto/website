@@ -34,8 +34,8 @@
       ]
     },
     {
-      "id": 3, "name": "doors", "type": "objectgroup", "x": 0, "y": 0, "opacity": 1, "visible": true,
-      "objects": [{ "id": 4, "name": "university", "x": 136, "y": 128, "width": 48, "height": 28, "rotation": 0, "visible": true }]
+      "id": 3, "name": "interactions", "type": "objectgroup", "x": 0, "y": 0, "opacity": 1, "visible": true,
+      "objects": [{ "id": 4, "name": "outside", "x": 136, "y": 128, "width": 48, "height": 28, "rotation": 0, "visible": true }]
     }
   ]
 }
