@@ -20,8 +20,8 @@ const expectedExits = { plaza: ["outside"], outside: ["plaza"], study: ["outside
 const expectedFacings = {
   plaza: { university: ["up"], lamp: ["up", "down", "left", "right"], pond: ["up", "right"] },
   outside: { study: ["up"], university: ["up"] },
-  study: { paper: ["up", "down"], notebook: ["up", "down", "left"], sensor: ["up", "down", "right"],
-    robot: ["up", "right"], computer: ["up", "down", "right"], board: ["up"], light: ["left"] },
+  study: { paper: ["up", "down", "left", "right"], notebook: ["up", "down", "left"], sensor: ["up", "down", "right"],
+    robot: ["up", "down", "left", "right"], computer: ["up", "left", "right"], board: ["up"], light: ["left"] },
 };
 const allActions = new Set();
 let totalReachable = 0;
@@ -183,6 +183,19 @@ for (const cycle of Object.values(motion.cycles)) {
 }
 const studyItems = study.layers.find((layer) => layer.name === "items").objects;
 assert.deepEqual(studyItems.map((o) => o.name).sort(), ["notebook", "sensor"]);
+const studyRules = navigation(study);
+assert.equal(studyRules.nearby({ x: 140, y: 182, facing: "left" })?.name, "notebook", "the smaller table exposes its notebook from the right");
+assert.equal(studyRules.nearby({ x: 55, y: 180, facing: "left" }), undefined, "the old table footprint is now empty floor");
+assert.equal(studyRules.nearby({ x: 140, y: 182, facing: "right" }), undefined, "facing away from the smaller table cannot activate it");
+for (const [x, y] of [[42, 180], [65, 205], [355, 200], [350, 120]]) {
+  assert(studyRules.walkable(x, y), `smaller furniture releases floor at ${x},${y}`);
+}
+for (const [x, y] of [[130, 175], [104, 214], [303, 126], [325, 205], [307, 167]]) {
+  assert(!studyRules.walkable(x, y), `furniture still blocks feet at ${x},${y}`);
+}
+for (const item of studyItems) {
+  assert(item.width <= 12 && item.height <= 12, `${item.name} fits the smaller furniture`);
+}
 
 const degree = {
   en: "Bachelor of Engineering in Control and Automation Engineering.",

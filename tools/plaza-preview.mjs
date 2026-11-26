@@ -9,8 +9,8 @@ assert(output, "Usage: node tools/plaza-preview.mjs /absolute/path/play.html (af
 const read = (name) => readFileSync(resolve(root, "_site", name), "utf8");
 const data = (name, type) => `data:${type};base64,${readFileSync(resolve(root, "_site", name)).toString("base64")}`;
 const assets = {};
-const images = new Set(["walker-sheet.png", "walker-shadow.png", "lamp-glow.png", "lamp-pool.png", "fish.png", "splash.png", "door-light.png"]);
-for (const name of ["plaza-navigation.tmj", "plaza-art/courtyard.tmj", "plaza-art/outside.tmj", "plaza-art/interior.tmj", "plaza-art/walker-layout.json"]) {
+const images = new Set(["walker-grounded.png", "walker-shadow.png", "lamp-glow.png", "lamp-pool.png", "fish.png", "splash.png", "door-light.png"]);
+for (const name of ["plaza-navigation.tmj", "plaza-art/courtyard.tmj", "plaza-art/outside.tmj", "plaza-art/interior.tmj", "plaza-art/walker-motion.json"]) {
   assets[name] = data(`assets/${name}`, "application/json");
   for (const tileset of JSON.parse(read(`assets/${name}`)).tilesets || []) {
     if (name === "plaza-navigation.tmj") continue;

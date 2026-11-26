@@ -29,7 +29,7 @@ entry = replaceOnce(entry, 'import("./plaza.js")', "Promise.resolve({ startPlaza
 entry = replaceOnce(entry, 'script.src = new URL("./phaser.min.js", import.meta.url).href;', `script.textContent = ${JSON.stringify(read("assets/phaser.min.js"))};`);
 entry = replaceOnce(entry, "document.head.append(script);", "document.head.append(script);\n    if (window.Phaser) script.onload();");
 entry = replaceOnce(entry, '(name) => new URL(`./${name}`, import.meta.url).href', "(name) => previewAssets[name]");
-const script = `/*\n${read("assets/phaser-LICENSE.txt")}\n*/\nconst previewAssets = ${JSON.stringify(assets)};\n${stripImports(read("assets/plaza-map.js"))}\n${stripImports(read("assets/plaza-state.js"))}\n${stripImports(read("assets/plaza.js"))}\nconst previewStartPlaza = startPlaza;\n${entry}`;
+const script = `/*\n${read("assets/phaser-LICENSE.txt")}\n*/\nconst previewAssets = ${JSON.stringify(assets)};\n${stripImports(read("assets/plaza-map.js"))}\n${stripImports(read("assets/plaza-state.js"))}\n${stripImports(read("assets/plaza-challenges.js"))}\n${stripImports(read("assets/plaza-dialogue.js"))}\n${stripImports(read("assets/plaza.js"))}\nconst previewStartPlaza = startPlaza;\n${entry}`;
 assert(!/import\.meta|\bimport\s*\(/.test(script));
 const pages = {};
 for (const [language, path] of [["en", "play/index.html"], ["pt-BR", "pt/play/index.html"]]) {

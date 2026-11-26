@@ -18,6 +18,8 @@ Without JavaScript, the directory and regular portfolio links remain available.
 If loading fails, the entry button offers another attempt.
 
 Use arrows or WASD to walk, or hold a direction button on a touch screen.
+Hold Shift to run, or toggle Run before holding a direction.
+Walking stays at 60 pixels per second, and running uses a separate animation at 102 pixels per second.
 Walk off the plaza's right path to reach the university courtyard from its left edge.
 Walk back across the courtyard's left edge to return to the plaza.
 Edge crossings happen automatically, without an interaction key.

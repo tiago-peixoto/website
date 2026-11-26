@@ -32,3 +32,51 @@ It preserves the generated alpha values within each retained crop.
 The exporter gives each sprite its final display dimensions, so the scene never stretches individual sprite pixels.
 The scene places the doorway light at the bottom threshold and draws it over the room shade so sunlight remains visible with the lights off.
 The same generated halo supplies the lamp's bulb glow and its flattened pool of light.
+
+## Interior furniture scale proposal
+
+`interior-scale-source.png` is the original ImageGen edit generated on 26 November 2026 for the furniture scale review.
+`interior-scale-prompt.txt` preserves both prompts and the reference roles.
+The original approved `interior.png` remains available for comparison.
+This proposal is not yet approved.
+No photograph, franchise art or new character was supplied.
+
+`../export-university.py` reduces the new source to 384 by 256 pixels using nearest-neighbor sampling, then maps it to the existing outside scene's 64-color palette without dithering.
+[Pillow documents the resize filter and palette-based quantization](https://pillow.readthedocs.io/en/stable/reference/Image.html).
+The exporter separates the notebook and sensor, rebuilds the 16-pixel terrain tiles, and asserts that reconstruction matches the reduced composition exactly.
+[Tiled documents the pixel dimensions and object alignment used by the map](https://doc.mapeditor.org/en/stable/reference/json-map-format/).
+
+The locked walker has a 40-pixel visible height inside its 32 by 48 frame.
+Furniture uses a 14-pixel chair seat height, close to the walker's hips, and a 28-pixel chair back height.
+The reading desk's front edge is about 16 pixels above its feet.
+Projected bounds below include tabletop depth, so they are not physical furniture heights.
+
+| Prop | Original bounds, pixels | Proposed bounds, pixels |
+| --- | --- | --- |
+| Reading chair | 28 x 44 | 20 x 28 |
+| Reading desk | 92 x 62 | 59 x 40 |
+| Desk lamp | 34 x 35 | 22 x 25 |
+| Loose paper | 20 x 20 | 11 x 10 |
+| Open book | 38 x 24 | 23 x 13 |
+| Notebook pickup | 15 x 18 | 10 x 10 |
+| Robot bench, including storage | 88 x 53 | 59 x 35 |
+| Robot arm and base | 61 x 54 | 32 x 39 |
+| Sensor pickup | 19 x 15 | 11 x 8 |
+| Computer desk | 105 x 47 | 76 x 33 |
+| Both monitors | 78 x 34 | 56 x 23 |
+| Computer stool | 26 x 28 | 16 x 19 |
+| Keyboard | 29 x 9 | 24 x 8 |
+| Computer electronics pair | 47 x 18 | 35 x 14 |
+| Right potted plant | 42 x 47 | 33 x 33 |
+
+The tall bookcase, books, box and left plant remain architectural decoration, approximately 54 by 92 pixels together.
+The chalkboard remains approximately 108 by 60 pixels, the windows 50 by 52, the pendant lights 28 by 26, and the switch 12 by 21.
+These fixtures keep their original scale and position within a few generated pixels.
+The room remains 384 by 256 pixels.
+
+Collision rectangles follow the final furniture positions and include separate chair and stool footprints.
+The seven interactions follow the new furniture surfaces and accept every reachable facing direction.
+The paper station, robot and computer each use two target rectangles to cover their separate exposed surfaces.
+The entry point and exit remain unchanged.
+The notebook and sensor artwork moves with the smaller desks, so both pickup images have new coordinates.
+The runtime, walker, controls, language content and doorway light are unchanged.
