@@ -9,6 +9,7 @@ const plazaMap = json("src/assets/plaza-navigation.tmj");
 const outside = json("src/assets/plaza-art/outside.tmj");
 const study = json("src/assets/plaza-art/interior.tmj");
 const layout = json("src/assets/plaza-art/walker-layout.json");
+const motion = json("src/assets/plaza-art/walker-motion.json");
 const areas = { plaza: [courtyard, plazaMap], outside: [outside, outside], study: [study, study] };
 const expectedActions = {
   plaza: ["university", "lamp", "pond"], outside: ["study", "university"],
@@ -132,6 +133,34 @@ assert(water.every((frame) => frame.duration === 180 && waterSet.tiles.some((til
 assert.deepEqual(layout.cell, [32, 48]);
 assert.equal(layout.frames.length, 28);
 assert(layout.frameMs.every((ms) => ms === 100));
+assert.deepEqual(motion.cell, layout.cell);
+assert.deepEqual(motion.directions, layout.directions);
+assert.equal(motion.columns, 17);
+const walkerSheet = readFileSync("src/assets/plaza-art/walker-grounded.png");
+assert.equal(walkerSheet.readUInt32BE(16), motion.cell[0] * motion.columns);
+assert.equal(walkerSheet.readUInt32BE(20), motion.cell[1] * motion.directions.length);
+assert.equal(motion.cycles.walk.speed, 60, "walking keeps its original speed");
+assert.equal(motion.cycles.run.speed, 102);
+for (const cycle of Object.values(motion.cycles)) {
+  assert.equal(cycle.end - cycle.start + 1, 8, "eight frames per gait and direction");
+  assert(cycle.frameRate > 10);
+  for (const [map, start, direction, target] of [
+    [plazaMap, { x: 370, y: 204 }, "right", "outside"],
+    [outside, { x: 18, y: 150 }, "left", "plaza"],
+    [study, { x: 192, y: 242 }, "down", "outside"],
+  ]) {
+    const route = navigation(map);
+    let position = start;
+    for (let frame = 0; frame < 20 && !route.exit(position); frame++) {
+      position = route.move(position, direction, cycle.speed * 0.05);
+      assert(route.walkable(position.x, position.y), "running cannot leave walkable ground");
+    }
+    assert.equal(route.exit(position)?.name, target, "both speeds reach every edge exit");
+  }
+  let position = { x: 250, y: 210 };
+  for (let frame = 0; frame < 20; frame++) position = rules.move(position, "right", cycle.speed * 0.05);
+  assert(position.x <= 256 && position.x > 255, "both speeds stop at the lamp base");
+}
 const studyItems = study.layers.find((layer) => layer.name === "items").objects;
 assert.deepEqual(studyItems.map((o) => o.name).sort(), ["notebook", "sensor"]);
 
@@ -155,6 +184,8 @@ for (const t of langs) {
   assert(html.includes('<form method="dialog">'));
   assert(html.indexOf('id="portfolio" href="../"') < html.indexOf('id="plaza"'));
   assert(html.includes('<div id="playable" hidden>'));
+  assert(html.includes('id="run" aria-pressed="false"'));
+  assert(html.includes(t.lang === "en" ? "Hold Shift to run." : "Segure Shift para correr."));
   assert(html.includes('id="fallback"') && html.includes('id="enter" hidden'));
   assert(!html.includes("phaser.min.js") && !html.includes("courtyard.tmj"), "game resources are absent from initial markup");
   for (const action of allActions) assert(html.includes(`data-${areas[action] ? "travel" : "action"}="${action}"`), `${action} reachable without walking`);

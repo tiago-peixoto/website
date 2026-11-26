@@ -1,0 +1,33 @@
+{
+  "generatedBy": "python3 tools/export-walker.py",
+  "cell": [
+    32,
+    48
+  ],
+  "columns": 17,
+  "directions": [
+    "down",
+    "left",
+    "right",
+    "up"
+  ],
+  "cycles": {
+    "walk": {
+      "start": 1,
+      "end": 8,
+      "frameRate": 12,
+      "speed": 60
+    },
+    "run": {
+      "start": 9,
+      "end": 16,
+      "frameRate": 16,
+      "speed": 102
+    }
+  },
+  "lockedRows": [
+    0,
+    24
+  ],
+  "method": "Original ImageGen limb poses, nearest-neighbor export to the approved palette. Locked model head and shoulders retain their pixels, translated for weight transfer."
+}

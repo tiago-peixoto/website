@@ -44,6 +44,7 @@ canvas:focus-visible { outline-color: #ddbb6d; outline-offset: -3px; }
 #nearby { flex: 1 1 12rem; margin: 0; font-size: .85rem; font-weight: 700; }
 #enter { background: #8d3f55; color: #fff; margin-bottom: .75rem; }
 #enter:hover { background: #713045; }
+#run[aria-pressed="true"] { background: #713045; color: #fff; }
 .pad { display: grid; grid-template-columns: repeat(4, 44px); gap: 4px; }
 .pad button { padding: 0; width: 44px; height: 44px; font-size: 1.5rem; touch-action: none; user-select: none; }
 dialog { width: min(32rem, calc(100% - 2rem)); max-height: calc(100svh - 2rem); padding: 2rem; color: #20283a; background: #f3e9cd; border: 3px solid #20283a; box-shadow: 5px 5px 0 #8d3f55; }

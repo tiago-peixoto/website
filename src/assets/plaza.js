@@ -2,7 +2,7 @@ import { navigation, cameraZoom } from "./plaza-map.js";
 
 export async function startPlaza({ asset, dialog, interact, state }) {
   const [courtyard, plazaNavigation, outside, study, layout] = await Promise.all([
-    "plaza-art/courtyard.tmj", "plaza-navigation.tmj", "plaza-art/outside.tmj", "plaza-art/interior.tmj", "plaza-art/walker-layout.json",
+    "plaza-art/courtyard.tmj", "plaza-navigation.tmj", "plaza-art/outside.tmj", "plaza-art/interior.tmj", "plaza-art/walker-motion.json",
   ].map(async (name) => {
     const response = await fetch(asset(name), { signal: AbortSignal.timeout(20000) });
     if (!response.ok) throw new Error(`Unable to load ${name}: ${response.status}`);
@@ -27,12 +27,18 @@ export async function startPlaza({ asset, dialog, interact, state }) {
   const events = new AbortController();
   const on = (target, type, listener) => target.addEventListener(type, listener, { signal: events.signal });
   const interactButton = document.querySelector("#interact");
+  const runButton = document.querySelector("#run");
   const nearby = document.querySelector("#nearby");
   const host = document.querySelector("#plaza");
   const names = Object.fromEntries([...document.querySelectorAll("[data-action], [data-travel]")].map((button) => [button.dataset.action || button.dataset.travel, button.textContent]));
   let game, scene, walker, shadow, water, shade, lampGlow, lampPool, fish, splash, daylight, areaId = "plaza", position;
   let seenJump = state.pondJump, jumpTime = Infinity;
-  const clearInput = () => { pressed.clear(); held.clear(); };
+  let shiftHeld = false;
+  const running = () => shiftHeld || runButton.getAttribute("aria-pressed") === "true";
+  const clearInput = () => {
+    pressed.clear(); held.clear(); shiftHeld = false;
+    runButton.setAttribute("aria-pressed", "false");
+  };
   const feet = (object) => object.properties?.find((property) => property.name === "feetY")?.value ?? object.y + object.height;
   document.querySelector("#playable").hidden = false;
   document.querySelector("#controls").hidden = false;
@@ -92,7 +98,7 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       const spawn = area.spawns[spawnName];
       position = { x: spawn.x, y: spawn.y, facing: spawn.facing };
       walker.anims.stop();
-      walker.setFrame(layout.directions.indexOf(position.facing) * 7);
+      walker.setFrame(layout.directions.indexOf(position.facing) * layout.columns);
       scene.cameras.main.setBounds(0, 0, area.art.width * 16, area.art.height * 16);
       document.querySelector("#location").textContent = names[id];
       host.setAttribute("aria-label", names[id]);
@@ -147,7 +153,7 @@ export async function startPlaza({ asset, dialog, interact, state }) {
         }
       }
       for (const image of images) this.load.image(image, asset(`plaza-art/${image}`));
-      this.load.spritesheet("walker", asset("plaza-art/walker-sheet.png"), { frameWidth: layout.cell[0], frameHeight: layout.cell[1] });
+      this.load.spritesheet("walker", asset("plaza-art/walker-grounded.png"), { frameWidth: layout.cell[0], frameHeight: layout.cell[1] });
     }
 
     function create() {
@@ -176,10 +182,14 @@ export async function startPlaza({ asset, dialog, interact, state }) {
             }
           }
         }
-        layout.directions.forEach((direction, row) => this.anims.create({
-          key: direction, repeat: -1, frameRate: 1000 / layout.frameMs[0],
-          frames: this.anims.generateFrameNumbers("walker", { start: row * 7 + 1, end: row * 7 + 6 }),
-        }));
+        for (const [gait, cycle] of Object.entries(layout.cycles)) {
+          layout.directions.forEach((direction, row) => this.anims.create({
+            key: `${gait}-${direction}`, repeat: -1, frameRate: cycle.frameRate,
+            frames: this.anims.generateFrameNumbers("walker", {
+              start: row * layout.columns + cycle.start, end: row * layout.columns + cycle.end,
+            }),
+          }));
+        }
         shadow = this.add.image(0, 0, "walker-shadow.png").setOrigin(0).setDepth(-200);
         walker = this.add.sprite(0, 0, "walker", 0).setOrigin(0.5, 44 / 48).setName("walker");
         lampGlow = this.add.image(264, 163, "lamp-glow.png").setDepth(500).setAlpha(0.8).setName("lamp-glow");
@@ -204,6 +214,7 @@ export async function startPlaza({ asset, dialog, interact, state }) {
         const keys = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right", w: "up", s: "down", a: "left", d: "right" };
         on(canvas, "keydown", (event) => {
           if (event.altKey || event.ctrlKey || event.metaKey || event.isComposing || dialog.open) return;
+          shiftHeld = event.shiftKey;
           const direction = keys[event.key] || keys[event.key.toLowerCase()];
           if (direction) { event.preventDefault(); pressed.set(event.code, direction); }
           else if (event.key === "Enter" || event.key === " ") {
@@ -211,12 +222,18 @@ export async function startPlaza({ asset, dialog, interact, state }) {
             if (!event.repeat) activate(canvas);
           } else if (event.key === "Escape") { clearInput(); document.querySelector(".menu summary").focus(); }
         });
-        on(window, "keyup", (event) => pressed.delete(event.code));
-        on(canvas, "blur", () => pressed.clear());
+        on(window, "keyup", (event) => {
+          pressed.delete(event.code);
+          shiftHeld = document.activeElement === canvas && event.shiftKey;
+        });
+        on(canvas, "blur", () => { pressed.clear(); shiftHeld = false; });
         on(window, "blur", clearInput);
         on(document, "visibilitychange", clearInput);
         on(dialog, "close", clearInput);
         on(document.querySelector(".menu"), "toggle", clearInput);
+        on(runButton, "click", () => {
+          if (!dialog.open) runButton.setAttribute("aria-pressed", String(runButton.getAttribute("aria-pressed") !== "true"));
+        });
         for (const button of document.querySelectorAll("[data-direction]")) {
           on(button, "pointerdown", (event) => {
             if (dialog.open || (event.pointerType === "mouse" && event.button !== 0)) return;
@@ -254,10 +271,11 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       splash.setVisible(splashing);
       if (splashing) splash.setAlpha(motion.matches ? 1 : 1 - (jumpTime - 900) / 350);
       const direction = !dialog.open && !document.hidden && this.moveDirection();
-      if (direction && step(direction, Math.min(delta, 50) * 0.06) && !motion.matches) walker.play(position.facing, true);
+      const gait = running() ? "run" : "walk";
+      if (direction && step(direction, Math.min(delta, 50) * layout.cycles[gait].speed / 1000) && !motion.matches) walker.play(`${gait}-${position.facing}`, true);
       else {
         walker.anims.stop();
-        walker.setFrame(layout.directions.indexOf(position.facing) * 7);
+        walker.setFrame(layout.directions.indexOf(position.facing) * layout.columns);
       }
       refresh();
     }
