@@ -8,6 +8,8 @@ ART = ROOT / 'src/assets/plaza-art'
 layout = json.loads((ROOT / 'tools/walker-art/model-layout.json').read_text())
 colors = {tuple(bytes.fromhex(c[1:])) for c in layout['palette']}
 model = Image.open(ART / 'model-sheet.png').convert('RGBA')
+round2 = Image.open(ROOT / 'tools/walker-art/round-2-sheet.png').convert('RGBA')
+round3 = Image.open(ROOT / 'tools/walker-art/round-3-sheet.png').convert('RGBA')
 
 def palette(values):
     return {tuple(bytes.fromhex(c)) for c in values.split()}
@@ -46,21 +48,31 @@ def anatomy(frame, row, gait):
     shoulders = points(frame, (0, 21, 32, 25), shirt)
     width = max(x for x, y in shoulders) - min(x for x, y in shoulders) + 1
     if row in (0, 3):
-        assert 14 <= width <= 17, f'shoulder width outside 14..17: {width}'
+        minimum_width = 11 if gait == 'walk' else (13 if row == 0 else 14)
+        assert minimum_width <= width <= 17, f'shoulder width outside {minimum_width}..17: {width}'
     torso = len(points(frame, (12, 22, 20, 31)))
     if gait == 'run' and row in (1, 2):
         assert torso >= 60, f'thin torso: {torso} central pixels'
-    if row == 0:
-        pupils = [points(frame, box, eye) for box in [(12, 13, 16, 15), (16, 13, 20, 15)]]
-        assert all(len(p) >= 4 for p in pupils), f'blank eye: {[len(p) for p in pupils]}'
+    if row == 0 and gait == 'walk':
+        pupils = [points(frame, box, eye) for box in [(13, 14, 16, 15), (17, 14, 20, 15)]]
+        assert all(len(p) >= 1 for p in pupils), f'blank eye: {[len(p) for p in pupils]}'
         assert abs(centroid(pupils[0])[1] - centroid(pupils[1])[1]) <= 0.5, 'uneven eyes'
         widths = [len(points(frame, (8, y, 24, y + 1))) for y in (15, 16, 17, 18)]
-        assert 10 <= widths[0] <= 12 and widths[0] > widths[1] > widths[2] > widths[3] >= 2, f'broken jaw taper: {widths}'
+        assert 10 <= widths[0] <= 12 and widths[0] >= widths[1] > widths[2] > widths[3] >= 2, f'broken jaw taper: {widths}'
     return {'arms': [len(a) for a in arms], 'shoulders': width, 'torso': torso, 'armSpan': arm_span}
+
+
+def walk_direction(frames, row):
+    # With screen y increasing downward, a forward left step traces a negative shoe orbit.
+    feet = [centroid(points(f, (0, 33, 32, 44), shoe)) for f in frames]
+    orbit = sum(a[0] * b[1] - b[0] * a[1]
+                for a, b in zip(feet, feet[1:] + feet[:1])) / 2
+    assert orbit * (-1 if row == 1 else 1) >= 4, f'walk runs backwards relative to facing: orbit={orbit}'
 
 
 def cycle_motion(frames, row, gait):
     if row in (1, 2) and gait == 'walk':
+        walk_direction(frames, row)
         # The nearer arm has more exposed skin than the far hand in each contact pose.
         contacts = []
         for frame in (frames[0], frames[4]):
@@ -88,13 +100,60 @@ def reject(check, label):
     raise AssertionError(f'{label} mutation escaped detection')
 
 
+def preserved_pixels(sheet):
+    for row in range(4):
+        box = (0, row * 48, 32, (row + 1) * 48)
+        assert sheet.crop(box).tobytes() == round3.crop(box).tobytes(), 'idle pose changed'
+        for gait, start in [('walk', 1), ('run', 9)]:
+            for i in range(8):
+                box = ((start + i) * 32, row * 48, (start + i + 1) * 32, (row + 1) * 48)
+                actual = sheet.crop(box)
+                if (gait == 'run' and row != 0) or (gait == 'walk' and row == 3):
+                    expected = (round3 if gait == 'run' else round2).crop(box)
+                    assert actual.tobytes() == expected.tobytes(), f'{row} {gait}: approved frame {i+1} changed'
+                if row == 0 and gait == 'run':
+                    bob = [0, 1, -1, -2][i % 4]
+                    legs = (0, 32 + bob, 32, 48)
+                    assert actual.crop(legs).tobytes() == round3.crop(box).crop(legs).tobytes(), 'down run legs changed'
+                    shoulders = (0, 21 + bob, 32, 25 + bob)
+                    def width(image):
+                        pixels = points(image, shoulders, shirt)
+                        return max(x for x, y in pixels) - min(x for x, y in pixels) + 1
+                    assert 1 <= width(round3.crop(box)) - width(actual) <= 3, 'down run torso must be slightly thinner'
+                if row == 0 and gait == 'walk':
+                    expected = round2.crop(box)
+                    bob = [0, 1, 0, -1][i % 4]
+                    for patch in [(17, 14 + bob, 19, 15 + bob), (13, 18 + bob, 19, 20 + bob)]:
+                        actual.paste(expected.crop(patch), patch[:2])
+                    assert actual.tobytes() == expected.tobytes(), 'down walk changed outside left eye/chin'
+            if row in (1, 2) and gait == 'walk':
+                def poses(source):
+                    return sorted(source.crop((col * 32, row * 48, (col + 1) * 32, (row + 1) * 48)).tobytes()
+                                  for col in range(1, 9))
+                assert poses(sheet) == poses(round3), 'profile walk art changed beyond frame order'
+
+
 def validate(sheet):
     assert sheet.size == (544, 192)
+    preserved_pixels(sheet)
     results, mutations = [], 0
+    for column, row, label in [(1, 0, 'down walk body'), (1, 3, 'up walk'), (9, 1, 'left run'), (9, 2, 'right run'), (9, 3, 'up run'), (0, 0, 'idle')]:
+        broken = sheet.copy()
+        broken.putpixel((column * 32 + 16, row * 48 + 25), (255, 0, 0, 255))
+        mutations += reject(lambda: preserved_pixels(broken), label + ' changed outside scope')
+    for column in range(9, 17):
+        broken = sheet.copy()
+        box = (column * 32, 0, (column + 1) * 32, 48)
+        broken.paste(round3.crop(box), box[:2])
+        mutations += reject(lambda: preserved_pixels(broken), 'wide down run')
     for row, direction in enumerate(layout['directions']):
         for gait, start, bob in [('walk', 1, [0, 1, 0, -1] * 2), ('run', 9, [0, 1, -1, -2] * 2)]:
+            if gait == 'walk' and row in (1, 2):
+                bob = [0, -1, 0, 1] * 2
             frames, raw_frames = [], []
-            head = model.crop((row * 32, 0, row * 32 + 32, 20)) if row else sheet.crop((0, 0, 32, 20))
+            head = model.crop((row * 32, 0, row * 32 + 32, 20))
+            if row == 0:
+                head = sheet.crop((32, 0, 64, 20)) if gait == 'walk' else round2.crop((0, 0, 32, 20))
             for i, offset in enumerate(bob):
                 frame = sheet.crop(((start + i) * 32, row * 48, (start + i + 1) * 32, (row + 1) * 48))
                 raw_frames.append(frame.tobytes())
@@ -138,8 +197,8 @@ def validate(sheet):
                         if p[0] < 11 or p[0] > 20:
                             broken.putpixel(p, (0, 0, 0, 0))
                     mutations += reject(lambda: anatomy(broken, row, gait), label + ' narrow shoulders')
-                if row == 0:
-                    for box in [(12, 13, 16, 15), (16, 13, 20, 15)]:
+                if row == 0 and gait == 'walk':
+                    for box in [(13, 14, 16, 15), (17, 14, 20, 15)]:
                         broken = normalized.copy()
                         for p in points(broken, box, eye):
                             broken.putpixel(p, (224, 167, 117, 255))
@@ -159,6 +218,10 @@ def validate(sheet):
             assert len(set(raw_frames)) == 8, f'{direction} {gait}: duplicate poses'
             cycle_motion(frames, row, gait)
             if row in (1, 2) and gait == 'walk':
+                for shift in range(8):
+                    rotated = frames[shift:] + frames[:shift]
+                    walk_direction(rotated, row)
+                    mutations += reject(lambda: walk_direction(rotated[::-1], row), direction + ' backwards walk')
                 broken = [f.copy() for f in frames]
                 broken[4].paste(frames[0].crop((0, 22, 32, 35)), (0, 22))
                 mutations += reject(lambda: cycle_motion(broken, row, gait), direction + ' fixed arm')

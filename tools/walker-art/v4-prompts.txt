@@ -1,0 +1,11 @@
+Built-in ImageGen, 26 November 2026.
+Edit target: round-2 down-walk frame 1, enlarged from 32 by 48 to 512 by 768 with nearest-neighbor sampling.
+The reference comes from commit 1691c9ad48a3bcb9af44f9fb720748c46ba4492e.
+
+Use case: precise-object-edit. Edit target: the supplied original pixel-art game sprite, shown enlarged with nearest-neighbor pixels. Preserve the EXACT character, pose, shape, dimensions, placement, pixel grid, colors, hair, clothing, body, arms, legs, shoes and transparency. Make ONLY two extremely small edits to the face: (1) the character's LEFT eye, on the VIEWER'S RIGHT, is currently a blank light square. Give it a single readable dark pupil like the existing eye on the viewer's left. Keep its existing eyebrow and position. (2) gently polish only the lowest chin edge with a slight clean taper, preserving the existing three-quarter face shape, expression, skin shading and asymmetric hairstyle. Do not redesign or regenerate the head. Do not change the other eye. Do not enlarge the head or alter any pixels outside that eye and the bottom edge of the chin. Retain the exact chunky pixel grid and original palette. Output same framing, transparent background. No shadow, no text, no additional art.
+
+Selected output: face-v4-source.png.
+The exporter imports only the left-eye and chin rectangles, then quantizes them to the existing palette.
+Everything outside those rectangles comes from the exact round-2 frames.
+A generated down-run narrowing sample was rejected because it changed details beyond body width.
+Down run instead resamples the original round-3 generated body horizontally, preserving the eight poses.
