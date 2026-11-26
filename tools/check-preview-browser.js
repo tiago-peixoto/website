@@ -52,7 +52,11 @@ for (const lang of ["en", "pt-BR"]) {
     return { language: d.documentElement.lang, entry: true, areas: 3, challenges: 2, workshopLines: 3, reducedMotion, externalRequests: external.length };
   }));
   if (lang === "en") {
-    await page.eval(() => document.querySelector("iframe").contentDocument.querySelector("[hreflang]").click());
+    await page.eval(() => {
+      const select = document.querySelector('#language');
+      if (select) { select.value = 'pt-BR'; select.dispatchEvent(new Event('change')); }
+      else document.querySelector('iframe').contentDocument.querySelector('[hreflang]').click();
+    });
     const changed = await page.eval(async () => {
       for (let i = 0; i < 100; i++) {
         if (document.querySelector("iframe").contentDocument?.documentElement.lang === "pt-BR") return true;
