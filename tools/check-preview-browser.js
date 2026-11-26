@@ -5,6 +5,7 @@ for (const lang of ["en", "pt-BR"]) {
     const d = frame.contentDocument;
     const assert = (value, message) => { if (!value) throw new Error(message); };
     if (d.querySelector("dialog").open) d.querySelector("dialog").close();
+    const advance = () => d.activeElement.dispatchEvent(new d.defaultView.KeyboardEvent("keydown", { key: " ", code: "Space", bubbles: true, cancelable: true }));
     const reducedMotion = d.defaultView.matchMedia("(prefers-reduced-motion: reduce)").matches;
     for (const id of ["welding", "tools", "parts"]) {
       const button = d.querySelector(`[data-action="${id}"]`);
@@ -13,9 +14,9 @@ for (const lang of ["en", "pt-BR"]) {
       assert(d.querySelector("dialog").open, `${id} opens from the directory`);
       assert(d.querySelector("#speech-readable").textContent === line, `${id} has a complete accessible line`);
       if (reducedMotion) assert(d.querySelector("#speech-typed").textContent === line, `${id} appears immediately with reduced motion`);
-      else d.querySelector("#speech-next").click();
+      else advance();
       assert(d.querySelector("#speech-typed").textContent === line, `${id} can reveal its complete line`);
-      d.querySelector("#speech-next").click();
+      advance();
       await new Promise((resolve) => setTimeout(resolve, 30));
       assert(!d.querySelector("dialog").open && d.activeElement === button, `${id} closes and restores keyboard focus`);
     }
