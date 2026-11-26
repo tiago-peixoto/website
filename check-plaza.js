@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { DIRECTIONS, navigation, cameraZoom } from "./src/assets/plaza-map.js";
 import { createState, changeState } from "./src/assets/plaza-state.js";
+import { BOARD_INPUTS, ROBOT_STEPS, startChallenge, chooseChallenge } from "./src/assets/plaza-challenges.js";
 
 const json = (file) => JSON.parse(readFileSync(file, "utf8"));
 const courtyard = json("src/assets/plaza-art/courtyard.tmj");
@@ -16,6 +17,12 @@ const expectedActions = {
   study: ["paper", "notebook", "sensor", "robot", "computer", "board", "light"],
 };
 const expectedExits = { plaza: ["outside"], outside: ["plaza"], study: ["outside"] };
+const expectedFacings = {
+  plaza: { university: ["up"], lamp: ["up", "down", "left", "right"], pond: ["up", "right"] },
+  outside: { study: ["up"], university: ["up"] },
+  study: { paper: ["up", "down"], notebook: ["up", "down", "left"], sensor: ["up", "down", "right"],
+    robot: ["up", "right"], computer: ["up", "down", "right"], board: ["up"], light: ["left"] },
+};
 const allActions = new Set();
 let totalReachable = 0;
 for (const [name, [art, map]] of Object.entries(areas)) {
@@ -51,10 +58,17 @@ for (const [name, [art, map]] of Object.entries(areas)) {
   }
   for (const [x, y] of [[-1, 200], [width, 200], [200, -1], [200, height]]) assert(!rules.walkable(x, y));
   const seen = new Set([`${start.x},${start.y}`]), queue = [start], reachableActions = new Set(), reachableExits = new Set();
+  const sides = {};
   for (const current of queue) {
     for (const direction of Object.keys(DIRECTIONS)) {
       const interaction = rules.nearby({ ...current, facing: direction });
-      if (interaction) reachableActions.add(interaction.name);
+      if (interaction) {
+        reachableActions.add(interaction.name);
+        (sides[interaction.name] ??= new Set()).add(direction);
+        const [dx, dy] = DIRECTIONS[direction];
+        const away = Object.keys(DIRECTIONS).find((key) => DIRECTIONS[key][0] === -dx && DIRECTIONS[key][1] === -dy);
+        assert.notEqual(rules.nearby({ ...current, facing: away })?.name, interaction.name, `${name}/${interaction.name}: facing away cannot activate`);
+      }
       const exit = rules.exit({ ...current, facing: direction });
       if (exit) reachableExits.add(exit.name);
       const next = rules.move(current, direction, 1);
@@ -70,6 +84,12 @@ for (const [name, [art, map]] of Object.entries(areas)) {
   for (const spawn of map.layers.find((layer) => layer.name === "spawns").objects) {
     const facing = spawn.properties.find((p) => p.name === "facing").value;
     assert.equal(rules.exit({ x: spawn.x, y: spawn.y, facing }), undefined, `${name}: arriving at ${spawn.name} does not send the walker back`);
+  }
+  for (const [action, facings] of Object.entries(expectedFacings[name])) {
+    assert.deepEqual([...sides[action]].sort(), [...facings].sort(), `${name}/${action}: every reachable side, and no blocked side`);
+    for (const direction of Object.keys(DIRECTIONS)) {
+      console.log(`${name}/${action}: facing ${direction} ${sides[action].has(direction) ? "reachable" : "blocked by scene geometry"}`);
+    }
   }
   assert.deepEqual([...reachableActions].sort(), expectedActions[name].sort(), `${name}: all interactions reachable with correct facing`);
   assert.deepEqual([...reachableExits].sort(), expectedExits[name], `${name}: all walking exits reachable`);
@@ -194,3 +214,46 @@ for (const t of langs) {
 }
 assert(!readFileSync("_site/sitemap.xml", "utf8").includes("/play/"));
 console.log(`ok: three maps, ${totalReachable} reachable positions, all interactions, integer viewport coverage and both languages`);
+
+for (const [id, answers] of [["board", BOARD_INPUTS.map((n) => n + 1)], ["robot", ROBOT_STEPS]]) {
+  let challenge = startChallenge(id);
+  const wrong = chooseChallenge(challenge, "not an answer");
+  assert.equal(wrong.step, 0, `${id}: incorrect choice does not advance`);
+  assert.equal(wrong.result, "wrong");
+  assert.equal(challenge.result, "", "choices do not mutate the original state");
+  for (const [index, choice] of answers.entries()) {
+    challenge = chooseChallenge(challenge, choice);
+    assert.equal(challenge.step, index + 1);
+    assert.equal(challenge.complete, index === answers.length - 1);
+  }
+  assert.equal(challenge.result, "done");
+  assert.equal(chooseChallenge(challenge, answers[0]), challenge, "finished challenges stay finished");
+  assert.equal(startChallenge(id).step, 0, "replaying starts fresh");
+}
+const conversations = json("src/_data/dialogue.json");
+for (const lang of ["en", "pt-BR"]) {
+  const d = conversations[lang];
+  const html = readFileSync(`_site/${lang === "en" ? "" : "pt/"}play/index.html`, "utf8");
+  for (const id of [...allActions].filter((id) => id !== "outside" && id !== "plaza").concat("inventory")) {
+    assert(d.lines[id]?.length >= 2, `${lang}/${id}: conversation exists`);
+    assert(html.includes(`data-action="${id}"`), `${lang}/${id}: directory action exists`);
+    assert(html.includes(`data-transcript="${id}"`), `${lang}/${id}: readable without engine or JavaScript`);
+    for (const line of d.lines[id]) assert(html.includes(line.replaceAll("&", "&amp;").replaceAll("'", "&#39;")), `${lang}/${id}: transcript contains the complete line`);
+  }
+  for (const id of ["board", "robot"]) for (const key of ["prompt", "wrong", "correct", "done"]) {
+    assert(d[id][key], `${lang}/${id}: translated ${key}`);
+  }
+}
+const barrierMap = {
+  width: 10, height: 10, tilewidth: 16, tileheight: 16,
+  layers: [
+    { name: "blocked", data: Array(100).fill(0) },
+    { name: "obstacles", objects: [{ x: 55, y: 50, width: 5, height: 30 }] },
+    { name: "interactions", objects: [{ name: "target", x: 65, y: 60, width: 10, height: 10 }] },
+  ],
+};
+assert.equal(navigation(barrierMap).nearby({ x: 45, y: 65, facing: "right" }), undefined, "cannot interact through another obstacle");
+barrierMap.layers[1].objects = [];
+assert.equal(navigation(barrierMap).nearby({ x: 45, y: 65, facing: "right" })?.name, "target", "unobstructed object in reach activates");
+assert.equal(navigation(barrierMap).nearby({ x: 40, y: 65, facing: "right" }), undefined, "out-of-reach object does not activate");
+console.log("ok: two finishable challenges, replay, mistakes, bilingual transcripts and occlusion");

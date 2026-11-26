@@ -51,8 +51,8 @@ for name in ['outside', 'interior']:
             ('right-garden', (310, 202, 74, 54)), ('bottom-left-garden', (0, 240, 90, 16)),
             ('bottom-garden', (128, 240, 96, 16)),
             ('lamp', (51, 187, 7, 18)), ('bicycle-rack', (229, 128, 33, 12))]]
-        interactions = [rectangle('study', (88, 128, 32, 22), facing='up'),
-                        rectangle('university', (274, 128, 36, 22), facing='up')]
+        interactions = [rectangle('study', (88, 112, 32, 16)),
+                        rectangle('university', (274, 112, 36, 16))]
         spawns = [rectangle('entry', (18, 150, 0, 0), facing='right'), rectangle('return', (104, 148, 0, 0), facing='down')]
         exits = [rectangle('plaza', (5, 142, 1, 18), facing='left')]
         blocked = [int(i // 24 < 8) for i in range(384)]
@@ -62,13 +62,13 @@ for name in ['outside', 'interior']:
             ('shelves', (25, 100, 54, 8)), ('reading-table', (27, 136, 92, 75)),
             ('computer-table', (270, 100, 105, 26)), ('robot-bench', (287, 160, 88, 52)),
             ('robot-arm', (308, 124, 60, 36))]]
-        interactions = [rectangle('paper', (38, 212, 67, 20), facing='up'),
-                        rectangle('notebook', (120, 147, 22, 45), facing='left'),
-                        rectangle('sensor', (267, 168, 20, 36), facing='right'),
-                        rectangle('robot', (306, 212, 62, 20), facing='up'),
-                        rectangle('computer', (270, 127, 37, 30), facing='up'),
-                        rectangle('board', (145, 100, 95, 28), facing='up'),
-                        rectangle('light', (25, 108, 25, 27), facing='left')]
+        interactions = [rectangle('paper', (27, 136, 70, 75)),
+                        rectangle('notebook', (97, 136, 22, 75)),
+                        rectangle('sensor', (287, 160, 21, 52)),
+                        rectangle('robot', (308, 124, 67, 88)),
+                        rectangle('computer', (270, 100, 38, 26)),
+                        rectangle('board', (145, 84, 95, 12)),
+                        rectangle('light', (19, 108, 6, 27))]
         spawns = [rectangle('entry', (192, 222, 0, 0), facing='up')]
         exits = [rectangle('outside', (160, 255, 64, 1), facing='down')]
         blocked = [int(i // 24 < 6) for i in range(384)]

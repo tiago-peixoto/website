@@ -972,121 +972,79 @@
       "objects": [
         {
           "name": "paper",
-          "x": 38,
-          "y": 212,
-          "width": 67,
-          "height": 20,
+          "x": 27,
+          "y": 136,
+          "width": 70,
+          "height": 75,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
+          "properties": [],
           "id": 10
         },
         {
           "name": "notebook",
-          "x": 120,
-          "y": 147,
+          "x": 97,
+          "y": 136,
           "width": 22,
-          "height": 45,
+          "height": 75,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "left"
-            }
-          ],
+          "properties": [],
           "id": 11
         },
         {
           "name": "sensor",
-          "x": 267,
-          "y": 168,
-          "width": 20,
-          "height": 36,
+          "x": 287,
+          "y": 160,
+          "width": 21,
+          "height": 52,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "right"
-            }
-          ],
+          "properties": [],
           "id": 12
         },
         {
           "name": "robot",
-          "x": 306,
-          "y": 212,
-          "width": 62,
-          "height": 20,
+          "x": 308,
+          "y": 124,
+          "width": 67,
+          "height": 88,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
+          "properties": [],
           "id": 13
         },
         {
           "name": "computer",
           "x": 270,
-          "y": 127,
-          "width": 37,
-          "height": 30,
+          "y": 100,
+          "width": 38,
+          "height": 26,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
+          "properties": [],
           "id": 14
         },
         {
           "name": "board",
           "x": 145,
-          "y": 100,
+          "y": 84,
           "width": 95,
-          "height": 28,
+          "height": 12,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
+          "properties": [],
           "id": 15
         },
         {
           "name": "light",
-          "x": 25,
+          "x": 19,
           "y": 108,
-          "width": 25,
+          "width": 6,
           "height": 27,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "left"
-            }
-          ],
+          "properties": [],
           "id": 16
         }
       ],

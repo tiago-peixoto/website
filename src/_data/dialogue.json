@@ -1,0 +1,96 @@
+{
+  "en": {
+    "transcript": "Every conversation, without walking",
+    "next": "Continue",
+    "finish": "Back to exploring",
+    "reveal": "Show this line",
+    "hint": "Enter, Space or tap to continue. Escape to close.",
+    "travel": "Enter the study room",
+    "challenge": "Try it",
+    "again": "Try again",
+    "progress": "Step",
+    "of": "of",
+    "imagined": "A tiny imagined experiment. No timer, no saved scores.",
+    "lines": {
+      "lamp": ["I'll start with the simplest thing that works. A light switch seems like a reasonable candidate.", "There. Not every problem needs an architecture diagram."],
+      "pond": ["I wrote about games that made me anxious when I wasn't playing. A surprisingly effective way to ruin a nice afternoon.", "Here, I'll just watch the fish. No energy meter. I can leave whenever I like."],
+      "university": ["UFSC, 2006 to 2012. My tutorial level.", "I studied Control and Automation Engineering. These days, I turn messy ideas into working software."],
+      "study": ["Control and Automation Engineering. All right, I'll take a look inside.", "A few small experiments. I don't need to enroll again for these."],
+      "paper": ["I try to write to teach, not to prove. Clear writing matters as much as clean code.", "If I need to read my own explanation twice, I probably have another draft to write."],
+      "light": ["I can switch the room lights. Small change, fairly obvious result.", "I'll take that kind of feedback loop."],
+      "notebook": ["When I started writing online, part of me asked: who is going to read this? Another part asked: why not?", "I'll give the second voice the microphone for a bit. The notebook might help."],
+      "sensor": ["I wrote embedded software for telecom gear at Datacom. I learned to respect commit messages.", "I'll take the sensor. The imaginary inventory has room."],
+      "computer": ["I'm a generalist programmer. I turn messy ideas into real, working software.", "My first move with a bug is to reproduce it the way a user sees it. Guessing can wait."],
+      "board": ["I'll keep this one small: an input, plus one, and an output.", "Three examples should do. I don't need to build a framework for addition."],
+      "robot": ["I'll move this little part onto the tray. First, I'll give the gripper somewhere sensible to go.", "Move to the part, close the gripper, move to the tray, then let go. Let's see if I can follow my own instructions."],
+      "inventory": ["I'll keep these here while the page is open.", "No daily reward for coming back. I wrote a whole post about that particular trap."]
+    },
+    "board": {
+      "prompt": "Choose the output.",
+      "wrong": "I'll try that again. Add exactly one to the input.",
+      "correct": "That adds up. Next example.",
+      "done": "Three examples, all working. I'll leave the framework for another day."
+    },
+    "robot": {
+      "prompt": "Move the part from the bench to the tray.",
+      "approach": "Move to part",
+      "grip": "Close gripper",
+      "carry": "Move to tray",
+      "release": "Open gripper",
+      "bench": "Bench",
+      "gripper": "Gripper",
+      "tray": "Tray",
+      "part": "Part",
+      "wrong": "That order won't do. I'll follow the next step.",
+      "correct": "Good. One small move at a time.",
+      "done": "On the tray, in one piece. I'll call that a successful experiment."
+    }
+  },
+  "pt-BR": {
+    "transcript": "Todas as conversas, sem caminhar",
+    "next": "Continuar",
+    "finish": "Voltar a explorar",
+    "reveal": "Mostrar esta fala",
+    "hint": "Enter, Espaço ou toque para continuar. Escape para fechar.",
+    "travel": "Entrar na sala de estudos",
+    "challenge": "Experimentar",
+    "again": "Tentar de novo",
+    "progress": "Etapa",
+    "of": "de",
+    "imagined": "Um pequeno experimento imaginado. Sem cronômetro nem pontuação salva.",
+    "lines": {
+      "lamp": ["Vou começar pela coisa mais simples que funciona. Um interruptor parece um candidato razoável.", "Pronto. Nem todo problema precisa de um diagrama de arquitetura."],
+      "pond": ["Escrevi sobre jogos que me deixavam ansioso quando eu não estava jogando. Um jeito bem eficiente de estragar uma tarde boa.", "Aqui, vou só olhar os peixes. Sem barra de energia. Posso ir embora quando quiser."],
+      "university": ["UFSC, de 2006 a 2012. Minha fase tutorial.", "Estudei Engenharia de Controle e Automação. Hoje, transformo ideias confusas em software que funciona."],
+      "study": ["Engenharia de Controle e Automação. Certo, vou dar uma olhada lá dentro.", "Alguns pequenos experimentos. Para esses, não preciso me matricular de novo."],
+      "paper": ["Tento escrever para ensinar, não para provar. Escrever com clareza vale tanto quanto código limpo.", "Se preciso ler minha própria explicação duas vezes, provavelmente ainda tenho outro rascunho para escrever."],
+      "light": ["Posso acender ou apagar as luzes da sala. Mudança pequena, resultado bem visível.", "Gosto desse tipo de retorno."],
+      "notebook": ["Quando comecei a escrever na internet, uma parte de mim perguntava: quem vai ler isso? Outra perguntava: por que não?", "Vou dar o microfone para a segunda voz por um tempo. Talvez o caderno ajude."],
+      "sensor": ["Escrevi software embarcado para equipamentos de telecomunicações na Datacom. Aprendi a respeitar mensagens de commit.", "Vou levar o sensor. Tem espaço no inventário imaginário."],
+      "computer": ["Sou um programador generalista. Transformo ideias confusas em software de verdade, que funciona.", "Meu primeiro passo com um bug é reproduzir o que o usuário vê. O chute pode esperar."],
+      "board": ["Vou deixar isso pequeno: uma entrada, mais um, e uma saída.", "Três exemplos devem bastar. Não preciso criar um framework para somar."],
+      "robot": ["Vou levar esta pecinha até a bandeja. Primeiro, preciso levar a garra ao lugar certo.", "Ir até a peça, fechar a garra, ir até a bandeja e soltar. Vamos ver se consigo seguir minhas próprias instruções."],
+      "inventory": ["Vou guardar isso aqui enquanto a página estiver aberta.", "Sem recompensa diária para voltar. Escrevi um post inteiro sobre essa armadilha."]
+    },
+    "board": {
+      "prompt": "Escolha a saída.",
+      "wrong": "Vou tentar de novo. É só somar um à entrada.",
+      "correct": "A conta fecha. Próximo exemplo.",
+      "done": "Três exemplos, todos funcionando. Vou deixar o framework para outro dia."
+    },
+    "robot": {
+      "prompt": "Leve a peça da bancada até a bandeja.",
+      "approach": "Ir até a peça",
+      "grip": "Fechar a garra",
+      "carry": "Ir até a bandeja",
+      "release": "Abrir a garra",
+      "bench": "Bancada",
+      "gripper": "Garra",
+      "tray": "Bandeja",
+      "part": "Peça",
+      "wrong": "Essa ordem não funciona. Vou seguir a próxima etapa.",
+      "correct": "Certo. Um pequeno movimento por vez.",
+      "done": "Na bandeja, inteira. Vou chamar isso de experimento bem-sucedido."
+    }
+  }
+}

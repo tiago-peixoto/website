@@ -1,6 +1,6 @@
 import { navigation, cameraZoom } from "./plaza-map.js";
 
-export async function startPlaza({ asset, dialog, interact, state }) {
+export async function startPlaza({ asset, dialog, interact, state, positionDialogue }) {
   const [courtyard, plazaNavigation, outside, study, layout] = await Promise.all([
     "plaza-art/courtyard.tmj", "plaza-navigation.tmj", "plaza-art/outside.tmj", "plaza-art/interior.tmj", "plaza-art/walker-motion.json",
   ].map(async (name) => {
@@ -103,7 +103,6 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       document.querySelector("#location").textContent = names[id];
       host.setAttribute("aria-label", names[id]);
       game.canvas.setAttribute("aria-label", names[id]);
-      document.querySelector("#feedback").textContent = "";
       jumpTime = Infinity;
       fish.setVisible(false);
       splash.setVisible(false);
@@ -129,8 +128,7 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       const near = areas[areaId].rules.nearby(position);
       if (!near) return;
       clearInput();
-      if (areas[near.name]) visit(near.name);
-      else interact(near.name, opener);
+      interact(near.name, opener);
       refresh();
     }
 
@@ -248,7 +246,15 @@ export async function startPlaza({ asset, dialog, interact, state }) {
           on(button, "click", (event) => { if (!dialog.open && event.detail === 0) step(button.dataset.direction, 4); });
         }
         on(interactButton, "click", () => activate(interactButton));
-        this.events.on("shutdown", () => { events.abort(); sizeObserver.disconnect(); });
+        const placeDialogue = () => {
+          const camera = scene.cameras.main;
+          const head = camera.matrixCombined.transformPoint(position.x, position.y - 32);
+          const feet = camera.matrixCombined.transformPoint(position.x, position.y);
+          const bounds = canvas.getBoundingClientRect();
+          positionDialogue({ x: bounds.left + head.x, top: bounds.top + head.y, bottom: bounds.top + feet.y, minY: bounds.top + 12 });
+        };
+        game.events.on("postrender", placeDialogue);
+        this.events.on("shutdown", () => { events.abort(); sizeObserver.disconnect(); game.events.off("postrender", placeDialogue); });
         this.moveDirection = () => [...held.values()].at(-1) || [...pressed.values()].at(-1);
         interactButton.dataset.idle = interactButton.textContent;
         visit("plaza");

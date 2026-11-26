@@ -7,6 +7,7 @@ permalink: "{{ t.url }}play/index.html"
 eleventyExcludeFromCollections: true
 ---
 {% assign p = plaza[t.lang] %}
+{% assign d = dialogue[t.lang] %}
 <!doctype html>
 <html lang="{{ t.lang }}">
 <head>
@@ -43,6 +44,7 @@ eleventyExcludeFromCollections: true
           <button data-action="lamp" aria-pressed="false">{{ p.lamp }}</button>
           <button data-action="pond">{{ p.pond }}</button>
           <button data-action="university">{{ p.university }} · {{ university.name }}</button>
+          <button data-action="study">{{ p.study }}</button>
           <button data-action="paper">{{ p.paper }}</button>
           <button data-action="light" aria-pressed="true">{{ p.light }}</button>
           <button data-action="notebook" data-item-name="{{ p.notebookName }}">{{ p.notebook }}</button>
@@ -63,13 +65,23 @@ eleventyExcludeFromCollections: true
         <a href="../#skills">{{ t.skills_h }}</a>
         <a href="../#quests">{{ t.quests_h }}</a>
         <a href="{{ p.root }}posts/">{{ t.journal_h }}</a>
+        <details id="transcripts">
+          <summary>{{ d.transcript }}</summary>
+          {% for conversation in d.lines %}
+          <section data-transcript="{{ conversation[0] }}">
+            <h3>{{ p[conversation[0]] }}</h3>
+            {% for line in conversation[1] %}<p>{{ line | escape }}</p>{% endfor %}
+          </section>
+          {% endfor %}
+          <p>{{ university.name }} · {{ university.dates }} · {{ t.q_ufsc_t }}</p>
+          <p id="degree">{{ university.degree[t.lang] }}</p>
+        </details>
       </nav>
     </details>
     <div id="playable" hidden>
       <p id="instructions" class="sr-only">{{ p.instructions }}</p>
       <div id="plaza" role="group" aria-label="{{ p.map }}" aria-describedby="instructions"></div>
     </div>
-    <p id="feedback" role="status"></p>
   </div>
   <p id="fallback">{{ p.fallback }} <a href="../">{{ p.portfolio }}</a></p>
   <div id="controls" hidden>
@@ -85,41 +97,48 @@ eleventyExcludeFromCollections: true
     </div>
   </div>
 </main>
-<dialog aria-labelledby="panel-title">
-  <h2 id="panel-title" tabindex="-1"></h2>
-  <section data-panel="university" hidden>
-  <p class="eyebrow">{{ p.university }} · {{ university.dates }}</p>
-  <h3>{{ university.name }}</h3>
-  <p>{{ t.q_ufsc_t }}</p>
-  <p id="degree">{{ university.degree[t.lang] }}</p>
-  </section>
-  <section data-panel="paper" hidden>
-    <p class="eyebrow">{{ p.paperTitle }} · {{ university.name }}</p>
-    <p>{{ university.dates }}</p>
-    <p>{{ university.degree[t.lang] }}</p>
-    <p><strong>{{ t.s3n }}</strong> {{ t.s3 }}</p>
-  </section>
+<dialog aria-labelledby="panel-title" aria-describedby="speech-readable interaction-result">
+  <p id="panel-context" class="eyebrow"></p>
+  <h2 id="panel-title" tabindex="-1">Tiago</h2>
+  <p id="speech" aria-hidden="true"><span id="speech-space"></span><span id="speech-typed"></span></p>
+  <p id="speech-readable" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+  <p id="interaction-result" class="note"></p>
+  <div id="challenge" hidden>
+    <p class="note">{{ d.imagined }}</p>
+    <section data-game="board" hidden>
+      <p>{{ d.board.prompt }}</p>
+      <p class="calculation"><span>{{ p.input }}: <b id="board-input"></b></span><span> + 1 → </span><span>{{ p.output }}: <b id="board-answer">?</b></span></p>
+      <div id="board-choices" class="choices"></div>
+    </section>
+    <section data-game="robot" hidden>
+      <p>{{ d.robot.prompt }}</p>
+      <div class="robot-stations" aria-label="{{ d.robot.prompt }}">
+        <div>{{ d.robot.bench }}<span data-station="bench">{{ d.robot.part }}</span></div>
+        <div>{{ d.robot.gripper }}<span data-station="gripper" hidden>{{ d.robot.part }}</span></div>
+        <div>{{ d.robot.tray }}<span data-station="tray" hidden>{{ d.robot.part }}</span></div>
+      </div>
+      <ol id="robot-steps">
+        <li data-step="approach">{{ d.robot.approach }}</li><li data-step="grip">{{ d.robot.grip }}</li><li data-step="carry">{{ d.robot.carry }}</li><li data-step="release">{{ d.robot.release }}</li>
+      </ol>
+      <div id="robot-choices" class="choices">
+        <button data-choice="approach">{{ d.robot.approach }}</button><button data-choice="grip">{{ d.robot.grip }}</button><button data-choice="carry">{{ d.robot.carry }}</button><button data-choice="release">{{ d.robot.release }}</button>
+      </div>
+    </section>
+    <p id="challenge-progress"></p>
+    <p id="challenge-result" role="status" aria-live="polite" aria-atomic="true"></p>
+    <button id="challenge-again" hidden>{{ d.again }}</button>
+  </div>
   <section data-panel="inventory" hidden>
     <p>{{ p.session }}</p>
     <p id="empty-inventory">{{ p.empty }}</p>
     <ul id="inventory"></ul>
   </section>
-  <section data-panel="robot" hidden>
-    <p>{{ p.robotText }}</p>
-    <button id="robot-toggle" aria-pressed="false">{{ p.robotToggle }}</button>
-    <p id="robot-status" role="status" data-open="{{ p.robotOpen }}" data-closed="{{ p.robotClosed }}">{{ p.robotOpen }}</p>
-  </section>
-  <section data-panel="computer" hidden>
-    <p>{{ p.computerText }}</p>
-    <button id="computer-toggle" aria-expanded="false" aria-controls="terminal">{{ p.computerToggle }}</button>
-    <div id="terminal" hidden><p><strong>{{ t.s1n }}</strong></p><p>{{ t.s1 }}</p></div>
-  </section>
-  <section data-panel="board" hidden>
-    <p>{{ p.boardText }}</p>
-    <p class="calculation" role="status"><span>{{ p.input }}: <b id="board-input">0</b></span><span> + 1 → </span><span>{{ p.output }}: <b id="board-output">1</b></span></p>
-    <button id="board-next">{{ p.boardNext }}</button>
-  </section>
-  <form method="dialog"><button>{{ p.close }}</button></form>
+  <div class="dialogue-actions">
+    <button id="speech-next" data-next="{{ d.next }}" data-finish="{{ d.finish }}" data-reveal="{{ d.reveal }}" data-challenge="{{ d.challenge }}" data-enter-room="{{ d.travel }}">{{ d.next }}</button>
+    <form method="dialog"><button>{{ p.close }}</button></form>
+  </div>
+  <p id="speech-hint" class="note">{{ d.hint }}</p>
+  <span id="challenge-labels" hidden data-input="{{ p.input }}" data-progress="{{ d.progress }}" data-of="{{ d.of }}"{% assign kinds = "board,robot" | split: "," %}{% for kind in kinds %}{% for item in d[kind] %} data-{{ kind }}-{{ item[0] }}="{{ item[1] | escape }}"{% endfor %}{% endfor %}></span>
 </dialog>
 <div id="messages" hidden data-lights-on="{{ p.lightsOn }}" data-lights-off="{{ p.lightsOff }}" data-lamp-on="{{ p.lampOn }}" data-lamp-off="{{ p.lampOff }}" data-pond-jump="{{ p.pondJump }}" data-picked="{{ p.picked }}" data-already-picked="{{ p.alreadyPicked }}"></div>
 </body>
