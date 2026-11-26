@@ -14,17 +14,22 @@ for (const lang of ["en", "pt-BR"]) {
     }
     for (const id of ["board", "robot"]) {
       d.querySelector(`[data-action="${id}"]`).click();
-      for (let i = 0; i < 4; i++) d.querySelector("#speech-next").click();
-      assert(!d.querySelector("#challenge").hidden, `${id} challenge starts`);
+      for (let i = 0; i < 4; i++) d.querySelector("#interact").click();
+      assert(!d.querySelector("#experiment").hidden, `${id} challenge starts`);
       if (id === "board") {
         for (let i = 0; i < 3; i++) d.querySelector("#board-choices button:nth-child(2)").click();
-        assert(d.querySelector("#board-answer").textContent === "9", "finished board shows its answer");
-      } else for (const action of ["approach", "grip", "carry", "release"]) d.querySelector(`[data-choice="${action}"]`).click();
+        assert(d.querySelector("#board-equation").textContent.endsWith("9"), "finished board shows its answer");
+      } else {
+        d.querySelector("#challenge-action").click();
+        d.querySelector('[data-adjust="right"]').click();
+        d.querySelector('[data-adjust="right"]').click();
+        d.querySelector("#challenge-action").click();
+      }
       assert(!d.querySelector("#challenge-again").hidden, `${id} finishes`);
       d.querySelector("#challenge-again").click();
       assert(d.querySelector("#challenge-again").hidden, `${id} replays`);
-      if (id === "board") assert(d.querySelector("#board-answer").textContent === "?", "replaying board resets the answer");
-      d.querySelector("dialog").close();
+      if (id === "board") assert(d.querySelector("#board-equation").textContent.endsWith("?"), "replaying board resets the answer");
+      d.querySelector("#challenge-leave").click();
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
     const external = d.defaultView.performance.getEntriesByType("resource").filter((r) => /^https?:/.test(r.name));

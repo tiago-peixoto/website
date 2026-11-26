@@ -31,9 +31,14 @@ Face an object and press Enter or Space, or use the interaction button beside th
 Switch the plaza lamp on and off, or watch a fish leap from the pond and splash back into the water.
 Read the paper, switch the room lights, collect the notebook and sensor, and inspect the robot, computer and math board.
 Each object opens a first-person conversation next to the walker.
-Enter, Space, a tap on the text, or the Continue button reveals the current line, then advances to the next one.
+Enter, Space, a tap on the text, or the action button reveals the current line, then advances to the next one.
 The study doorway opens a conversation before entering the room.
-The math board offers three addition problems, and the robot offers a four-step transfer from bench to tray.
+The final action closes the balloon and automatically collects a pickup.
+Escape cancels speech without collecting the item.
+The math board offers three addition problems directly on its surface.
+The robot uses three arm positions, with left/right controls and Space to grip or release the part.
+Both games stay in the scene, with a closer camera view and touch controls.
+The study lamp has its own target and toggles its glow and the room brightness.
 Each challenge has an ending, an immediate replay, and feedback for mistakes.
 Neither challenge has a countdown or saved scores.
 The robot and math board are imagined demonstrations, not claims about a real laboratory.
@@ -48,13 +53,14 @@ Escape closes the panel or moves focus outside the game.
 Tab reaches the links normally.
 Every interaction is also available in the HTML directory before the engine loads.
 The directory contains the complete conversation transcripts, including without JavaScript.
-The native dialog keeps focus inside the conversation and returns it to the opener on close.
+The nonmodal speech dialog leaves the action button available and returns focus to the opener on close.
 Screen readers receive each complete line separately from the decorative typing animation.
 Reduced motion reveals each line immediately, including when the preference changes during typing.
 Once play starts, the directory can visit any of the three areas without walking.
 Reduced motion pauses the water and walking animation, including when the preference changes during play.
 The pond then shows a brief stationary ripple instead of a moving fish.
-State changes, such as pickups and light switches, appear inside their conversation.
+Light switches report their state inside the conversation.
+Pickups announce their inventory update after the final line.
 The canvas fills the area between the header and the controls, so neither bar covers the map, the walker or an exit.
 The final play layout is set before loading the scene, and a size observer keeps the canvas aligned when translated controls wrap.
 The camera uses the smallest whole-number zoom that covers both dimensions of that area, and follows the walker within the map bounds.
@@ -170,10 +176,10 @@ The post appears in the journal and on the home page with no other edit.
 
 ### Interaction verification and offline review
 
-After building and serving the site, open `/play/` in a named `chrome-devtools-axi` session.
-Run `chrome-devtools-axi run < tools/check-interactions-browser.js` in that same session.
-The script checks both languages, every directory action, keyboard closing, focus return, pickup persistence, four lamp approaches, doorway travel, and both challenges.
-Its reduced-motion checks use a controlled `MediaQueryList`, not a change to the host's operating-system preference.
+Build the standalone preview below and open it in a named `chrome-devtools-axi` session.
+Run `chrome-devtools-axi run < tools/check-interactions-browser.js` on a fresh English preview.
+The script checks the enter gate, pickup timing and cancellation, all 21 study approaches, both games, keyboard controls, touch controls, and the lamp.
+Repeat at 390 by 844, 1280 by 720, and 1920 by 1080.
 
 After `npm run build`, run `node tools/plaza-preview.mjs /absolute/path/play.html` to generate the standalone review.
 The preview embeds both languages, the engine, all maps, and every image.
@@ -181,12 +187,17 @@ Its language link reloads the embedded page in the other language.
 Portfolio links are disabled inside this offline review.
 The production portfolio links remain unchanged.
 
-The interaction implementation checked the [native dialog documentation](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal).
-`showModal()` makes the surrounding document inert and presents the dialog in the top layer.
+The interaction implementation checked the [native dialog documentation](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/show).
+`show()` opens a nonmodal dialog, so the action button remains usable.
 The installed Phaser 4.2.1 documentation in `src/cameras/2d/BaseCamera.js` describes `matrixCombined` as combining the internal and external camera transforms.
 `src/gameobjects/components/TransformMatrix.js` documents `transformPoint()` for projecting the walker's head and feet into the canvas.
 `src/core/events/POST_RENDER_EVENT.js` documents the event after scene rendering, when those camera transforms are current.
-The balloon uses these coordinates, and the centered challenges use normal dialog layout.
+The balloon and board surface use these coordinates.
+[Phaser camera controls](https://docs.phaser.io/phaser/concepts/cameras) stop following the walker during experiments and restore following afterward.
+Camera changes and robot poses are immediate, including with reduced motion.
+The robot reuses pixels from the approved room through [canvas textures](https://docs.phaser.io/phaser/concepts/textures).
+The arm outline, floor patch, board surface, and lamp glow use coordinates in the current 384 by 256 study composition.
+Update those coordinates if that artwork moves during integration.
 Open the generated preview in the browser, then run `chrome-devtools-axi run < tools/check-preview-browser.js`.
 This checks engine startup, every area, both challenges, replay, language switching, and zero external resource requests in both languages.
 The transcript template follows LiquidJS's documented [hash iteration](https://liquidjs.com/tags/for.html) and [HTML escaping](https://liquidjs.com/filters/escape.html).

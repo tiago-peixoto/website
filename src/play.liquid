@@ -46,6 +46,7 @@ eleventyExcludeFromCollections: true
           <button data-action="university">{{ p.university }} · {{ university.name }}</button>
           <button data-action="study">{{ p.study }}</button>
           <button data-action="paper">{{ p.paper }}</button>
+          <button data-action="studyLamp" aria-pressed="true">{{ p.studyLamp }}</button>
           <button data-action="light" aria-pressed="true">{{ p.light }}</button>
           <button data-action="notebook" data-item-name="{{ p.notebookName }}">{{ p.notebook }}</button>
           <button data-action="sensor" data-item-name="{{ p.sensorName }}">{{ p.sensor }}</button>
@@ -78,6 +79,10 @@ eleventyExcludeFromCollections: true
         </details>
       </nav>
     </details>
+    <section id="board-surface" aria-label="{{ p.board }}" hidden>
+      <p id="board-equation"></p>
+      <div id="board-choices"><button></button><button></button><button></button></div>
+    </section>
     <div id="playable" hidden>
       <p id="instructions" class="sr-only">{{ p.instructions }}</p>
       <div id="plaza" role="group" aria-label="{{ p.map }}" aria-describedby="instructions"></div>
@@ -87,7 +92,7 @@ eleventyExcludeFromCollections: true
   <div id="controls" hidden>
     <p id="location" role="status" aria-label="{{ p.location }}"></p>
     <p id="nearby" role="status" data-near="{{ p.near }}" data-far="{{ p.far }}">{{ p.far }}</p>
-    <button id="interact" disabled>{{ p.open }}</button>
+    <button id="interact" data-speech="{{ d.action }}" disabled>{{ p.open }}</button>
     <button id="run" aria-pressed="false">{{ p.run }}</button>
     <div class="pad" role="group" aria-label="{{ p.touch }}">
       <button data-direction="left" aria-label="{{ p.left }}">←</button>
@@ -96,6 +101,19 @@ eleventyExcludeFromCollections: true
       <button data-direction="right" aria-label="{{ p.right }}">→</button>
     </div>
   </div>
+  <section id="experiment" aria-labelledby="challenge-title" hidden>
+    <h2 id="challenge-title" tabindex="-1"></h2>
+    <p id="challenge-result" role="status" aria-live="polite" aria-atomic="true"></p>
+    <p id="challenge-help"></p>
+    <div class="experiment-controls">
+      <button data-adjust="left" aria-label="{{ d.previousPosition }}">←</button>
+      <button data-adjust="right" aria-label="{{ d.nextPosition }}">→</button>
+      <button id="challenge-action"></button>
+      <button id="challenge-again" hidden>{{ d.again }}</button>
+      <button id="challenge-leave">{{ d.finish }}</button>
+      <span id="challenge-progress"></span>
+    </div>
+  </section>
 </main>
 <dialog aria-labelledby="panel-title" aria-describedby="speech-readable interaction-result">
   <p id="panel-context" class="eyebrow"></p>
@@ -103,43 +121,15 @@ eleventyExcludeFromCollections: true
   <p id="speech" aria-hidden="true"><span id="speech-space"></span><span id="speech-typed"></span></p>
   <p id="speech-readable" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
   <p id="interaction-result" class="note"></p>
-  <div id="challenge" hidden>
-    <p class="note">{{ d.imagined }}</p>
-    <section data-game="board" hidden>
-      <p>{{ d.board.prompt }}</p>
-      <p class="calculation"><span>{{ p.input }}: <b id="board-input"></b></span><span> + 1 → </span><span>{{ p.output }}: <b id="board-answer">?</b></span></p>
-      <div id="board-choices" class="choices"></div>
-    </section>
-    <section data-game="robot" hidden>
-      <p>{{ d.robot.prompt }}</p>
-      <div class="robot-stations" aria-label="{{ d.robot.prompt }}">
-        <div>{{ d.robot.bench }}<span data-station="bench">{{ d.robot.part }}</span></div>
-        <div>{{ d.robot.gripper }}<span data-station="gripper" hidden>{{ d.robot.part }}</span></div>
-        <div>{{ d.robot.tray }}<span data-station="tray" hidden>{{ d.robot.part }}</span></div>
-      </div>
-      <ol id="robot-steps">
-        <li data-step="approach">{{ d.robot.approach }}</li><li data-step="grip">{{ d.robot.grip }}</li><li data-step="carry">{{ d.robot.carry }}</li><li data-step="release">{{ d.robot.release }}</li>
-      </ol>
-      <div id="robot-choices" class="choices">
-        <button data-choice="approach">{{ d.robot.approach }}</button><button data-choice="grip">{{ d.robot.grip }}</button><button data-choice="carry">{{ d.robot.carry }}</button><button data-choice="release">{{ d.robot.release }}</button>
-      </div>
-    </section>
-    <p id="challenge-progress"></p>
-    <p id="challenge-result" role="status" aria-live="polite" aria-atomic="true"></p>
-    <button id="challenge-again" hidden>{{ d.again }}</button>
-  </div>
   <section data-panel="inventory" hidden>
     <p>{{ p.session }}</p>
     <p id="empty-inventory">{{ p.empty }}</p>
     <ul id="inventory"></ul>
   </section>
-  <div class="dialogue-actions">
-    <button id="speech-next" data-next="{{ d.next }}" data-finish="{{ d.finish }}" data-reveal="{{ d.reveal }}" data-challenge="{{ d.challenge }}" data-enter-room="{{ d.travel }}">{{ d.next }}</button>
-    <form method="dialog"><button>{{ p.close }}</button></form>
-  </div>
   <p id="speech-hint" class="note">{{ d.hint }}</p>
-  <span id="challenge-labels" hidden data-input="{{ p.input }}" data-progress="{{ d.progress }}" data-of="{{ d.of }}"{% assign kinds = "board,robot" | split: "," %}{% for kind in kinds %}{% for item in d[kind] %} data-{{ kind }}-{{ item[0] }}="{{ item[1] | escape }}"{% endfor %}{% endfor %}></span>
 </dialog>
-<div id="messages" hidden data-lights-on="{{ p.lightsOn }}" data-lights-off="{{ p.lightsOff }}" data-lamp-on="{{ p.lampOn }}" data-lamp-off="{{ p.lampOff }}" data-pond-jump="{{ p.pondJump }}" data-picked="{{ p.picked }}" data-already-picked="{{ p.alreadyPicked }}"></div>
+  <span id="challenge-labels" hidden data-finished="{{ d.finished }}" data-finish="{{ d.finish }}" data-select="{{ d.select }}" data-input="{{ p.input }}" data-progress="{{ d.progress }}" data-of="{{ d.of }}"{% assign kinds = "board,robot" | split: "," %}{% for kind in kinds %}{% for item in d[kind] %} data-{{ kind }}-{{ item[0] }}="{{ item[1] | escape }}"{% endfor %}{% endfor %}></span>
+<p id="pickup-status" class="sr-only" role="status"></p>
+<div id="messages" hidden data-study-lamp-on="{{ p.studyLampOn }}" data-study-lamp-off="{{ p.studyLampOff }}" data-lights-on="{{ p.lightsOn }}" data-lights-off="{{ p.lightsOff }}" data-lamp-on="{{ p.lampOn }}" data-lamp-off="{{ p.lampOff }}" data-pond-jump="{{ p.pondJump }}" data-picked="{{ p.picked }}" data-already-picked="{{ p.alreadyPicked }}"></div>
 </body>
 </html>

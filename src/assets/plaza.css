@@ -73,23 +73,30 @@ dialog[data-tail="top"]::after { top: -10px; border-left: 3px solid #20283a; bor
 #speech-space { visibility: hidden; }
 #speech-typed { position: absolute; inset: 0; }
 #interaction-result:empty { display: none; }
-.dialogue-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
-.dialogue-actions form { margin: 0; }
-#speech-next, #challenge-again { background: #713045; color: #fff; }
-#speech-next:hover, #challenge-again:hover { background: #542333; }
 #speech-hint { margin-bottom: 0; font-size: .75rem; }
-.choices { display: flex; flex-wrap: wrap; gap: .5rem; }
-#board-choices button { min-width: 64px; font-family: ui-monospace, monospace; font-size: 1.3rem; }
-.robot-stations { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
-.robot-stations > div { padding: .6rem .3rem; min-height: 5rem; text-align: center; border: 2px solid #b3a57f; font-size: .85rem; }
-.robot-stations span { display: block; padding: .2rem; margin-top: .5rem; background: #153a37; color: #fff; }
-#robot-steps { padding-left: 1.5rem; line-height: 1.6; }
-#robot-steps [aria-current] { font-weight: 750; color: #713045; }
-#robot-steps [data-done] { text-decoration: line-through; }
-#challenge-result { min-height: 3em; font-weight: 650; }
+#experiment { background: #f3e9cd; border-top: 2px solid #20283a; padding: .75rem 1rem; }
+#experiment h2 { margin: 0; font-size: 1rem; }
+#experiment p { margin: .35rem 0; font-size: .85rem; }
+#challenge-result { font-weight: 650; }
+#challenge-help { max-width: 70ch; }
+.experiment-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+#challenge-progress { font-size: .75rem; }
+#board-surface { position: absolute; z-index: 2; background: #153a37; color: #f3e9cd; display: flex; flex-direction: column; justify-content: space-evenly; padding: 4px; font-family: ui-monospace, monospace; text-align: center; }
+#board-equation { font-size: clamp(18px, 3vw, 30px); margin: 0; }
+#board-choices { display: flex; justify-content: space-evenly; gap: 4px; }
+#board-choices button { min-width: 44px; padding: 4px 12px; color: #f3e9cd; background: transparent; border-color: #a5bb9c; font-family: inherit; font-size: 1.25rem; }
+#board-choices button[aria-pressed="true"] { background: #f3e9cd; color: #153a37; border-color: #f3e9cd; }
+#board-choices button:hover { background: #ddbb6d; color: #153a37; }
+#board-choices button:focus-visible { outline-color: #fff; }
+.experimenting #controls, .experimenting .menu, .experimenting #fallback { display: none; }
+body:not(.playing) #board-surface { width: min(320px, calc(100% - 24px)); height: 180px; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.speaking:not(.playing) #controls > :not(#interact) { display: none; }
+dialog { position: fixed; z-index: 3; top: 50%; transform: translateY(-50%); }
+dialog.balloon { transform: none; }
+.speaking #run, .speaking .pad { visibility: hidden; }
 @media (max-height: 650px) {
   dialog.balloon { overflow: auto; }
   dialog.balloon::after { display: none; }
 }
 
-#panel-title:focus-visible { outline: none; }
+#panel-title:focus-visible, #challenge-title:focus-visible { outline: none; }

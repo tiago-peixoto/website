@@ -69,7 +69,9 @@ for name in ['outside', 'interior']:
             ('reading-chair', (95, 188, 20, 28)),
             ('computer-table', (268, 93, 76, 32)), ('computer-stool', (296, 111, 16, 17)),
             ('robot-bench', (275, 181, 59, 35)), ('robot-arm', (290, 156, 32, 25))]]
-        interactions = [rectangle('paper', (76, 169, 41, 39)),
+        interactions = [rectangle('studyLamp', (76, 169, 22, 19)),
+                        rectangle('paper', (98, 169, 19, 39)),
+                        rectangle('paper', (76, 188, 22, 20)),
                         rectangle('paper', (95, 208, 20, 8)),
                         rectangle('notebook', (117, 169, 18, 39)),
                         rectangle('sensor', (275, 181, 15, 35)),

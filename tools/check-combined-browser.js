@@ -3,7 +3,7 @@ console.log(JSON.stringify(await page.eval(async () => {
   const w = document.querySelector('iframe').contentWindow, d = w.document;
   const assert = (value, message) => { if (!value) throw new Error(message); };
   const wait = () => new Promise(resolve => setTimeout(resolve, 30));
-  const close = async () => { if (d.querySelector('dialog').open) d.querySelector('dialog').close(); await wait(); };
+  const close = async () => { if (!d.querySelector('#experiment').hidden) d.querySelector('#challenge-leave').click(); if (d.querySelector('dialog').open) d.querySelector('dialog').close(); await wait(); };
   const navigation = w.eval('navigation');
   const assets = w.eval('previewAssets');
   const map = await (await w.fetch(assets['plaza-art/interior.tmj'])).json();
@@ -18,12 +18,12 @@ console.log(JSON.stringify(await page.eval(async () => {
     if (!seen.has(key)) { seen.add(key); queue.push({ ...next, route }); }
   }
   const expected = { paper: directions, notebook: ['up','down','left'], sensor: ['up','down','right'], robot: directions,
-    computer: ['up','left','right'], board: ['up'], light: ['left'] };
+    computer: ['up','left','right'], board: ['up'], light: ['left'], studyLamp: ['down','right'] };
   const travel = area => d.querySelector(`[data-travel="${area}"]`).click();
   const walk = route => { for (const direction of route) d.querySelector(`[data-direction="${direction}"]`).click(); };
   const approach = async (id, direction) => { await close(); travel('study'); walk(routes[`${id}/${direction}`]); await wait(); };
   const open = () => d.querySelector('#interact').click();
-  const challenge = () => { for (let i = 0; i < 6 && d.querySelector('#challenge').hidden; i++) d.querySelector('#speech-next').click(); };
+  const challenge = () => { for (let i = 0; i < 4 && d.querySelector('dialog').open; i++) d.querySelector('#interact').click(); };
   const checks = [];
   for (const [id, facings] of Object.entries(expected)) for (const direction of facings) {
     assert(routes[`${id}/${direction}`], `route exists for ${id}/${direction}`);
@@ -32,15 +32,17 @@ console.log(JSON.stringify(await page.eval(async () => {
     assert(d.querySelector('#interact').textContent === d.querySelector(`[data-action="${id}"]`).textContent, `${id}/${direction} names the correct object`);
     open();
     assert(d.querySelector('dialog').open && d.querySelector('dialog').classList.contains('balloon'), `${id}/${direction} opens a balloon`);
+    challenge(); await wait();
     checks.push(`${id}/${direction}`);
   }
   for (const id of ['board','robot']) {
     await approach(id, 'up'); open(); challenge();
-    assert(!d.querySelector('#challenge').hidden, `${id} starts`);
-    d.querySelector(id === 'board' ? '#board-choices button:first-child' : '[data-choice="carry"]').click();
+    assert(!d.querySelector('#experiment').hidden, `${id} starts`);
+    if (id === 'board') d.querySelector('#board-choices button:first-child').click();
+    else { d.querySelector('[data-adjust="right"]').click(); d.querySelector('#challenge-action').click(); d.querySelector('[data-adjust="left"]').click(); }
     assert(d.querySelector('#challenge-progress').textContent.includes('1'), `${id} mistake retains progress`);
     if (id === 'board') for (let i = 0; i < 3; i++) d.querySelector('#board-choices button:nth-child(2)').click();
-    else for (const action of ['approach','grip','carry','release']) d.querySelector(`[data-choice="${action}"]`).click();
+    else { d.querySelector('#challenge-action').click(); d.querySelector('[data-adjust="right"]').click(); d.querySelector('[data-adjust="right"]').click(); d.querySelector('#challenge-action').click(); }
     assert(!d.querySelector('#challenge-again').hidden, `${id} finishes`);
     d.querySelector('#challenge-again').click();
     assert(d.querySelector('#challenge-again').hidden, `${id} replays`);
@@ -60,7 +62,7 @@ console.log(JSON.stringify(await page.eval(async () => {
       canvas.dispatchEvent(new w.KeyboardEvent('keydown', {key:'ArrowLeft',code:'ArrowLeft',shiftKey:name === 'run',bubbles:true}));
     }
     if (name === 'study') { travel('study'); walk([...Array(13).fill('left'),...Array(10).fill('up'),'left']); }
-    if (name === 'balloon') { await approach('notebook','left'); open(); d.querySelector('#speech-next').click(); }
+    if (name === 'balloon') { await approach('notebook','left'); open(); d.querySelector('#interact').click(); }
     if (name === 'board' || name === 'robot') { await approach(name,'up'); open(); challenge(); }
     if (name === 'edge') { travel('study'); walk(Array(12).fill('down')); }
     await wait(); await wait();

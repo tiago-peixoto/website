@@ -9,7 +9,7 @@
   "tilewidth": 16,
   "tileheight": 16,
   "nextlayerid": 8,
-  "nextobjectid": 24,
+  "nextobjectid": 26,
   "tilesets": [
     {
       "firstgid": 1,
@@ -993,15 +993,37 @@
       "type": "objectgroup",
       "objects": [
         {
-          "name": "paper",
+          "name": "studyLamp",
           "x": 76,
           "y": 169,
-          "width": 41,
-          "height": 39,
+          "width": 22,
+          "height": 19,
           "rotation": 0,
           "visible": true,
           "properties": [],
           "id": 12
+        },
+        {
+          "name": "paper",
+          "x": 98,
+          "y": 169,
+          "width": 19,
+          "height": 39,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 13
+        },
+        {
+          "name": "paper",
+          "x": 76,
+          "y": 188,
+          "width": 22,
+          "height": 20,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 14
         },
         {
           "name": "paper",
@@ -1012,7 +1034,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 13
+          "id": 15
         },
         {
           "name": "notebook",
@@ -1023,7 +1045,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 14
+          "id": 16
         },
         {
           "name": "sensor",
@@ -1034,7 +1056,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 15
+          "id": 17
         },
         {
           "name": "robot",
@@ -1045,7 +1067,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 16
+          "id": 18
         },
         {
           "name": "robot",
@@ -1056,7 +1078,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 17
+          "id": 19
         },
         {
           "name": "computer",
@@ -1067,7 +1089,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 18
+          "id": 20
         },
         {
           "name": "computer",
@@ -1078,7 +1100,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 19
+          "id": 21
         },
         {
           "name": "board",
@@ -1089,7 +1111,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 20
+          "id": 22
         },
         {
           "name": "light",
@@ -1100,7 +1122,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 21
+          "id": 23
         }
       ],
       "visible": false,
@@ -1128,7 +1150,7 @@
               "value": "up"
             }
           ],
-          "id": 22
+          "id": 24
         }
       ],
       "visible": false,
@@ -1156,7 +1178,7 @@
               "value": "down"
             }
           ],
-          "id": 23
+          "id": 25
         }
       ],
       "visible": false,

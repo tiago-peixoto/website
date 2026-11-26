@@ -1,37 +1,43 @@
 import { createState, changeState } from "./plaza-state.js";
+import { createExperiments } from "./plaza-experiments.js";
 import { createDialogue } from "./plaza-dialogue.js";
 
 const dialog = document.querySelector("dialog");
 const enter = document.querySelector("#enter");
 const loading = document.querySelector("#loading");
 let game;
-const conversation = createDialogue(dialog, (id) => game?.visit(id));
+const experiments = createExperiments((id) => game?.experiment(id));
+const conversation = createDialogue(dialog, (id) => {
+  if (id === "study") game?.visit("study");
+  if (id === "board" || id === "robot") experiments.open(id);
+  if ((id === "notebook" || id === "sensor") && !state.inventory.has(id)) {
+    changeState(state, id);
+    const item = document.createElement("li");
+    item.textContent = actions[id].dataset.itemName;
+    document.querySelector("#inventory").append(item);
+    document.querySelector("#inventory-count").textContent = state.inventory.size;
+    document.querySelector("#empty-inventory").hidden = true;
+    document.querySelector("#pickup-status").textContent = `${messages.picked} ${item.textContent}`;
+  }
+});
 const state = createState();
 const messages = document.querySelector("#messages").dataset;
 const actions = Object.fromEntries([...document.querySelectorAll("[data-action]")].map((button) => [button.dataset.action, button]));
 function interact(id, opener) {
-  if (dialog.open) return;
+  if (dialog.open || experiments.current) return;
   let result = "";
-  if (id === "light" || id === "lamp") {
+  if (id === "light" || id === "lamp" || id === "studyLamp") {
     changeState(state, id);
-    const on = id === "light" ? state.lightsOn : state.lampOn;
+    const on = id === "light" ? state.lightsOn : id === "studyLamp" ? state.studyLampOn : state.lampOn;
     actions[id].setAttribute("aria-pressed", String(on));
-    result = id === "light" ? (on ? messages.lightsOn : messages.lightsOff) : (on ? messages.lampOn : messages.lampOff);
+    result = id === "light" ? (on ? messages.lightsOn : messages.lightsOff) : id === "studyLamp" ? (on ? messages.studyLampOn : messages.studyLampOff) : (on ? messages.lampOn : messages.lampOff);
   } else if (id === "pond") {
     changeState(state, id);
     result = messages.pondJump;
   } else if (id === "notebook" || id === "sensor") {
     const name = actions[id].dataset.itemName;
     const picked = state.inventory.has(id);
-    if (!picked) {
-      changeState(state, id);
-      const item = document.createElement("li");
-      item.textContent = name;
-      document.querySelector("#inventory").append(item);
-      document.querySelector("#inventory-count").textContent = state.inventory.size;
-      document.querySelector("#empty-inventory").hidden = true;
-    }
-    result = `${picked ? messages.alreadyPicked : messages.picked} ${name}`;
+    result = picked ? `${messages.alreadyPicked} ${name}` : "";
   }
   conversation.open(id, opener, result);
 }
@@ -53,7 +59,7 @@ function loadPhaser() {
   });
 }
 
-if (typeof dialog.showModal === "function") {
+if (typeof dialog.show === "function") {
   enter.hidden = false;
   document.querySelector("#directory-actions").hidden = false;
   for (const [id, button] of Object.entries(actions)) button.addEventListener("click", () => interact(id, button));
@@ -70,12 +76,15 @@ if (typeof dialog.showModal === "function") {
         interact,
         positionDialogue: conversation.position,
         state,
+        experiments,
       });
       loading.textContent = "";
       enter.hidden = true;
       document.querySelector("#how").hidden = false;
       document.querySelector("#directory-places").hidden = false;
       for (const button of document.querySelectorAll("[data-travel]")) button.addEventListener("click", () => {
+        experiments.close();
+        if (dialog.open) dialog.close();
         game.visit(button.dataset.travel);
         document.querySelector(".menu").open = false;
         document.querySelector("#plaza canvas").focus();

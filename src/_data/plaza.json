@@ -56,7 +56,10 @@
     "lampOff": "Plaza lamp off.",
     "pond": "Watch the pond",
     "pondJump": "A fish jumps from the pond and splashes back into the water.",
-    "run": "Run"
+    "run": "Run",
+    "studyLamp": "Study lamp",
+    "studyLampOn": "Study lamp on.",
+    "studyLampOff": "Study lamp off."
   },
   "pt-BR": {
     "root": "../../",
@@ -115,6 +118,9 @@
     "lampOff": "Luz do poste apagada.",
     "pond": "Observar o lago",
     "pondJump": "Um peixe salta do lago e mergulha de volta na água.",
-    "run": "Correr"
+    "run": "Correr",
+    "studyLamp": "Luminária de estudo",
+    "studyLampOn": "Luminária acesa.",
+    "studyLampOff": "Luminária apagada."
   }
 }

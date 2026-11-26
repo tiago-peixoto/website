@@ -32,7 +32,7 @@ entry = replaceOnce(entry, '(name) => new URL(`./${name}`, import.meta.url).href
 const bundle = [
   `/*\n${read("assets/phaser-LICENSE.txt")}\n*/`,
   `const previewAssets = ${JSON.stringify(assets)};`,
-  ...["plaza-map.js", "plaza-state.js", "plaza-challenges.js", "plaza-dialogue.js", "plaza.js"].map(scriptBody),
+  ...["plaza-map.js", "plaza-state.js", "plaza-challenges.js", "plaza-dialogue.js", "plaza-experiments.js", "plaza.js"].map(scriptBody),
   "const previewStartPlaza = startPlaza;",
   entry,
 ].join("\n");

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { DIRECTIONS, navigation, cameraZoom } from "./src/assets/plaza-map.js";
 import { createState, changeState } from "./src/assets/plaza-state.js";
-import { BOARD_INPUTS, ROBOT_STEPS, startChallenge, chooseChallenge } from "./src/assets/plaza-challenges.js";
+import { BOARD_INPUTS, startChallenge, chooseChallenge, moveChallenge } from "./src/assets/plaza-challenges.js";
 
 const json = (file) => JSON.parse(readFileSync(file, "utf8"));
 const courtyard = json("src/assets/plaza-art/courtyard.tmj");
@@ -14,14 +14,14 @@ const motion = json("src/assets/plaza-art/walker-motion.json");
 const areas = { plaza: [courtyard, plazaMap], outside: [outside, outside], study: [study, study] };
 const expectedActions = {
   plaza: ["university", "lamp", "pond"], outside: ["study", "university"],
-  study: ["paper", "notebook", "sensor", "robot", "computer", "board", "light"],
+  study: ["paper", "notebook", "sensor", "robot", "computer", "board", "light", "studyLamp"],
 };
 const expectedExits = { plaza: ["outside"], outside: ["plaza"], study: ["outside"] };
 const expectedFacings = {
   plaza: { university: ["up"], lamp: ["up", "down", "left", "right"], pond: ["up", "right"] },
   outside: { study: ["up"], university: ["up"] },
   study: { paper: ["up", "down", "left", "right"], notebook: ["up", "down", "left"], sensor: ["up", "down", "right"],
-    robot: ["up", "down", "left", "right"], computer: ["up", "left", "right"], board: ["up"], light: ["left"] },
+    robot: ["up", "down", "left", "right"], computer: ["up", "left", "right"], board: ["up"], light: ["left"], studyLamp: ["down", "right"] },
 };
 const allActions = new Set();
 let totalReachable = 0;
@@ -212,7 +212,9 @@ for (const t of langs) {
   }
   assert(html.includes(`<html lang="${t.lang}">`));
   assert(html.includes('<dialog aria-labelledby="panel-title"'));
-  assert(html.includes('<form method="dialog">'));
+  assert(!/<dialog[^>]*>[\s\S]*?<button[\s\S]*?<\/dialog>/.test(html), "speech has no buttons");
+  assert(html.includes('id="speech-readable"') && html.includes('id="speech-hint"'), "speech retains readable text and visible key hint");
+  assert(html.indexOf('id="board-surface"') < html.indexOf('<dialog'), "board choices live in the scene");
   assert(html.indexOf('id="portfolio" href="../"') < html.indexOf('id="plaza"'));
   assert(html.includes('<div id="playable" hidden>'));
   assert(html.includes('id="run" aria-pressed="false"'));
@@ -226,21 +228,31 @@ for (const t of langs) {
 assert(!readFileSync("_site/sitemap.xml", "utf8").includes("/play/"));
 console.log(`ok: three maps, ${totalReachable} reachable positions, all interactions, integer viewport coverage and both languages`);
 
-for (const [id, answers] of [["board", BOARD_INPUTS.map((n) => n + 1)], ["robot", ROBOT_STEPS]]) {
-  let challenge = startChallenge(id);
-  const wrong = chooseChallenge(challenge, "not an answer");
-  assert.equal(wrong.step, 0, `${id}: incorrect choice does not advance`);
-  assert.equal(wrong.result, "wrong");
-  assert.equal(challenge.result, "", "choices do not mutate the original state");
-  for (const [index, choice] of answers.entries()) {
-    challenge = chooseChallenge(challenge, choice);
-    assert.equal(challenge.step, index + 1);
-    assert.equal(challenge.complete, index === answers.length - 1);
-  }
-  assert.equal(challenge.result, "done");
-  assert.equal(chooseChallenge(challenge, answers[0]), challenge, "finished challenges stay finished");
-  assert.equal(startChallenge(id).step, 0, "replaying starts fresh");
-}
+let board = startChallenge("board");
+assert.equal(chooseChallenge(board, -1).step, 0, "wrong answer preserves the board example");
+for (const input of BOARD_INPUTS) board = chooseChallenge(board, input + 1);
+assert(board.complete);
+assert.equal(chooseChallenge(board, 0), board);
+assert.equal(startChallenge("board").step, 0);
+let robot = startChallenge("robot");
+assert.equal(moveChallenge(robot, "left").selection, 0, "arm cannot move past the part");
+robot = moveChallenge(robot, "right");
+assert.equal(chooseChallenge(robot).result, "wrong", "cannot grip away from the part");
+robot = moveChallenge(robot, "left");
+robot = chooseChallenge(robot);
+assert(robot.holding && !robot.complete);
+assert.equal(chooseChallenge(robot).result, "wrong", "cannot release away from the tray");
+robot = moveChallenge(moveChallenge(robot, "right"), "right");
+assert.equal(moveChallenge(robot, "right").selection, 2, "arm cannot move past the tray");
+robot = chooseChallenge(robot);
+assert(robot.complete && !robot.holding);
+assert.equal(moveChallenge(robot, "left"), robot, "finished arm stays still");
+assert.equal(chooseChallenge(robot), robot);
+assert.equal(startChallenge("robot").holding, false, "replay clears the gripper");
+changeState(state, "studyLamp");
+assert.equal(state.studyLampOn, false);
+changeState(state, "studyLamp");
+assert.equal(state.studyLampOn, true);
 const conversations = json("src/_data/dialogue.json");
 for (const lang of ["en", "pt-BR"]) {
   const d = conversations[lang];

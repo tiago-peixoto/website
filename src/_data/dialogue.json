@@ -1,12 +1,8 @@
 {
   "en": {
     "transcript": "Every conversation, without walking",
-    "next": "Continue",
     "finish": "Back to exploring",
-    "reveal": "Show this line",
-    "hint": "Enter, Space or tap to continue. Escape to close.",
-    "travel": "Enter the study room",
-    "challenge": "Try it",
+    "hint": "Space, Enter or the action button: reveal, advance, then finish. Escape cancels.",
     "again": "Try again",
     "progress": "Step",
     "of": "of",
@@ -23,13 +19,15 @@
       "computer": ["I'm a generalist programmer. I turn messy ideas into real, working software.", "My first move with a bug is to reproduce it the way a user sees it. Guessing can wait."],
       "board": ["I'll keep this one small: an input, plus one, and an output.", "Three examples should do. I don't need to build a framework for addition."],
       "robot": ["I'll move this little part onto the tray. First, I'll give the gripper somewhere sensible to go.", "Move to the part, close the gripper, move to the tray, then let go. Let's see if I can follow my own instructions."],
-      "inventory": ["I'll keep these here while the page is open.", "No daily reward for coming back. I wrote a whole post about that particular trap."]
+      "inventory": ["I'll keep these here while the page is open.", "No daily reward for coming back. I wrote a whole post about that particular trap."],
+      "studyLamp": ["I'll try the switch on this desk lamp.", "A little less light changes the whole room. I can switch it back whenever I like."]
     },
     "board": {
       "prompt": "Choose the output.",
       "wrong": "I'll try that again. Add exactly one to the input.",
       "correct": "That adds up. Next example.",
-      "done": "Three examples, all working. I'll leave the framework for another day."
+      "done": "Three examples, all working. I'll leave the framework for another day.",
+      "controls": "← → to choose. Space to mark the board. Or tap an answer. Escape to leave."
     },
     "robot": {
       "prompt": "Move the part from the bench to the tray.",
@@ -41,19 +39,24 @@
       "gripper": "Gripper",
       "tray": "Tray",
       "part": "Part",
-      "wrong": "That order won't do. I'll follow the next step.",
+      "wrong": "I'll grip at the left end, then release at the right end.",
       "correct": "Good. One small move at a time.",
-      "done": "On the tray, in one piece. I'll call that a successful experiment."
-    }
+      "done": "On the tray, in one piece. I'll call that a successful experiment.",
+      "controls": "← → to move the arm. Space to grip or release. Pick up on the left, place on the right. Escape to leave.",
+      "position": "Arm position",
+      "holding": "Holding the part.",
+      "empty": "Gripper empty."
+    },
+    "previousPosition": "Previous position",
+    "nextPosition": "Next position",
+    "action": "Space · Action",
+    "finished": "Space to return. Replay is optional.",
+    "select": "Select"
   },
   "pt-BR": {
     "transcript": "Todas as conversas, sem caminhar",
-    "next": "Continuar",
     "finish": "Voltar a explorar",
-    "reveal": "Mostrar esta fala",
-    "hint": "Enter, Espaço ou toque para continuar. Escape para fechar.",
-    "travel": "Entrar na sala de estudos",
-    "challenge": "Experimentar",
+    "hint": "Espaço, Enter ou o botão de ação: revelar, avançar e terminar. Escape cancela.",
     "again": "Tentar de novo",
     "progress": "Etapa",
     "of": "de",
@@ -70,13 +73,15 @@
       "computer": ["Sou um programador generalista. Transformo ideias confusas em software de verdade, que funciona.", "Meu primeiro passo com um bug é reproduzir o que o usuário vê. O chute pode esperar."],
       "board": ["Vou deixar isso pequeno: uma entrada, mais um, e uma saída.", "Três exemplos devem bastar. Não preciso criar um framework para somar."],
       "robot": ["Vou levar esta pecinha até a bandeja. Primeiro, preciso levar a garra ao lugar certo.", "Ir até a peça, fechar a garra, ir até a bandeja e soltar. Vamos ver se consigo seguir minhas próprias instruções."],
-      "inventory": ["Vou guardar isso aqui enquanto a página estiver aberta.", "Sem recompensa diária para voltar. Escrevi um post inteiro sobre essa armadilha."]
+      "inventory": ["Vou guardar isso aqui enquanto a página estiver aberta.", "Sem recompensa diária para voltar. Escrevi um post inteiro sobre essa armadilha."],
+      "studyLamp": ["Vou mudar a luz desta luminária.", "Um pouco menos de luz muda a sala toda. Posso acender de novo quando quiser."]
     },
     "board": {
       "prompt": "Escolha a saída.",
       "wrong": "Vou tentar de novo. É só somar um à entrada.",
       "correct": "A conta fecha. Próximo exemplo.",
-      "done": "Três exemplos, todos funcionando. Vou deixar o framework para outro dia."
+      "done": "Três exemplos, todos funcionando. Vou deixar o framework para outro dia.",
+      "controls": "← → para escolher. Espaço para marcar o quadro. Ou toque na resposta. Escape para sair."
     },
     "robot": {
       "prompt": "Leve a peça da bancada até a bandeja.",
@@ -88,9 +93,18 @@
       "gripper": "Garra",
       "tray": "Bandeja",
       "part": "Peça",
-      "wrong": "Essa ordem não funciona. Vou seguir a próxima etapa.",
+      "wrong": "Vou pegar a peça na ponta esquerda e soltar na ponta direita.",
       "correct": "Certo. Um pequeno movimento por vez.",
-      "done": "Na bandeja, inteira. Vou chamar isso de experimento bem-sucedido."
-    }
+      "done": "Na bandeja, inteira. Vou chamar isso de experimento bem-sucedido.",
+      "controls": "← → para mover o braço. Espaço para pegar ou soltar. Pegue à esquerda, solte à direita. Escape para sair.",
+      "position": "Posição do braço",
+      "holding": "Com a peça.",
+      "empty": "Garra vazia."
+    },
+    "previousPosition": "Posição anterior",
+    "nextPosition": "Próxima posição",
+    "action": "Espaço · Ação",
+    "finished": "Espaço para voltar. Repetir é opcional.",
+    "select": "Selecionar"
   }
 }
