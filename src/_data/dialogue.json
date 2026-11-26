@@ -19,6 +19,9 @@
       "computer": ["I'm a generalist programmer. I turn messy ideas into real, working software.", "My first move with a bug is to reproduce it the way a user sees it. Guessing can wait."],
       "board": ["I'll keep this one small: an input, plus one, and an output.", "Three examples should do. I don't need to build a framework for addition."],
       "robot": ["I'll move this little part onto the tray. First, I'll give the gripper somewhere sensible to go.", "Move to the part, close the gripper, move to the tray, then let go. Let's see if I can follow my own instructions."],
+      "welding": ["I built welding robots at university. I'll leave this one switched off while I look around."],
+      "tools": ["I'll put the wrench back this time. My future self has heard that one before."],
+      "parts": ["I'll sort these before I start. Otherwise, I'm just moving the search problem into a smaller box."],
       "inventory": ["I'll keep these here while the page is open.", "No daily reward for coming back. I wrote a whole post about that particular trap."],
       "studyLamp": ["I'll try the switch on this desk lamp.", "A little less light changes the whole room. I can switch it back whenever I like."]
     },
@@ -73,6 +76,9 @@
       "computer": ["Sou um programador generalista. Transformo ideias confusas em software de verdade, que funciona.", "Meu primeiro passo com um bug é reproduzir o que o usuário vê. O chute pode esperar."],
       "board": ["Vou deixar isso pequeno: uma entrada, mais um, e uma saída.", "Três exemplos devem bastar. Não preciso criar um framework para somar."],
       "robot": ["Vou levar esta pecinha até a bandeja. Primeiro, preciso levar a garra ao lugar certo.", "Ir até a peça, fechar a garra, ir até a bandeja e soltar. Vamos ver se consigo seguir minhas próprias instruções."],
+      "welding": ["Construí robôs de soldagem na universidade. Vou deixar este desligado enquanto dou uma olhada."],
+      "tools": ["Desta vez, vou guardar a chave no lugar. Meu eu do futuro já ouviu essa antes."],
+      "parts": ["Vou organizar as peças antes de começar. Senão, só estou mudando o problema de busca para uma caixa menor."],
       "inventory": ["Vou guardar isso aqui enquanto a página estiver aberta.", "Sem recompensa diária para voltar. Escrevi um post inteiro sobre essa armadilha."],
       "studyLamp": ["Vou mudar a luz desta luminária.", "Um pouco menos de luz muda a sala toda. Posso acender de novo quando quiser."]
     },

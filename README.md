@@ -88,6 +88,10 @@ Objects support every reachable side, while walls and adjacent furniture still b
 Items on a table use separate parts of its footprint so they remain reachable from the exposed edges.
 Exit rectangles also specify the outgoing direction, so arriving at an edge does not immediately send the walker back.
 `tools/export-university.py` exports these maps from the approved native images in `tools/university-art/`.
+The study room uses `interior-workshop-source.png`, an original ImageGen edit of the reviewed smaller furniture.
+Its welding workbench, tool cart and parts rack each have English and Portuguese speech through the existing conversation mechanism.
+The exporter adds their collision and interaction surfaces while preserving the central aisle and existing approaches.
+`interior-workshop-prompt.txt` records the generation and clearance correction.
 Run it with Python and Pillow 12.3 or later after changing its source art or map definitions.
 Do not hand-edit its generated maps or atlases.
 It slices each composition into 16-pixel tiles and checks that reconstruction with collectible items matches the approved pixels exactly.

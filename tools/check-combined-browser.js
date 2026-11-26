@@ -18,7 +18,8 @@ console.log(JSON.stringify(await page.eval(async () => {
     if (!seen.has(key)) { seen.add(key); queue.push({ ...next, route }); }
   }
   const expected = { paper: directions, notebook: ['up','down','left'], sensor: ['up','down','right'], robot: directions,
-    computer: ['up','left','right'], board: ['up'], light: ['left'], studyLamp: ['down','right'] };
+    computer: ['up','left','right'], board: ['up'], light: ['left'], studyLamp: ['down','right'],
+    welding: directions, tools: directions, parts: directions };
   const travel = area => d.querySelector(`[data-travel="${area}"]`).click();
   const walk = route => { for (const direction of route) d.querySelector(`[data-direction="${direction}"]`).click(); };
   const approach = async (id, direction) => { await close(); travel('study'); walk(routes[`${id}/${direction}`]); await wait(); };
@@ -32,6 +33,7 @@ console.log(JSON.stringify(await page.eval(async () => {
     assert(d.querySelector('#interact').textContent === d.querySelector(`[data-action="${id}"]`).textContent, `${id}/${direction} names the correct object`);
     open();
     assert(d.querySelector('dialog').open && d.querySelector('dialog').classList.contains('balloon'), `${id}/${direction} opens a balloon`);
+    assert(d.querySelector('#speech-readable').textContent === d.querySelector(`[data-transcript="${id}"] p`).textContent, `${id}/${direction} reads its own line`);
     challenge(); await wait();
     checks.push(`${id}/${direction}`);
   }

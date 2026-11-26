@@ -15,7 +15,7 @@ for name in ['outside', 'interior']:
     scene = Image.open(ROOT / f'tools/university-art/{name}.png').convert('RGBA')
     if name == 'interior':
         palette = Image.open(ROOT / 'tools/university-art/outside.png').convert('RGB').quantize(colors=64)
-        scene = Image.open(ROOT / 'tools/university-art/interior-scale-source.png').convert('RGB')
+        scene = Image.open(ROOT / 'tools/university-art/interior-workshop-source.png').convert('RGB')
         scene = scene.resize((384, 256), Image.Resampling.NEAREST)
         scene = scene.quantize(palette=palette, dither=Image.Dither.NONE).convert('RGBA')
     assert scene.size == (384, 256)
@@ -68,7 +68,9 @@ for name in ['outside', 'interior']:
             ('shelves', (25, 100, 54, 8)), ('reading-table', (76, 169, 59, 39)),
             ('reading-chair', (95, 188, 20, 28)),
             ('computer-table', (268, 93, 76, 32)), ('computer-stool', (296, 111, 16, 17)),
-            ('robot-bench', (275, 181, 59, 35)), ('robot-arm', (290, 156, 32, 25))]]
+            ('robot-bench', (275, 181, 59, 35)), ('robot-arm', (290, 156, 32, 25)),
+            ('welding-bench', (111, 113, 65, 42)), ('welding-arm', (138, 89, 35, 24)),
+            ('tool-cart', (43, 125, 30, 41)), ('parts-rack', (232, 197, 36, 41))]]
         interactions = [rectangle('studyLamp', (76, 169, 22, 19)),
                         rectangle('paper', (98, 169, 19, 39)),
                         rectangle('paper', (76, 188, 22, 20)),
@@ -80,7 +82,11 @@ for name in ['outside', 'interior']:
                         rectangle('computer', (268, 93, 76, 32)),
                         rectangle('computer', (296, 125, 16, 3)),
                         rectangle('board', (145, 84, 95, 12)),
-                        rectangle('light', (19, 108, 6, 27))]
+                        rectangle('light', (19, 108, 6, 27)),
+                        rectangle('welding', (111, 113, 65, 42)),
+                        rectangle('welding', (138, 89, 35, 24)),
+                        rectangle('tools', (43, 125, 30, 41)),
+                        rectangle('parts', (232, 197, 36, 41))]
         spawns = [rectangle('entry', (192, 222, 0, 0), facing='up')]
         exits = [rectangle('outside', (160, 255, 64, 1), facing='down')]
         blocked = [int(i // 24 < 6) for i in range(384)]

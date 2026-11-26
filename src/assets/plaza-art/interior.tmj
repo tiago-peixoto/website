@@ -9,7 +9,7 @@
   "tilewidth": 16,
   "tileheight": 16,
   "nextlayerid": 8,
-  "nextobjectid": 26,
+  "nextobjectid": 34,
   "tilesets": [
     {
       "firstgid": 1,
@@ -980,6 +980,50 @@
           "visible": true,
           "properties": [],
           "id": 11
+        },
+        {
+          "name": "welding-bench",
+          "x": 111,
+          "y": 113,
+          "width": 65,
+          "height": 42,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 12
+        },
+        {
+          "name": "welding-arm",
+          "x": 138,
+          "y": 89,
+          "width": 35,
+          "height": 24,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 13
+        },
+        {
+          "name": "tool-cart",
+          "x": 43,
+          "y": 125,
+          "width": 30,
+          "height": 41,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 14
+        },
+        {
+          "name": "parts-rack",
+          "x": 232,
+          "y": 197,
+          "width": 36,
+          "height": 41,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 15
         }
       ],
       "visible": false,
@@ -1001,7 +1045,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 12
+          "id": 16
         },
         {
           "name": "paper",
@@ -1012,7 +1056,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 13
+          "id": 17
         },
         {
           "name": "paper",
@@ -1023,7 +1067,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 14
+          "id": 18
         },
         {
           "name": "paper",
@@ -1034,7 +1078,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 15
+          "id": 19
         },
         {
           "name": "notebook",
@@ -1045,7 +1089,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 16
+          "id": 20
         },
         {
           "name": "sensor",
@@ -1056,7 +1100,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 17
+          "id": 21
         },
         {
           "name": "robot",
@@ -1067,7 +1111,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 18
+          "id": 22
         },
         {
           "name": "robot",
@@ -1078,7 +1122,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 19
+          "id": 23
         },
         {
           "name": "computer",
@@ -1089,7 +1133,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 20
+          "id": 24
         },
         {
           "name": "computer",
@@ -1100,7 +1144,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 21
+          "id": 25
         },
         {
           "name": "board",
@@ -1111,7 +1155,7 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 22
+          "id": 26
         },
         {
           "name": "light",
@@ -1122,7 +1166,51 @@
           "rotation": 0,
           "visible": true,
           "properties": [],
-          "id": 23
+          "id": 27
+        },
+        {
+          "name": "welding",
+          "x": 111,
+          "y": 113,
+          "width": 65,
+          "height": 42,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 28
+        },
+        {
+          "name": "welding",
+          "x": 138,
+          "y": 89,
+          "width": 35,
+          "height": 24,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 29
+        },
+        {
+          "name": "tools",
+          "x": 43,
+          "y": 125,
+          "width": 30,
+          "height": 41,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 30
+        },
+        {
+          "name": "parts",
+          "x": 232,
+          "y": 197,
+          "width": 36,
+          "height": 41,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 31
         }
       ],
       "visible": false,
@@ -1150,7 +1238,7 @@
               "value": "up"
             }
           ],
-          "id": 24
+          "id": 32
         }
       ],
       "visible": false,
@@ -1178,7 +1266,7 @@
               "value": "down"
             }
           ],
-          "id": 25
+          "id": 33
         }
       ],
       "visible": false,
