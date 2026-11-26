@@ -19,10 +19,10 @@ for (const [name, [art, map]] of Object.entries(areas)) {
   const rules = navigation(map);
   const objects = art.layers.flatMap((layer) => layer.objects || []);
   const legacySpawn = objects.find((object) => object.name === "walker");
-  const spawns = art.layers.find((layer) => layer.name === "spawns")?.objects || [{
+  const spawns = [...(legacySpawn ? [{
     x: legacySpawn.x + legacySpawn.width / 2,
     y: legacySpawn.properties.find((p) => p.name === "feetY").value,
-  }];
+  }] : []), ...map.layers.find((layer) => layer.name === "spawns").objects];
   const start = { x: spawns[0].x, y: spawns[0].y, facing: "down" };
   const width = map.width * map.tilewidth, height = map.height * map.tileheight;
   assert.deepEqual([map.width, map.height, map.tilewidth, map.tileheight], [art.width, art.height, 16, 16]);
@@ -77,6 +77,9 @@ assert.equal(rules.move({ x: 250, y: 210 }, "right", 200).x, 256, "cannot tunnel
 assert.equal(rules.move({ x: 160, y: 140 }, "up", 200).y, 132, "cannot cross a blocked tile");
 assert.equal(rules.nearby({ x: 160, y: 140, facing: "up" }).name, "outside");
 assert.equal(rules.nearby({ x: 160, y: 140, facing: "down" }), undefined);
+const plazaReturn = plazaMap.layers.find((layer) => layer.name === "spawns").objects.find((object) => object.name === "return");
+assert.equal(rules.nearby({ ...plazaReturn, facing: "up" }).name, "outside", "leaving the university arrives at its plaza door");
+assert.equal(rules.nearby({ ...plazaReturn, facing: "down" }), undefined, "arriving walker faces away from the door");
 const waterSet = courtyard.tilesets.find((set) => set.tiles);
 const water = waterSet.tiles.find((tile) => tile.animation).animation;
 assert.equal(water.length, 4);

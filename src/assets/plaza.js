@@ -9,14 +9,17 @@ export async function startPlaza({ asset, dialog, interact, state }) {
     return response.json();
   }));
   const plazaSpawn = courtyard.layers.flatMap((layer) => layer.objects || []).find((object) => object.name === "walker");
+  const spawns = (map) => Object.fromEntries(map.layers.find((layer) => layer.name === "spawns").objects.map((object) => [object.name, object]));
   const areas = {
-    plaza: { art: courtyard, rules: navigation(plazaNavigation), spawn: {
+    plaza: { art: courtyard, rules: navigation(plazaNavigation), spawns: { ...spawns(plazaNavigation), entry: {
       x: plazaSpawn.x + plazaSpawn.width / 2,
       y: plazaSpawn.properties.find((property) => property.name === "feetY").value,
-    } },
-    outside: { art: outside, rules: navigation(outside) },
-    study: { art: study, rules: navigation(study) },
+      facing: "down",
+    } } },
+    outside: { art: outside, rules: navigation(outside), spawns: spawns(outside) },
+    study: { art: study, rules: navigation(study), spawns: spawns(study) },
   };
+  const order = Object.keys(areas);
   const pressed = new Map();
   const held = new Map();
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -69,9 +72,8 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       areaId = id;
       for (const [key, area] of Object.entries(areas)) for (const image of area.display) image.setVisible(key === id);
       const area = areas[id];
-      const spawns = area.art.layers.find((layer) => layer.name === "spawns")?.objects;
-      const spawn = spawns?.find((object) => object.name === (returning ? "return" : "entry")) || spawns?.[0] || area.spawn;
-      position = { x: spawn.x, y: spawn.y, facing: returning ? "down" : "up" };
+      const spawn = area.spawns[returning ? "return" : "entry"];
+      position = { x: spawn.x, y: spawn.y, facing: spawn.facing || (returning ? "down" : "up") };
       walker.anims.stop();
       walker.setFrame(layout.directions.indexOf(position.facing) * 7);
       scene.cameras.main.setBounds(0, 0, area.art.width * 16, area.art.height * 16);
@@ -95,7 +97,7 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       const near = areas[areaId].rules.nearby(position);
       if (!near) return;
       clearInput();
-      if (areas[near.name]) visit(near.name, areaId === "study");
+      if (areas[near.name]) visit(near.name, order.indexOf(near.name) < order.indexOf(areaId));
       else interact(near.name, opener);
       refresh();
     }

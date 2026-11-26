@@ -39,9 +39,11 @@ The courtyard tree becomes partly transparent when it covers the walker.
 
 `src/assets/plaza-art/` contains the approved round-two courtyard and the approved university compositions.
 These are invented settings inspired by UFSC, not reconstructions of its buildings or laboratories.
-`courtyard.tmj` supplies the terrain, objects, ground-contact depths, starting pose, and water frames.
+`courtyard.tmj` supplies the terrain, objects, ground-contact depths, starting position, and water frames.
+The walker starts there facing down.
 The art export has no gameplay data.
-The separate, hand-authored `src/assets/plaza-navigation.tmj` supplies blocked tiles, object footprints, and the university transition.
+The separate, hand-authored `src/assets/plaza-navigation.tmj` supplies blocked tiles, object footprints, the university transition, and the `return` spawn in front of the university door.
+Leaving the university courtyard puts the walker on that spawn, facing away from the door.
 It uses the same 24 by 16 grid and 16-pixel tiles.
 Keep both maps aligned when moving scenery.
 The collision footprint covers the walker's feet, not the head or tree canopy.

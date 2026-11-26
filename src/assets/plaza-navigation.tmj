@@ -1,7 +1,7 @@
 {
   "type": "map", "version": "1.10", "orientation": "orthogonal", "renderorder": "right-down",
   "width": 24, "height": 16, "tilewidth": 16, "tileheight": 16, "infinite": false,
-  "nextlayerid": 4, "nextobjectid": 5,
+  "nextlayerid": 5, "nextobjectid": 6,
   "tilesets": [{ "firstgid": 1, "name": "blocked", "image": "plaza-art/terrain.png", "imagewidth": 128, "imageheight": 128, "tilewidth": 16, "tileheight": 16, "columns": 8, "tilecount": 64 }],
   "layers": [
     {
@@ -36,6 +36,10 @@
     {
       "id": 3, "name": "interactions", "type": "objectgroup", "x": 0, "y": 0, "opacity": 1, "visible": true,
       "objects": [{ "id": 4, "name": "outside", "x": 136, "y": 128, "width": 48, "height": 28, "rotation": 0, "visible": true }]
+    },
+    {
+      "id": 4, "name": "spawns", "type": "objectgroup", "x": 0, "y": 0, "opacity": 1, "visible": false,
+      "objects": [{ "id": 5, "name": "return", "x": 160, "y": 148, "width": 0, "height": 0, "rotation": 0, "visible": true, "point": true }]
     }
   ]
 }
