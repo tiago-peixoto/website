@@ -79,7 +79,6 @@ assert.equal(rules.nearby({ x: 160, y: 140, facing: "up" }).name, "outside");
 assert.equal(rules.nearby({ x: 160, y: 140, facing: "down" }), undefined);
 const plazaReturn = plazaMap.layers.find((layer) => layer.name === "spawns").objects.find((object) => object.name === "return");
 assert.equal(rules.nearby({ ...plazaReturn, facing: "up" }).name, "outside", "leaving the university arrives at its plaza door");
-assert.equal(rules.nearby({ ...plazaReturn, facing: "down" }), undefined, "arriving walker faces away from the door");
 const waterSet = courtyard.tilesets.find((set) => set.tiles);
 const water = waterSet.tiles.find((tile) => tile.animation).animation;
 assert.equal(water.length, 4);

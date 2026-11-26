@@ -31,8 +31,8 @@ Tab reaches the links normally.
 Every interaction is also available in the HTML directory before the engine loads.
 Once play starts, the directory can visit any of the three areas without walking.
 Reduced motion pauses the water and walking animation, including when the preference changes during play.
-The canvas fills the browser viewport beneath the interface.
-The camera uses the smallest whole-number zoom that covers both viewport dimensions, and follows the walker within the map bounds.
+The canvas fills the area between the header and the controls, so neither bar covers the map, the walker or an exit.
+The camera uses the smallest whole-number zoom that covers both dimensions of that area, and follows the walker within the map bounds.
 This keeps the approved native 384 by 256 artwork sharp without empty bands or fractional scaling.
 Narrow windows show less of the map at once, and the camera follows movement to reveal the rest.
 The courtyard tree becomes partly transparent when it covers the walker.
