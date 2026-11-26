@@ -5,8 +5,9 @@ It is a static site built with [Eleventy](https://www.11ty.dev).
 
 ## Commands
 
+- `python3 -m pip install -r tools/requirements-art.txt` installs Pillow for the sprite checks and art exporters.
 - `npm start` serves the site at http://localhost:8080 and reloads on save.
-- `npm test` builds the site and checks internal links, battle rules, all three maps, interaction reachability, viewport coverage, and both languages.
+- `npm test` builds the site and checks internal links, battle rules, all three maps, interaction reachability, viewport coverage, both languages, and every walker frame.
 
 ## Plaza preview
 

@@ -27,7 +27,7 @@
   },
   "lockedRows": [
     0,
-    24
+    20
   ],
-  "method": "Original ImageGen limb poses, nearest-neighbor export to the approved palette. Locked model head and shoulders retain their pixels, translated for weight transfer."
+  "method": "Original ImageGen complete bodies with nearest-neighbor scaling to the approved palette. Only the approved head is restored, leaving generated shoulders and arms intact."
 }

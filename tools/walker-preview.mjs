@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -38,6 +39,7 @@ for (const [language, path] of [["en", "play/index.html"], ["pt-BR", "pt/play/in
   html = html.replace(/<link rel="icon"[^>]+>/, () => `<link rel="icon" href="${data(resolve("_site/assets/ball.svg"), "image/svg+xml")}">`);
   html = html.replace(/<a href="[^"]+" lang="[^"]+" hreflang="[^"]+">[^<]+<\/a>/, "");
   html = html.replaceAll('href="../../', 'href="https://tiagop.dev.br/').replaceAll('href="../', 'href="https://tiagop.dev.br/');
+  html = html.replace(/href="https:\/\/tiagop\.dev\.br\/[^"\n]*"/g, 'href="#" onclick="event.preventDefault()" title="Portfolio links are disabled in this offline preview"');
   assert(!/<(?:script|link|img)[^>]+(?:src|href)="(?:\.\.?\/|https?:)/.test(html));
   pages[language] = html;
 }
@@ -47,43 +49,47 @@ const play = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="v
 <header><strong>Grounded walk + run</strong><label>Language <select id="language"><option value="en">English</option><option value="pt-BR">Português</option></select></label></header>
 <iframe title="Playable plaza with running"></iframe><script>const pages=${safe(pages)}, source=${safe(script)};const select=document.querySelector('select'),frame=document.querySelector('iframe');frame.onload=()=>{const s=frame.contentDocument.createElement('script');s.textContent=source;frame.contentDocument.body.append(s)};function show(){frame.srcdoc=pages[select.value]}select.addEventListener('change',show);show();</script></html>`;
 
-const old = data(resolve("src/assets/plaza-art/walker-sheet.png"));
-const lively = data(resolve("tools/walker-art/lively-sheet.png"));
+const before = `data:image/png;base64,${execFileSync("git", ["show", "ad736259e74a8b3f81ef21a59721969352d249fc:src/assets/plaza-art/walker-grounded.png"]).toString("base64")}`;
 const terrain = maps[0].tilesets.find((set) => set.image);
-const comparison = {
-  current: { title: "Current", description: "6 frames · 10 fps · fixed upper body", image: old, count: 6, start: 1, fps: 10 },
-  grounded: { title: "A · Grounded", description: "Recommended · 8 frames · 12 fps · subtle weight shift", image: assets["plaza-art/walker-grounded.png"], count: 8, start: 1, fps: 12 },
-  lively: { title: "B · Lively", description: "8 frames · 12 fps · stronger bounce and arm swing", image: lively, count: 8, start: 1, fps: 12 },
-};
 const directions = ["Down", "Left", "Right", "Up"];
-const card = (key, row, run = false) => `<article class="walker-card ${key === "grounded" ? "walker-recommended" : ""}"><h3>${run ? "Run" : comparison[key].title} · ${directions[row]}</h3><p>${run ? "8 frames · 16 fps · 1.7× walking speed" : comparison[key].description}</p><div class="walker-samples"><figure><canvas width="64" height="56" data-option="${key}" data-row="${row}" data-run="${run}" role="img" aria-label="${directions[row]} ${run ? "run" : key + " walk"}, native size"></canvas><figcaption>1× · native pixels</figcaption></figure><figure><canvas class="walker-large" width="64" height="56" data-option="${key}" data-row="${row}" data-run="${run}" role="img" aria-label="${directions[row]} ${run ? "run" : key + " walk"}, four times enlarged"></canvas><figcaption>4× · inspect the motion</figcaption></figure></div></article>`;
-const part = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Walker motion comparison</title>
+const options = { before, after: assets["plaza-art/walker-grounded.png"] };
+const canvas = (version, row, gait, frame, cls = "") => `<canvas width="64" height="56" class="${cls}" data-version="${version}" data-row="${row}" data-gait="${gait}" ${frame === undefined ? "data-animated" : `data-frame="${frame}"`} role="img" aria-label="${version}, ${directions[row]} ${gait}${frame === undefined ? " cycle" : ` frame ${frame + 1}`}"></canvas>`;
+const card = (version, row, gait) => `<article class="walker-card"><h4>${version === "before" ? "Before · ad736259" : "After · revised Grounded"}</h4><div class="walker-inspect"><div class="walker-samples"><figure>${canvas(version, row, gait)}<figcaption>1× · actual pixels</figcaption></figure><figure>${canvas(version, row, gait, undefined, "walker-large")}<figcaption>4× · animated cycle</figcaption></figure></div><div class="walker-strip" role="region" tabindex="0" aria-label="${version} ${directions[row]} ${gait}, all eight numbered frames"><div class="walker-frames">${Array.from({length: 8}, (_, frame) => `<figure>${canvas(version, row, gait, frame, "walker-still")}<figcaption>Frame ${frame + 1}</figcaption></figure>`).join("")}</div></div></div></article>`;
+const part = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Grounded walk and run / second pass</title>
 <section id="walker-review" aria-labelledby="walker-title">
-<style>#walker-review{font:16px/1.5 system-ui;color:#f4eedf;background:#142e2b;padding:clamp(16px,3vw,40px);max-width:1500px;margin:auto}#walker-review *{box-sizing:border-box}#walker-review h2{font-size:clamp(28px,4vw,44px);line-height:1.1;margin:12px 0}#walker-review h3{font-size:18px;margin:0}#walker-review p{max-width:80ch}#walker-review button{font:inherit;min-height:44px;padding:8px 16px;border:1px solid #ebc987;background:#f4eedf;color:#142e2b;border-radius:4px}#walker-review button:focus-visible{outline:3px solid #f6c86d;outline-offset:3px}.walker-eyebrow{letter-spacing:.12em;text-transform:uppercase;color:#ebc987}.walker-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}.walker-grid{display:grid;grid-template-columns:repeat(3,minmax(320px,1fr));gap:16px}.walker-card{padding:16px;background:#203d37;border:1px solid #4b6253;border-radius:8px}.walker-recommended{border-color:#ebc987}.walker-card p{font-size:14px;min-height:42px;color:#dad6c5}.walker-samples{display:flex;align-items:flex-end;justify-content:center;gap:8px;flex-wrap:wrap}.walker-samples figure{margin:0;text-align:center}.walker-samples canvas{display:block;image-rendering:pixelated;margin:auto}.walker-large{width:256px;height:224px}.walker-samples figcaption{font-size:12px;margin-top:8px;color:#dad6c5}.walker-run{grid-template-columns:repeat(2,minmax(320px,1fr))}.walker-note{padding:16px 20px;background:#304b40;border-left:4px solid #ebc987}.walker-overflow{overflow-x:auto;padding-bottom:12px}@media(max-width:750px){.walker-grid{width:1010px}.walker-run{width:auto;grid-template-columns:1fr}.walker-samples{justify-content:space-around}}</style>
-<p class="walker-eyebrow">Character study · original generated art</p><h2 id="walker-title">A little more life in each step.</h2>
-<p>Two new walks, the same Tiago. Every view uses the plaza floor, the approved palette, and the locked head and shoulders.</p>
-<p class="walker-note"><strong>Recommendation: A · Grounded.</strong> Eight distinct poses soften the footfalls without making a quiet stroll look hurried. B adds a larger bounce and broader gestures. The playable review uses A.</p>
+<style>
+#walker-review{font:16px/1.5 system-ui;color:#f4eedf;background:#142e2b;padding:clamp(16px,3vw,40px);max-width:1500px;margin:auto}#walker-review *{box-sizing:border-box}#walker-review h2{font:700 clamp(30px,4vw,48px)/1.1 Georgia,serif;margin:12px 0}#walker-review h3{font-size:24px;margin:36px 0 12px}#walker-review h4{font-size:17px;margin:0 0 16px}#walker-review p{max-width:75ch}#walker-review button{font:inherit;min-height:44px;padding:8px 16px;border:1px solid #ebc987;background:#f4eedf;color:#142e2b;border-radius:4px}#walker-review :focus-visible{outline:3px solid #f6c86d;outline-offset:3px}.walker-eyebrow{letter-spacing:.1em;text-transform:uppercase;color:#ebc987;font-size:13px}.walker-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:24px 0}.walker-card{padding:16px;background:#203d37;border:1px solid #4b6253;border-radius:8px;margin:12px 0;min-width:0}.walker-inspect{display:grid;grid-template-columns:344px minmax(0,1fr);gap:24px;align-items:center}.walker-samples{display:flex;gap:16px;align-items:flex-end}.walker-samples figure,.walker-frames figure{margin:0;text-align:center;flex:none}.walker-samples canvas,.walker-frames canvas{display:block;image-rendering:pixelated}.walker-large{width:256px;height:224px}.walker-still{width:128px;height:112px}.walker-frames{display:flex;gap:12px;width:max-content;padding:4px}.walker-frames figure{border:2px solid transparent;padding:4px}.walker-frames figure.active{border-color:#ebc987}.walker-strip{overflow-x:auto;min-width:0;padding-bottom:12px}.walker-card figcaption{font-size:12px;color:#dad6c5;padding-top:6px}.walker-note{padding:16px 20px;background:#304b40;border-left:4px solid #ebc987}.walker-frame-status{min-width:80px}@media(max-width:850px){.walker-inspect{grid-template-columns:minmax(0,1fr)}.walker-samples{flex-wrap:wrap;justify-content:center}.walker-card{padding:12px}.walker-strip{width:100%}.walker-large{max-width:100%;height:auto}}body{margin:0;background:#142e2b}
+</style>
+<p class="walker-eyebrow">Character only / 26 November 2026 / Second pass</p><h2 id="walker-title">Grounded steps. Complete arms.</h2>
+<p>The revised walk keeps the quiet pace of option A. The run has complete bent arms, visible hands and a separate stride.</p>
+<p>The approved head stays fixed within each direction. The generated body now includes the shoulders, so the export cannot cut the arms at the chest.</p>
+<div class="walker-note" data-task-id="website-walker-v2-review-20261126"><strong>Review question:</strong> Keep this revised Grounded walk and run, or iterate? If a pose needs work, name the gait, direction and frame number.</div>
+<p>Each comparison shows the reviewed proposal beside the revision on the same plaza floor. The numbered strips show every frame at 2× size.</p>
 <div class="walker-toolbar"><button id="walker-pause" type="button">Pause animation</button><button id="walker-step" type="button">Next frame</button><span id="walker-status" role="status"></span></div>
-<div class="walker-overflow"><div class="walker-grid">${directions.map((_, row) => Object.keys(comparison).map((key) => card(key, row)).join("")).join("")}</div></div>
-<h2>Pick up the pace.</h2><p>Hold Shift while moving, or turn on Run before holding a touch direction. A visible toggle avoids an undiscoverable long-press. Run uses a separate eight-frame cycle at 102 pixels per second. Walk stays at 60.</p>
-<div class="walker-grid walker-run">${directions.map((_, row) => card("grounded", row, true)).join("")}</div>
-<p class="walker-note">Reduced motion starts this comparison paused. Next frame supports still inspection. In the game, movement and running remain available with a static directional pose. Run turns off when leaving play, opening the menu, or changing places through the directory.</p>
-<p>Review A, B, or the current walk in the combined review document. No selection on this page changes the live website.</p>
+${["walk", "run"].map(gait => `<h2>${gait === "walk" ? "Grounded walk" : "Run"}</h2><p>${gait === "walk" ? "Eight frames at 12 frames per second. Walking speed remains 60 pixels per second." : "Eight frames at 16 frames per second. Running speed remains 102 pixels per second."}</p>${directions.map((direction,row) => `<section><h3>${direction} · ${gait}</h3>${card("before",row,gait)}${card("after",row,gait)}</section>`).join("")}`).join("")}
+<p class="walker-note">Reduced motion starts this page paused. Use Next frame for still inspection. In the game, reduced motion keeps the directional idle pose.</p>
+<p>The playable review contains only the revised Grounded walk and run. Keyboard controls, touch controls and both languages remain available.</p>
 </section><script>(()=>{
-const root=document.querySelector('#walker-review'), options=${safe(comparison)}, ground=${safe(maps[0].layers.find((layer) => layer.name === "ground"))}, tiles=${safe(terrain)};
-const load=(src)=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=src});
+const root=document.querySelector('#walker-review'), options=${safe(options)}, ground=${safe(maps[0].layers.find(layer=>layer.name === "ground"))}, tiles=${safe(terrain)};
+const load=src=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=src});
 const motion=matchMedia('(prefers-reduced-motion: reduce)');let paused=motion.matches,time=0,last=0,step=0;
 const pause=root.querySelector('#walker-pause'),status=root.querySelector('#walker-status');
-function labels(){pause.textContent=paused?'Play animation':'Pause animation';pause.setAttribute('aria-pressed',String(paused));status.textContent=paused?'Paused. Inspect each pose with Next frame.':'Playing at the game animation rates.'}labels();
-pause.onclick=()=>{paused=!paused;labels()};root.querySelector('#walker-step').onclick=()=>{paused=true;step++;labels()};motion.addEventListener('change',()=>{paused=motion.matches;labels()});
-Promise.all([load(${safe(assets[`plaza-art/${terrain.image}`])}),load(${safe(assets["plaza-art/walker-shadow.png"])}),...Object.values(options).map(o=>load(o.image))]).then(([floor,shadow,...sheets])=>{
-const textures=Object.fromEntries(Object.keys(options).map((key,i)=>[key,sheets[i]]));
-function draw(now){if(!paused&&last)time+=Math.min(now-last,100);last=now;
-for(const canvas of root.querySelectorAll('canvas')){const c=canvas.getContext('2d');c.imageSmoothingEnabled=false;const o=options[canvas.dataset.option],run=canvas.dataset.run==='true',row=Number(canvas.dataset.row),count=run?8:o.count,fps=run?16:o.fps,col=(run?9:o.start)+(Math.floor(time*fps/1000)+step)%count;
+function labels(){pause.textContent=paused?'Play animation':'Pause animation';pause.setAttribute('aria-pressed',String(paused));status.textContent=paused?'Paused. Use Next frame to inspect all eight poses.':'Playing at the game animation rates.'}labels();
+pause.onclick=()=>{paused=!paused;labels()};root.querySelector('#walker-step').onclick=()=>{paused=true;step=(step+1)%8;time=0;labels()};motion.addEventListener('change',()=>{paused=motion.matches;labels()});
+Promise.all([load(${safe(assets[`plaza-art/${terrain.image}`])}),load(${safe(assets["plaza-art/walker-shadow.png"])}),load(options.before),load(options.after)]).then(([floor,shadow,before,after])=>{
+const sheets={before,after};const canvases=[...root.querySelectorAll('canvas')];
+function render(canvas,frame){const c=canvas.getContext('2d');c.imageSmoothingEnabled=false;
 for(let y=0;y<4;y++)for(let x=0;x<4;x++){const tile=ground.data[(10+y)*ground.width+10+x]-tiles.firstgid;c.drawImage(floor,(tile%tiles.columns)*16,Math.floor(tile/tiles.columns)*16,16,16,x*16,y*16,16,16)}
-c.drawImage(shadow,24,45);c.drawImage(textures[canvas.dataset.option],col*32,row*48,32,48,16,4,32,48)}requestAnimationFrame(draw)}requestAnimationFrame(draw)
+c.drawImage(shadow,24,45);const col=(canvas.dataset.gait==='run'?9:1)+frame;c.drawImage(sheets[canvas.dataset.version],col*32,Number(canvas.dataset.row)*48,32,48,16,4,32,48);canvas.dataset.rendered=String(frame+1)}
+for(const canvas of canvases.filter(c=>c.dataset.frame!==undefined))render(canvas,Number(canvas.dataset.frame));
+function draw(now){if(!paused&&last)time+=Math.min(now-last,100);last=now;
+for(const canvas of canvases){const frame=(Math.floor(time*(canvas.dataset.gait==='run'?16:12)/1000)+step)%8;
+if(canvas.hasAttribute('data-animated'))render(canvas,frame);else canvas.parentElement.classList.toggle('active',Number(canvas.dataset.frame)===frame)}requestAnimationFrame(draw)}requestAnimationFrame(draw);root.dataset.ready='true';
 }).catch(()=>{status.textContent='An embedded sprite could not load.'});
 })();<\/script></html>`;
+assert(!part.includes("—"));
+assert.equal((part.match(/data-frame="/g) || []).length, 128);
+assert.equal((part.match(/data-animated/g) || []).length, 33);
 mkdirSync(destination, { recursive: true });
 for (const [name, html] of [["part.html", part], ["play.html", play]]) {
   writeFileSync(resolve(destination, name), html);

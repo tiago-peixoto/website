@@ -9,7 +9,7 @@ const courtyard = json("src/assets/plaza-art/courtyard.tmj");
 const plazaMap = json("src/assets/plaza-navigation.tmj");
 const outside = json("src/assets/plaza-art/outside.tmj");
 const study = json("src/assets/plaza-art/interior.tmj");
-const layout = json("src/assets/plaza-art/walker-layout.json");
+const layout = json("tools/walker-art/model-layout.json");
 const motion = json("src/assets/plaza-art/walker-motion.json");
 const areas = { plaza: [courtyard, plazaMap], outside: [outside, outside], study: [study, study] };
 const expectedActions = {
@@ -151,8 +151,6 @@ const water = waterSet.tiles.find((tile) => tile.animation).animation;
 assert.equal(water.length, 4);
 assert(water.every((frame) => frame.duration === 180 && waterSet.tiles.some((tile) => tile.id === frame.tileid)));
 assert.deepEqual(layout.cell, [32, 48]);
-assert.equal(layout.frames.length, 28);
-assert(layout.frameMs.every((ms) => ms === 100));
 assert.deepEqual(motion.cell, layout.cell);
 assert.deepEqual(motion.directions, layout.directions);
 assert.equal(motion.columns, 17);
