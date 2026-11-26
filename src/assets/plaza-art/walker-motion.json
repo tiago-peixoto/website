@@ -29,5 +29,5 @@
     0,
     20
   ],
-  "method": "Original ImageGen complete bodies with nearest-neighbor scaling to the approved palette. Only the approved head is restored, leaving generated shoulders and arms intact."
+  "method": "Original ImageGen v3 bodies and corrected front face. Profile bodies mirror for consistent proportions; front and back half cycles mirror for alternating limbs. Directional heads remain stable. Nearest-neighbor palette export."
 }
