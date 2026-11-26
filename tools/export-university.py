@@ -17,6 +17,8 @@ for name in ['outside', 'interior']:
         palette = Image.open(ROOT / 'tools/university-art/outside.png').convert('RGB').quantize(colors=64)
         scene = Image.open(ROOT / 'tools/university-art/interior-workshop-source.png').convert('RGB')
         scene = scene.resize((384, 256), Image.Resampling.NEAREST)
+        tabletop = Image.open(ROOT / 'tools/university-art/interior-tabletop-patch.png').convert('RGB')
+        scene.paste(tabletop.resize((26, 14), Image.Resampling.NEAREST), (96, 173))
         scene = scene.quantize(palette=palette, dither=Image.Dither.NONE).convert('RGBA')
     assert scene.size == (384, 256)
     composition = scene.copy()

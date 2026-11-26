@@ -97,6 +97,9 @@ Do not hand-edit its generated maps or atlases.
 It slices each composition into 16-pixel tiles and checks that reconstruction with collectible items matches the approved pixels exactly.
 These compositions have 384 unique tiles each, so the exports are specific to these scenes rather than a general reusable terrain set.
 The notebook and sensor use separate image objects over clean tabletop patches sampled from the generated art.
+`interior-tabletop-patch.png` removes the painted open book so the red collectible is the only notebook.
+The exporter applies this patch only inside the open book's 26-by-14-pixel footprint.
+`npm test` checks the empty tabletop and verifies that all other room pixels remain unchanged.
 `tools/export-effects.py` exports the generated lamp glow, fish, splash and doorway light from `tools/university-art/effects-source.png`.
 It trims faint background speckles, reduces each sprite with nearest-neighbor sampling, and maps its colors to the approved 64-color palette.
 The retained pixels preserve the generated alpha channel.
