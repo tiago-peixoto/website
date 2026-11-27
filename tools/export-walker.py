@@ -53,8 +53,6 @@ layout = {
         'walk': {'start': 1, 'end': 8, 'frameRate': 12, 'speed': 60},
         'run': {'start': 9, 'end': 16, 'frameRate': 16, 'speed': 102},
     },
-    'lockedRows': [0, 20],
-    'method': 'Round 2 down walk with masked ImageGen left-eye and chin edit; unchanged round 2 up walk. Round 3 profile walks in reverse temporal order. Round 3 down run upper body at 28/32 width; legs unchanged with round 2 face. Other runs and all idle poses remain round 3.',
 }
 (ART / 'walker-motion.json').write_text(json.dumps(layout, indent=2) + '\n')
 print('Packed 64 poses with cycle-specific round-4 edits.')

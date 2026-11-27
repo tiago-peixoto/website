@@ -74,7 +74,7 @@ export function createExperiments(view) {
     const direction = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", a: "left", d: "right", w: "up", s: "down" }[event.key] || { A: "left", D: "right", W: "up", S: "down" }[event.key];
     if (direction) { event.preventDefault(); if (!event.repeat) move(direction); }
     else if (event.key === "Escape") { event.preventDefault(); close(); }
-    else if ((event.key === " " || event.key === "Enter") && !event.target.closest("a, summary, #challenge-leave, #challenge-again, [data-adjust], #board-choices button")) {
+    else if ((event.key === " " || event.key === "Enter") && !event.target.closest("a, summary, button")) {
       event.preventDefault(); if (!event.repeat) choose();
     }
   });

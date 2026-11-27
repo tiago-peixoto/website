@@ -68,6 +68,7 @@ console.log(JSON.stringify(await page.eval(async () => {
   await close();await approach('paper','up');d.querySelector('canvas').focus();key(' ');
   assert(d.querySelector('dialog').open,'Space on the canvas opens speech');
   assert(d.querySelector('#speech-typed').textContent.length<d.querySelector('#speech-readable').textContent.length,'the opening key press leaves the first line typing');
+  assert(key(' ',d.querySelector('#interact'))&&d.querySelector('#speech-typed').textContent.length<d.querySelector('#speech-readable').textContent.length,'Space on the focused action button keeps the button\'s own click');
   key(' ');
   assert(d.querySelector('#speech-typed').textContent===d.querySelector('#speech-readable').textContent,'the next key press reveals the line');
   await finish();
@@ -88,8 +89,8 @@ console.log(JSON.stringify(await page.eval(async () => {
   const before={x:walker.x,y:walker.y},arm=scene.children.getByName('robot-arm'),part=scene.children.getByName('robot-part');
   assert(arm.visible && scene.cameras.main.zoom>=3 && covers(),'robot is in the scene with a closer view that covers the canvas');
   const grip=d.querySelector('#challenge-action').textContent;
-  for(const pressed of ['Enter',' ']) assert(key(pressed,d.querySelector('[data-adjust="right"]')),`${pressed} on an arrow button keeps the button's own click`);
-  assert(d.querySelector('#challenge-action').textContent===grip,'a key on an arrow button does not grip');
+  for(const pressed of ['Enter',' ']) for(const button of ['[data-adjust="right"]','#challenge-action']) assert(key(pressed,d.querySelector(button)),`${pressed} on ${button} keeps the button's own click`);
+  assert(d.querySelector('#challenge-action').textContent===grip,'a key on a focused button does not also grip');
   key('ArrowRight');key(' ');
   assert(d.querySelector('#challenge-progress').textContent.includes('1'),'cannot grip middle position');
   key('ArrowLeft');key(' ');await wait();const partStart=part.x;

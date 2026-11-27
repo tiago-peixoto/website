@@ -88,7 +88,7 @@ export function createDialogue(dialog, finish) {
   document.addEventListener("keydown", (event) => {
     if (!dialog.open || event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
     if (event.key === "Escape") { event.preventDefault(); dialog.close(); }
-    else if ((event.key === "Enter" || event.key === " ") && !event.target.closest("a, summary, button:not(#interact)")) {
+    else if ((event.key === "Enter" || event.key === " ") && !event.target.closest("a, summary, button")) {
       event.preventDefault();
       if (!event.repeat) advance();
     }
