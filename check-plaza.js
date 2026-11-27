@@ -2,19 +2,28 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { DIRECTIONS, navigation, cameraZoom } from "./src/assets/plaza-map.js";
 import { createState, changeState } from "./src/assets/plaza-state.js";
+import { BOARD_INPUTS, startChallenge, chooseChallenge, moveChallenge } from "./src/assets/plaza-challenges.js";
 
 const json = (file) => JSON.parse(readFileSync(file, "utf8"));
 const courtyard = json("src/assets/plaza-art/courtyard.tmj");
 const plazaMap = json("src/assets/plaza-navigation.tmj");
 const outside = json("src/assets/plaza-art/outside.tmj");
 const study = json("src/assets/plaza-art/interior.tmj");
-const layout = json("src/assets/plaza-art/walker-layout.json");
+const layout = json("tools/walker-art/model-layout.json");
+const motion = json("src/assets/plaza-art/walker-motion.json");
 const areas = { plaza: [courtyard, plazaMap], outside: [outside, outside], study: [study, study] };
 const expectedActions = {
   plaza: ["university", "lamp", "pond"], outside: ["study", "university"],
-  study: ["paper", "notebook", "sensor", "robot", "computer", "board", "light"],
+  study: ["paper", "notebook", "sensor", "robot", "computer", "board", "light", "studyLamp", "welding", "tools", "parts"],
 };
 const expectedExits = { plaza: ["outside"], outside: ["plaza"], study: ["outside"] };
+const expectedFacings = {
+  plaza: { university: ["up"], lamp: ["up", "down", "left", "right"], pond: ["up", "right"] },
+  outside: { study: ["up"], university: ["up"] },
+  study: { paper: ["up", "down", "left", "right"], notebook: ["up", "down", "left"], sensor: ["up", "down", "right"],
+    robot: ["up", "down", "left", "right"], computer: ["up", "left", "right"], board: ["up"], light: ["left"], studyLamp: ["down", "right"],
+    welding: ["up", "down", "left", "right"], tools: ["up", "down", "left", "right"], parts: ["up", "down", "left", "right"] },
+};
 const allActions = new Set();
 let totalReachable = 0;
 for (const [name, [art, map]] of Object.entries(areas)) {
@@ -50,10 +59,17 @@ for (const [name, [art, map]] of Object.entries(areas)) {
   }
   for (const [x, y] of [[-1, 200], [width, 200], [200, -1], [200, height]]) assert(!rules.walkable(x, y));
   const seen = new Set([`${start.x},${start.y}`]), queue = [start], reachableActions = new Set(), reachableExits = new Set();
+  const sides = {};
   for (const current of queue) {
     for (const direction of Object.keys(DIRECTIONS)) {
       const interaction = rules.nearby({ ...current, facing: direction });
-      if (interaction) reachableActions.add(interaction.name);
+      if (interaction) {
+        reachableActions.add(interaction.name);
+        (sides[interaction.name] ??= new Set()).add(direction);
+        const [dx, dy] = DIRECTIONS[direction];
+        const away = Object.keys(DIRECTIONS).find((key) => DIRECTIONS[key][0] === -dx && DIRECTIONS[key][1] === -dy);
+        assert.notEqual(rules.nearby({ ...current, facing: away })?.name, interaction.name, `${name}/${interaction.name}: facing away cannot activate`);
+      }
       const exit = rules.exit({ ...current, facing: direction });
       if (exit) reachableExits.add(exit.name);
       const next = rules.move(current, direction, 1);
@@ -69,6 +85,12 @@ for (const [name, [art, map]] of Object.entries(areas)) {
   for (const spawn of map.layers.find((layer) => layer.name === "spawns").objects) {
     const facing = spawn.properties.find((p) => p.name === "facing").value;
     assert.equal(rules.exit({ x: spawn.x, y: spawn.y, facing }), undefined, `${name}: arriving at ${spawn.name} does not send the walker back`);
+  }
+  for (const [action, facings] of Object.entries(expectedFacings[name])) {
+    assert.deepEqual([...sides[action]].sort(), [...facings].sort(), `${name}/${action}: every reachable side, and no blocked side`);
+    for (const direction of Object.keys(DIRECTIONS)) {
+      console.log(`${name}/${action}: facing ${direction} ${sides[action].has(direction) ? "reachable" : "blocked by scene geometry"}`);
+    }
   }
   assert.deepEqual([...reachableActions].sort(), expectedActions[name].sort(), `${name}: all interactions reachable with correct facing`);
   assert.deepEqual([...reachableExits].sort(), expectedExits[name], `${name}: all walking exits reachable`);
@@ -130,10 +152,60 @@ const water = waterSet.tiles.find((tile) => tile.animation).animation;
 assert.equal(water.length, 4);
 assert(water.every((frame) => frame.duration === 180 && waterSet.tiles.some((tile) => tile.id === frame.tileid)));
 assert.deepEqual(layout.cell, [32, 48]);
-assert.equal(layout.frames.length, 28);
-assert(layout.frameMs.every((ms) => ms === 100));
+assert.deepEqual(motion.cell, layout.cell);
+assert.deepEqual(motion.directions, layout.directions);
+assert.equal(motion.columns, 17);
+const walkerSheet = readFileSync("src/assets/plaza-art/walker-grounded.png");
+assert.equal(walkerSheet.readUInt32BE(16), motion.cell[0] * motion.columns);
+assert.equal(walkerSheet.readUInt32BE(20), motion.cell[1] * motion.directions.length);
+assert.equal(motion.cycles.walk.speed, 60, "walking keeps its original speed");
+assert.equal(motion.cycles.run.speed, 102);
+for (const cycle of Object.values(motion.cycles)) {
+  assert.equal(cycle.end - cycle.start + 1, 8, "eight frames per gait and direction");
+  assert(cycle.frameRate > 10);
+  for (const [map, start, direction, target] of [
+    [plazaMap, { x: 370, y: 204 }, "right", "outside"],
+    [outside, { x: 18, y: 150 }, "left", "plaza"],
+    [study, { x: 192, y: 242 }, "down", "outside"],
+  ]) {
+    const route = navigation(map);
+    let position = start;
+    for (let frame = 0; frame < 20 && !route.exit(position); frame++) {
+      position = route.move(position, direction, cycle.speed * 0.05);
+      assert(route.walkable(position.x, position.y), "running cannot leave walkable ground");
+    }
+    assert.equal(route.exit(position)?.name, target, "both speeds reach every edge exit");
+  }
+  let position = { x: 250, y: 210 };
+  for (let frame = 0; frame < 20; frame++) position = rules.move(position, "right", cycle.speed * 0.05);
+  assert(position.x <= 256 && position.x > 255, "both speeds stop at the lamp base");
+}
 const studyItems = study.layers.find((layer) => layer.name === "items").objects;
 assert.deepEqual(studyItems.map((o) => o.name).sort(), ["notebook", "sensor"]);
+const studyRules = navigation(study);
+assert.equal(studyRules.nearby({ x: 140, y: 182, facing: "left" })?.name, "notebook", "the smaller table exposes its notebook from the right");
+assert.equal(studyRules.nearby({ x: 55, y: 180, facing: "left" }), undefined, "the old table footprint is now empty floor");
+assert.equal(studyRules.nearby({ x: 140, y: 182, facing: "right" }), undefined, "facing away from the smaller table cannot activate it");
+for (const [x, y] of [[42, 180], [65, 205], [355, 200], [350, 120]]) {
+  assert(studyRules.walkable(x, y), `smaller furniture releases floor at ${x},${y}`);
+}
+for (const [x, y] of [[130, 175], [104, 214], [303, 126], [325, 205], [307, 167]]) {
+  assert(!studyRules.walkable(x, y), `furniture still blocks feet at ${x},${y}`);
+}
+for (let y = 100; y <= 250; y++) {
+  for (const x of [192, 208, 224]) assert(studyRules.walkable(x, y), `central aisle stays open at ${x},${y}`);
+}
+for (const [start, direction, stop] of [
+  [{ x: 192, y: 140 }, "left", { x: 181, y: 140 }],
+  [{ x: 85, y: 145 }, "left", { x: 78, y: 145 }],
+  [{ x: 210, y: 225 }, "right", { x: 227, y: 225 }],
+]) {
+  const moved = studyRules.move(start, direction, 200);
+  assert.deepEqual({ x: moved.x, y: moved.y }, stop, "a long movement cannot cross new furniture");
+}
+for (const item of studyItems) {
+  assert(item.width <= 12 && item.height <= 12, `${item.name} fits the smaller furniture`);
+}
 
 const degree = {
   en: "Bachelor of Engineering in Control and Automation Engineering.",
@@ -152,9 +224,13 @@ for (const t of langs) {
   }
   assert(html.includes(`<html lang="${t.lang}">`));
   assert(html.includes('<dialog aria-labelledby="panel-title"'));
-  assert(html.includes('<form method="dialog">'));
+  assert(!/<dialog[^>]*>[\s\S]*?<button[\s\S]*?<\/dialog>/.test(html), "speech has no buttons");
+  assert(html.includes('id="speech-readable"') && html.includes('id="speech-hint"'), "speech retains readable text and visible key hint");
+  assert(html.indexOf('id="board-surface"') < html.indexOf('<dialog'), "board choices live in the scene");
   assert(html.indexOf('id="portfolio" href="../"') < html.indexOf('id="plaza"'));
   assert(html.includes('<div id="playable" hidden>'));
+  assert(html.includes('id="run" aria-pressed="false"'));
+  assert(html.includes(t.lang === "en" ? "Hold Shift to run." : "Segure Shift para correr."));
   assert(html.includes('id="fallback"') && html.includes('id="enter" hidden'));
   assert(!html.includes("phaser.min.js") && !html.includes("courtyard.tmj"), "game resources are absent from initial markup");
   for (const action of allActions) assert(html.includes(`data-${areas[action] ? "travel" : "action"}="${action}"`), `${action} reachable without walking`);
@@ -163,3 +239,56 @@ for (const t of langs) {
 }
 assert(!readFileSync("_site/sitemap.xml", "utf8").includes("/play/"));
 console.log(`ok: three maps, ${totalReachable} reachable positions, all interactions, integer viewport coverage and both languages`);
+
+let board = startChallenge("board");
+assert.equal(chooseChallenge(board, -1).step, 0, "wrong answer preserves the board example");
+for (const input of BOARD_INPUTS) board = chooseChallenge(board, input + 1);
+assert(board.complete);
+assert.equal(chooseChallenge(board, 0), board);
+assert.equal(startChallenge("board").step, 0);
+let robot = startChallenge("robot");
+assert.equal(moveChallenge(robot, "left").selection, 0, "arm cannot move past the part");
+robot = moveChallenge(robot, "right");
+assert.equal(chooseChallenge(robot).result, "wrong", "cannot grip away from the part");
+robot = moveChallenge(robot, "left");
+robot = chooseChallenge(robot);
+assert(robot.holding && !robot.complete);
+assert.equal(chooseChallenge(robot).result, "wrong", "cannot release away from the tray");
+robot = moveChallenge(moveChallenge(robot, "right"), "right");
+assert.equal(moveChallenge(robot, "right").selection, 2, "arm cannot move past the tray");
+robot = chooseChallenge(robot);
+assert(robot.complete && !robot.holding);
+assert.equal(moveChallenge(robot, "left"), robot, "finished arm stays still");
+assert.equal(chooseChallenge(robot), robot);
+assert.equal(startChallenge("robot").holding, false, "replay clears the gripper");
+changeState(state, "studyLamp");
+assert.equal(state.studyLampOn, false);
+changeState(state, "studyLamp");
+assert.equal(state.studyLampOn, true);
+const conversations = json("src/_data/dialogue.json");
+for (const lang of ["en", "pt-BR"]) {
+  const d = conversations[lang];
+  const html = readFileSync(`_site/${lang === "en" ? "" : "pt/"}play/index.html`, "utf8");
+  for (const id of [...allActions].filter((id) => id !== "outside" && id !== "plaza").concat("inventory")) {
+    assert(d.lines[id]?.length >= (["welding", "tools", "parts"].includes(id) ? 1 : 2), `${lang}/${id}: conversation exists`);
+    assert(html.includes(`data-action="${id}"`), `${lang}/${id}: directory action exists`);
+    assert(html.includes(`data-transcript="${id}"`), `${lang}/${id}: readable without engine or JavaScript`);
+    for (const line of d.lines[id]) assert(html.includes(line.replaceAll("&", "&amp;").replaceAll("'", "&#39;")), `${lang}/${id}: transcript contains the complete line`);
+  }
+  for (const id of ["board", "robot"]) for (const key of ["prompt", "wrong", "correct", "done"]) {
+    assert(d[id][key], `${lang}/${id}: translated ${key}`);
+  }
+}
+const barrierMap = {
+  width: 10, height: 10, tilewidth: 16, tileheight: 16,
+  layers: [
+    { name: "blocked", data: Array(100).fill(0) },
+    { name: "obstacles", objects: [{ x: 55, y: 50, width: 5, height: 30 }] },
+    { name: "interactions", objects: [{ name: "target", x: 65, y: 60, width: 10, height: 10 }] },
+  ],
+};
+assert.equal(navigation(barrierMap).nearby({ x: 45, y: 65, facing: "right" }), undefined, "cannot interact through another obstacle");
+barrierMap.layers[1].objects = [];
+assert.equal(navigation(barrierMap).nearby({ x: 45, y: 65, facing: "right" })?.name, "target", "unobstructed object in reach activates");
+assert.equal(navigation(barrierMap).nearby({ x: 40, y: 65, facing: "right" }), undefined, "out-of-reach object does not activate");
+console.log("ok: two finishable challenges, replay, mistakes, bilingual transcripts and occlusion");

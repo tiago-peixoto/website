@@ -27,6 +27,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: python3 -m pip install -r tools/requirements-art.txt
       - run: npm test
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5

@@ -38,8 +38,18 @@ export function navigation(map) {
   }
 
   function nearby({ x, y, facing }) {
-    return interactions.find((object) => facing === (object.properties?.find((p) => p.name === "facing")?.value || "up")
-      && x >= object.x && x <= object.x + object.width && y >= object.y && y <= object.y + object.height);
+    if (!walkable(x, y) || !DIRECTIONS[facing]) return;
+    const [dx, dy] = DIRECTIONS[facing];
+    const contains = (o, px, py) => px >= o.x && px < o.x + o.width && py >= o.y && py < o.y + o.height;
+    for (let distance = 0; distance <= 24; distance++) {
+      const px = x + dx * distance, py = y - 2 + dy * distance;
+      if (px < 0 || py < 0 || px >= width || py >= height) return;
+      const target = interactions.find((o) => contains(o, px, py));
+      if (target) return target;
+      // Stop at the first surface, so a nearby object cannot be used through a wall or table.
+      if (blocked[Math.floor(py / map.tileheight) * map.width + Math.floor(px / map.tilewidth)]
+        || obstacles.some((o) => contains(o, px, py))) return;
+    }
   }
   function exit({ x, y, facing }) {
     return exits.find((object) => facing === object.properties.find((p) => p.name === "facing").value

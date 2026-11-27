@@ -37,19 +37,15 @@ canvas:focus-visible { outline-color: #ddbb6d; outline-offset: -3px; }
 #fallback, #controls { margin: 0; padding: .5rem 1rem; border-top: 2px solid #20283a; }
 #controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
 #location { margin: 0; font-weight: 700; }
-#feedback { position: absolute; z-index: 2; bottom: .75rem; left: .75rem; max-width: calc(100% - 1.5rem); margin: 0; padding: .5rem .75rem; background: #f3e9cd; border: 2px solid #20283a; pointer-events: none; }
-#feedback:empty { display: none; }
-#terminal { margin-top: 1rem; padding: 1rem; color: #f3e9cd; background: #153a37; font-family: ui-monospace, monospace; }
-.calculation { display: flex; flex-wrap: wrap; gap: .5rem; font-family: ui-monospace, monospace; }
 #nearby { flex: 1 1 12rem; margin: 0; font-size: .85rem; font-weight: 700; }
 #enter { background: #8d3f55; color: #fff; margin-bottom: .75rem; }
 #enter:hover { background: #713045; }
+#run[aria-pressed="true"] { background: #713045; color: #fff; }
 .pad { display: grid; grid-template-columns: repeat(4, 44px); gap: 4px; }
 .pad button { padding: 0; width: 44px; height: 44px; font-size: 1.5rem; touch-action: none; user-select: none; }
 dialog { width: min(32rem, calc(100% - 2rem)); max-height: calc(100svh - 2rem); padding: 2rem; color: #20283a; background: #f3e9cd; border: 3px solid #20283a; box-shadow: 5px 5px 0 #8d3f55; }
 dialog::backdrop { background: #20283abf; }
 dialog h2 { font-size: 2rem; margin: .75rem 0; }
-dialog form { margin-top: 2rem; }
 @media (max-width: 760px) {
   header { font-size: .85rem; }
   header span { display: none; }
@@ -58,3 +54,47 @@ dialog form { margin-top: 2rem; }
   #interact { font-size: .85rem; padding: .5rem; }
 }
 @media (max-height: 400px) { header { min-height: 44px; } #nearby { display: none; } }
+
+#transcripts { margin-top: 1rem; border-top: 1px solid #b3a57f; }
+#transcripts section + section { border-top: 1px solid #b3a57f; margin-top: 1rem; }
+#transcripts h3 { font-size: 1rem; }
+dialog { padding: 1.25rem; border-radius: 8px; max-height: calc(100svh - 24px); }
+dialog h2 { margin: 0 0 .65rem; font-size: 1.3rem; color: #713045; }
+dialog .eyebrow { margin: 0 0 .4rem; }
+dialog::backdrop { background: #10252c70; }
+dialog.balloon { position: fixed; margin: 0; width: min(28rem, calc(100% - 24px)); overflow: visible; }
+dialog.balloon::backdrop { background: #10252c18; }
+dialog.balloon::after { content: ""; position: absolute; left: var(--tail-left, 50%); width: 14px; height: 14px; background: #f3e9cd; transform: rotate(45deg); }
+dialog[data-tail="bottom"]::after { bottom: -10px; border-right: 3px solid #20283a; border-bottom: 3px solid #20283a; }
+dialog[data-tail="top"]::after { top: -10px; border-left: 3px solid #20283a; border-top: 3px solid #20283a; }
+#speech { position: relative; font-size: 1.05rem; line-height: 1.6; min-height: 3.2em; cursor: pointer; }
+#speech-space { visibility: hidden; }
+#speech-typed { position: absolute; inset: 0; }
+#interaction-result:empty { display: none; }
+#speech-hint { margin-bottom: 0; font-size: .75rem; }
+#experiment { background: #f3e9cd; border-top: 2px solid #20283a; padding: .75rem 1rem; }
+#experiment h2 { margin: 0; font-size: 1rem; }
+#experiment p { margin: .35rem 0; font-size: .85rem; }
+#challenge-result { font-weight: 650; }
+#challenge-help { max-width: 70ch; }
+.experiment-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+#challenge-progress { font-size: .75rem; }
+#board-surface { position: absolute; z-index: 2; background: #153a37; color: #f3e9cd; display: flex; flex-direction: column; justify-content: space-evenly; padding: 4px; font-family: ui-monospace, monospace; text-align: center; }
+#board-equation { font-size: clamp(18px, 3vw, 30px); margin: 0; }
+#board-choices { display: flex; justify-content: space-evenly; gap: 4px; }
+#board-choices button { min-width: 44px; padding: 4px 12px; color: #f3e9cd; background: transparent; border-color: #a5bb9c; font-family: inherit; font-size: 1.25rem; }
+#board-choices button[aria-pressed="true"] { background: #f3e9cd; color: #153a37; border-color: #f3e9cd; }
+#board-choices button:hover { background: #ddbb6d; color: #153a37; }
+#board-choices button:focus-visible { outline-color: #fff; }
+.experimenting #controls, .experimenting .menu, .experimenting #fallback { display: none; }
+body:not(.playing) #board-surface { width: min(320px, calc(100% - 24px)); height: 180px; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.speaking:not(.playing) #controls > :not(#interact) { display: none; }
+dialog { position: fixed; z-index: 3; top: 50%; transform: translateY(-50%); }
+dialog.balloon { transform: none; }
+.speaking #run, .speaking .pad { visibility: hidden; }
+@media (max-height: 650px) {
+  dialog.balloon { overflow: auto; }
+  dialog.balloon::after { display: none; }
+}
+
+#panel-title:focus-visible, #challenge-title:focus-visible { outline: none; }

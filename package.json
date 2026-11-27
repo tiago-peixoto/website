@@ -5,7 +5,7 @@
   "scripts": {
     "start": "eleventy --serve",
     "build": "eleventy",
-    "test": "eleventy && node check.js"
+    "test": "eleventy && python3 tools/check-walker.py && python3 tools/check-pickup-art.py && node check.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.8"

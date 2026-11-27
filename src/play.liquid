@@ -7,6 +7,7 @@ permalink: "{{ t.url }}play/index.html"
 eleventyExcludeFromCollections: true
 ---
 {% assign p = plaza[t.lang] %}
+{% assign d = dialogue[t.lang] %}
 <!doctype html>
 <html lang="{{ t.lang }}">
 <head>
@@ -43,11 +44,16 @@ eleventyExcludeFromCollections: true
           <button data-action="lamp" aria-pressed="false">{{ p.lamp }}</button>
           <button data-action="pond">{{ p.pond }}</button>
           <button data-action="university">{{ p.university }} · {{ university.name }}</button>
+          <button data-action="study">{{ p.study }}</button>
           <button data-action="paper">{{ p.paper }}</button>
+          <button data-action="studyLamp" aria-pressed="true">{{ p.studyLamp }}</button>
           <button data-action="light" aria-pressed="true">{{ p.light }}</button>
           <button data-action="notebook" data-item-name="{{ p.notebookName }}">{{ p.notebook }}</button>
           <button data-action="sensor" data-item-name="{{ p.sensorName }}">{{ p.sensor }}</button>
           <button data-action="robot">{{ p.robot }}</button>
+          <button data-action="welding">{{ p.welding }}</button>
+          <button data-action="tools">{{ p.tools }}</button>
+          <button data-action="parts">{{ p.parts }}</button>
           <button data-action="computer">{{ p.computer }}</button>
           <button data-action="board">{{ p.board }}</button>
           <button data-action="inventory">{{ p.inventory }} (<span id="inventory-count">0</span>)</button>
@@ -63,19 +69,34 @@ eleventyExcludeFromCollections: true
         <a href="../#skills">{{ t.skills_h }}</a>
         <a href="../#quests">{{ t.quests_h }}</a>
         <a href="{{ p.root }}posts/">{{ t.journal_h }}</a>
+        <details id="transcripts">
+          <summary>{{ d.transcript }}</summary>
+          {% for conversation in d.lines %}
+          <section data-transcript="{{ conversation[0] }}">
+            <h3>{{ p[conversation[0]] }}</h3>
+            {% for line in conversation[1] %}<p>{{ line | escape }}</p>{% endfor %}
+          </section>
+          {% endfor %}
+          <p>{{ university.name }} · {{ university.dates }} · {{ t.q_ufsc_t }}</p>
+          <p id="degree">{{ university.degree[t.lang] }}</p>
+        </details>
       </nav>
     </details>
+    <section id="board-surface" aria-label="{{ p.board }}" hidden>
+      <p id="board-equation"></p>
+      <div id="board-choices"><button></button><button></button><button></button></div>
+    </section>
     <div id="playable" hidden>
       <p id="instructions" class="sr-only">{{ p.instructions }}</p>
       <div id="plaza" role="group" aria-label="{{ p.map }}" aria-describedby="instructions"></div>
     </div>
-    <p id="feedback" role="status"></p>
   </div>
   <p id="fallback">{{ p.fallback }} <a href="../">{{ p.portfolio }}</a></p>
   <div id="controls" hidden>
     <p id="location" role="status" aria-label="{{ p.location }}"></p>
     <p id="nearby" role="status" data-near="{{ p.near }}" data-far="{{ p.far }}">{{ p.far }}</p>
-    <button id="interact" disabled>{{ p.open }}</button>
+    <button id="interact" data-idle="{{ p.open }}" data-speech="{{ d.action }}" disabled>{{ p.open }}</button>
+    <button id="run" aria-pressed="false">{{ p.run }}</button>
     <div class="pad" role="group" aria-label="{{ p.touch }}">
       <button data-direction="left" aria-label="{{ p.left }}">←</button>
       <button data-direction="up" aria-label="{{ p.up }}">↑</button>
@@ -83,43 +104,35 @@ eleventyExcludeFromCollections: true
       <button data-direction="right" aria-label="{{ p.right }}">→</button>
     </div>
   </div>
+  <section id="experiment" aria-labelledby="challenge-title" hidden>
+    <h2 id="challenge-title" tabindex="-1"></h2>
+    <p id="challenge-result" role="status" aria-live="polite" aria-atomic="true"></p>
+    <p id="challenge-help"></p>
+    <div class="experiment-controls">
+      <button data-adjust="left" aria-label="{{ d.previousPosition }}">←</button>
+      <button data-adjust="right" aria-label="{{ d.nextPosition }}">→</button>
+      <button id="challenge-action"></button>
+      <button id="challenge-again" hidden>{{ d.again }}</button>
+      <button id="challenge-leave">{{ d.finish }}</button>
+      <span id="challenge-progress"></span>
+    </div>
+  </section>
 </main>
-<dialog aria-labelledby="panel-title">
-  <h2 id="panel-title" tabindex="-1"></h2>
-  <section data-panel="university" hidden>
-  <p class="eyebrow">{{ p.university }} · {{ university.dates }}</p>
-  <h3>{{ university.name }}</h3>
-  <p>{{ t.q_ufsc_t }}</p>
-  <p id="degree">{{ university.degree[t.lang] }}</p>
-  </section>
-  <section data-panel="paper" hidden>
-    <p class="eyebrow">{{ p.paperTitle }} · {{ university.name }}</p>
-    <p>{{ university.dates }}</p>
-    <p>{{ university.degree[t.lang] }}</p>
-    <p><strong>{{ t.s3n }}</strong> {{ t.s3 }}</p>
-  </section>
+<dialog aria-labelledby="panel-title" aria-describedby="speech-readable interaction-result">
+  <p id="panel-context" class="eyebrow"></p>
+  <h2 id="panel-title" tabindex="-1">Tiago</h2>
+  <p id="speech" aria-hidden="true"><span id="speech-space"></span><span id="speech-typed"></span></p>
+  <p id="speech-readable" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+  <p id="interaction-result" class="note"></p>
   <section data-panel="inventory" hidden>
     <p>{{ p.session }}</p>
     <p id="empty-inventory">{{ p.empty }}</p>
     <ul id="inventory"></ul>
   </section>
-  <section data-panel="robot" hidden>
-    <p>{{ p.robotText }}</p>
-    <button id="robot-toggle" aria-pressed="false">{{ p.robotToggle }}</button>
-    <p id="robot-status" role="status" data-open="{{ p.robotOpen }}" data-closed="{{ p.robotClosed }}">{{ p.robotOpen }}</p>
-  </section>
-  <section data-panel="computer" hidden>
-    <p>{{ p.computerText }}</p>
-    <button id="computer-toggle" aria-expanded="false" aria-controls="terminal">{{ p.computerToggle }}</button>
-    <div id="terminal" hidden><p><strong>{{ t.s1n }}</strong></p><p>{{ t.s1 }}</p></div>
-  </section>
-  <section data-panel="board" hidden>
-    <p>{{ p.boardText }}</p>
-    <p class="calculation" role="status"><span>{{ p.input }}: <b id="board-input">0</b></span><span> + 1 → </span><span>{{ p.output }}: <b id="board-output">1</b></span></p>
-    <button id="board-next">{{ p.boardNext }}</button>
-  </section>
-  <form method="dialog"><button>{{ p.close }}</button></form>
+  <p id="speech-hint" class="note">{{ d.hint }}</p>
 </dialog>
-<div id="messages" hidden data-lights-on="{{ p.lightsOn }}" data-lights-off="{{ p.lightsOff }}" data-lamp-on="{{ p.lampOn }}" data-lamp-off="{{ p.lampOff }}" data-pond-jump="{{ p.pondJump }}" data-picked="{{ p.picked }}" data-already-picked="{{ p.alreadyPicked }}"></div>
+  <span id="challenge-labels" hidden data-finished="{{ d.finished }}" data-progress="{{ d.progress }}" data-of="{{ d.of }}"{% assign kinds = "board,robot" | split: "," %}{% for kind in kinds %}{% for item in d[kind] %} data-{{ kind }}-{{ item[0] }}="{{ item[1] | escape }}"{% endfor %}{% endfor %}></span>
+<p id="pickup-status" class="sr-only" role="status"></p>
+<div id="messages" hidden data-study-lamp-on="{{ p.studyLampOn }}" data-study-lamp-off="{{ p.studyLampOff }}" data-lights-on="{{ p.lightsOn }}" data-lights-off="{{ p.lightsOff }}" data-lamp-on="{{ p.lampOn }}" data-lamp-off="{{ p.lampOff }}" data-pond-jump="{{ p.pondJump }}" data-picked="{{ p.picked }}" data-already-picked="{{ p.alreadyPicked }}"></div>
 </body>
 </html>

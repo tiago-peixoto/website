@@ -1,0 +1,11 @@
+2026-11-26, built-in imagegen edit of interior-workshop-source.png.
+
+Prompt:
+Edit this exact 1536x1024 pixel art room. Remove ONLY the open book on the lower left reading table (the open cream-colored pages at approximately x=386..480, y=693..747). Replace that book and its dark outline/shadow with continuous empty warm wooden tabletop matching the existing table surface and wood grain. Keep the separate small red closed notebook to its right at x=493..525, the loose cream paper to its left, the lamp and its lighting, table edges, chair, all furniture, robot arms, tools, room, composition, pixel art style, colors, and canvas dimensions unchanged. The red closed notebook is the collectible and MUST stay. Do not remove the loose paper. Do not alter any part outside the removed open book's footprint. No new objects, no labels, no text.
+
+Retained asset: interior-tabletop-patch.png.
+Only the rectangle (384, 692, 488, 748) was cropped from the 1536x1024 result.
+The exporter resizes this 104x56 patch to 26x14 with nearest-neighbor sampling.
+It applies the patch at (96, 173) before the existing 64-color palette conversion.
+The original source remains unchanged, and no generated pixels outside this patch enter the game.
+The red notebook and sensor keep their original sprite pixels and pickup behavior.

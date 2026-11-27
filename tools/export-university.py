@@ -1,4 +1,4 @@
-"""Export the approved university compositions as 16-pixel Tiled maps."""
+"""Export the original university compositions as 16-pixel Tiled maps."""
 from pathlib import Path
 import json
 from PIL import Image, ImageChops
@@ -12,11 +12,20 @@ def rectangle(name, box, **properties):
                 properties=[dict(name=k, type='string', value=v) for k, v in properties.items()])
 
 for name in ['outside', 'interior']:
-    scene = Image.open(ROOT / f'tools/university-art/{name}.png').convert('RGBA')
+    if name == 'outside':
+        scene = Image.open(ROOT / 'tools/university-art/outside.png').convert('RGBA')
+    else:
+        palette = Image.open(ROOT / 'tools/university-art/outside.png').convert('RGB').quantize(colors=64)
+        scene = Image.open(ROOT / 'tools/university-art/interior-workshop-source.png').convert('RGB')
+        scene = scene.resize((384, 256), Image.Resampling.NEAREST)
+        tabletop = Image.open(ROOT / 'tools/university-art/interior-tabletop-patch.png').convert('RGB')
+        scene.paste(tabletop.resize((26, 14), Image.Resampling.NEAREST), (96, 173))
+        scene = scene.quantize(palette=palette, dither=Image.Dither.NONE).convert('RGBA')
     assert scene.size == (384, 256)
+    composition = scene.copy()
     pieces = []
     if name == 'interior':
-        for item, box, clean in [('notebook', (99, 149, 114, 167), (98, 139, 113, 149)), ('sensor', (296, 163, 315, 178), (317, 164, 330, 178))]:
+        for item, box, clean in [('notebook', (122, 177, 132, 187), (119, 170, 129, 177)), ('sensor', (282, 184, 293, 192), (295, 184, 306, 192))]:
             piece = scene.crop(box)
             piece.save(OUT / f'{item}.png')
             scene.paste(scene.crop(clean).resize(piece.size, Image.Resampling.NEAREST), box[:2])
@@ -51,24 +60,36 @@ for name in ['outside', 'interior']:
             ('right-garden', (310, 202, 74, 54)), ('bottom-left-garden', (0, 240, 90, 16)),
             ('bottom-garden', (128, 240, 96, 16)),
             ('lamp', (51, 187, 7, 18)), ('bicycle-rack', (229, 128, 33, 12))]]
-        interactions = [rectangle('study', (88, 128, 32, 22), facing='up'),
-                        rectangle('university', (274, 128, 36, 22), facing='up')]
+        interactions = [rectangle('study', (88, 112, 32, 16)),
+                        rectangle('university', (274, 112, 36, 16))]
         spawns = [rectangle('entry', (18, 150, 0, 0), facing='right'), rectangle('return', (104, 148, 0, 0), facing='down')]
         exits = [rectangle('plaza', (5, 142, 1, 18), facing='left')]
         blocked = [int(i // 24 < 8) for i in range(384)]
     else:
         obstacles = [rectangle(n, b) for n, b in [
             ('left-wall', (0, 100, 25, 156)), ('right-wall', (375, 100, 9, 156)),
-            ('shelves', (25, 100, 54, 8)), ('reading-table', (27, 136, 92, 75)),
-            ('computer-table', (270, 100, 105, 26)), ('robot-bench', (287, 160, 88, 52)),
-            ('robot-arm', (308, 124, 60, 36))]]
-        interactions = [rectangle('paper', (38, 212, 67, 20), facing='up'),
-                        rectangle('notebook', (120, 147, 22, 45), facing='left'),
-                        rectangle('sensor', (267, 168, 20, 36), facing='right'),
-                        rectangle('robot', (306, 212, 62, 20), facing='up'),
-                        rectangle('computer', (270, 127, 37, 30), facing='up'),
-                        rectangle('board', (145, 100, 95, 28), facing='up'),
-                        rectangle('light', (25, 108, 25, 27), facing='left')]
+            ('shelves', (25, 100, 54, 8)), ('reading-table', (76, 169, 59, 39)),
+            ('reading-chair', (95, 188, 20, 28)),
+            ('computer-table', (268, 93, 76, 32)), ('computer-stool', (296, 111, 16, 17)),
+            ('robot-bench', (275, 181, 59, 35)), ('robot-arm', (290, 156, 32, 25)),
+            ('welding-bench', (111, 113, 65, 42)), ('welding-arm', (138, 89, 35, 24)),
+            ('tool-cart', (43, 125, 30, 41)), ('parts-rack', (232, 197, 36, 41))]]
+        interactions = [rectangle('studyLamp', (76, 169, 22, 19)),
+                        rectangle('paper', (98, 169, 19, 39)),
+                        rectangle('paper', (76, 188, 22, 20)),
+                        rectangle('paper', (95, 208, 20, 8)),
+                        rectangle('notebook', (117, 169, 18, 39)),
+                        rectangle('sensor', (275, 181, 15, 35)),
+                        rectangle('robot', (290, 156, 32, 25)),
+                        rectangle('robot', (290, 181, 44, 35)),
+                        rectangle('computer', (268, 93, 76, 32)),
+                        rectangle('computer', (296, 125, 16, 3)),
+                        rectangle('board', (145, 84, 95, 12)),
+                        rectangle('light', (19, 108, 6, 27)),
+                        rectangle('welding', (111, 113, 65, 42)),
+                        rectangle('welding', (138, 89, 35, 24)),
+                        rectangle('tools', (43, 125, 30, 41)),
+                        rectangle('parts', (232, 197, 36, 41))]
         spawns = [rectangle('entry', (192, 222, 0, 0), facing='up')]
         exits = [rectangle('outside', (160, 255, 64, 1), facing='down')]
         blocked = [int(i // 24 < 6) for i in range(384)]
@@ -92,6 +113,5 @@ for name in ['outside', 'interior']:
         proof.paste(tiles[gid - 1], (i % 24 * 16, i // 24 * 16))
     for piece in pieces:
         proof.alpha_composite(Image.open(OUT / f'{piece["name"]}.png'), (piece['x'], piece['y']))
-    approved = Image.open(ROOT / f'tools/university-art/{name}.png').convert('RGBA')
-    assert ImageChops.difference(proof, approved).getbbox(alpha_only=False) is None
-    print(f'{name}: {len(tiles)} unique 16px tiles, 384 placements, reconstruction matches approved pixels')
+    assert ImageChops.difference(proof, composition).getbbox(alpha_only=False) is None
+    print(f'{name}: {len(tiles)} unique 16px tiles, 384 placements, reconstruction matches source pixels')

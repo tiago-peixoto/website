@@ -1,52 +1,45 @@
 import { createState, changeState } from "./plaza-state.js";
+import { createExperiments } from "./plaza-experiments.js";
+import { createDialogue } from "./plaza-dialogue.js";
 
 const dialog = document.querySelector("dialog");
 const enter = document.querySelector("#enter");
 const loading = document.querySelector("#loading");
-let returnFocus;
+let game;
+const experiments = createExperiments((id) => game?.experiment(id));
+const conversation = createDialogue(dialog, (id) => {
+  if (id === "study") game?.visit("study");
+  if (id === "board" || id === "robot") experiments.open(id);
+  if ((id === "notebook" || id === "sensor") && !state.inventory.has(id)) {
+    changeState(state, id);
+    const item = document.createElement("li");
+    item.textContent = actions[id].dataset.itemName;
+    document.querySelector("#inventory").append(item);
+    document.querySelector("#inventory-count").textContent = state.inventory.size;
+    document.querySelector("#empty-inventory").hidden = true;
+    document.querySelector("#pickup-status").textContent = `${messages.picked} ${item.textContent}`;
+  }
+});
 const state = createState();
 const messages = document.querySelector("#messages").dataset;
 const actions = Object.fromEntries([...document.querySelectorAll("[data-action]")].map((button) => [button.dataset.action, button]));
-const feedback = document.querySelector("#feedback");
-let feedbackTimer;
-
-function announce(message) {
-  clearTimeout(feedbackTimer);
-  feedback.textContent = message;
-  feedbackTimer = setTimeout(() => { feedback.textContent = ""; }, 4000);
-}
-
-function openPanel(id, opener = document.activeElement) {
-  if (dialog.open) return;
-  returnFocus = opener;
-  for (const panel of dialog.querySelectorAll("[data-panel]")) panel.hidden = panel.dataset.panel !== id;
-  document.querySelector("#panel-title").textContent = actions[id].textContent;
-  dialog.showModal();
-  document.querySelector("#panel-title").focus();
-}
-
 function interact(id, opener) {
-  if (id === "light" || id === "lamp") {
+  if (dialog.open || experiments.current) return;
+  let result = "";
+  if (id === "light" || id === "lamp" || id === "studyLamp") {
     changeState(state, id);
-    const on = id === "light" ? state.lightsOn : state.lampOn;
+    const on = id === "light" ? state.lightsOn : id === "studyLamp" ? state.studyLampOn : state.lampOn;
     actions[id].setAttribute("aria-pressed", String(on));
-    announce(id === "light" ? (on ? messages.lightsOn : messages.lightsOff) : (on ? messages.lampOn : messages.lampOff));
+    result = id === "light" ? (on ? messages.lightsOn : messages.lightsOff) : id === "studyLamp" ? (on ? messages.studyLampOn : messages.studyLampOff) : (on ? messages.lampOn : messages.lampOff);
   } else if (id === "pond") {
     changeState(state, id);
-    announce(messages.pondJump);
+    result = messages.pondJump;
   } else if (id === "notebook" || id === "sensor") {
     const name = actions[id].dataset.itemName;
     const picked = state.inventory.has(id);
-    if (!picked) {
-      changeState(state, id);
-      const item = document.createElement("li");
-      item.textContent = name;
-      document.querySelector("#inventory").append(item);
-      document.querySelector("#inventory-count").textContent = state.inventory.size;
-      document.querySelector("#empty-inventory").hidden = true;
-    }
-    announce(`${picked ? messages.alreadyPicked : messages.picked} ${name}`);
-  } else openPanel(id, opener);
+    result = picked ? `${messages.alreadyPicked} ${name}` : "";
+  }
+  conversation.open(id, opener, result);
 }
 
 function loadPhaser() {
@@ -66,28 +59,10 @@ function loadPhaser() {
   });
 }
 
-if (typeof dialog.showModal === "function") {
+if (typeof dialog.show === "function") {
   enter.hidden = false;
   document.querySelector("#directory-actions").hidden = false;
   for (const [id, button] of Object.entries(actions)) button.addEventListener("click", () => interact(id, button));
-  dialog.addEventListener("close", () => returnFocus?.focus());
-  document.querySelector("#robot-toggle").addEventListener("click", (event) => {
-    const closed = event.currentTarget.getAttribute("aria-pressed") !== "true";
-    event.currentTarget.setAttribute("aria-pressed", String(closed));
-    const status = document.querySelector("#robot-status");
-    status.textContent = closed ? status.dataset.closed : status.dataset.open;
-  });
-  document.querySelector("#computer-toggle").addEventListener("click", (event) => {
-    const terminal = document.querySelector("#terminal");
-    terminal.hidden = !terminal.hidden;
-    event.currentTarget.setAttribute("aria-expanded", String(!terminal.hidden));
-  });
-  document.querySelector("#board-next").addEventListener("click", () => {
-    const input = document.querySelector("#board-input");
-    const value = (Number(input.textContent) + 1) % 10;
-    input.textContent = value;
-    document.querySelector("#board-output").textContent = value + 1;
-  });
   enter.addEventListener("click", async () => {
     enter.disabled = true;
     loading.textContent = loading.dataset.loading;
@@ -95,22 +70,27 @@ if (typeof dialog.showModal === "function") {
       const [{ startPlaza }] = await Promise.all([import("./plaza.js"), loadPhaser()]);
       document.querySelector("#fallback").hidden = true;
       document.body.classList.add("playing");
-      const game = await startPlaza({
+      game = await startPlaza({
         asset: (name) => new URL(`./${name}`, import.meta.url).href,
         dialog,
         interact,
+        positionDialogue: conversation.position,
         state,
+        experiments,
       });
+      if (experiments.current) game.experiment(experiments.current.id);
       loading.textContent = "";
       enter.hidden = true;
       document.querySelector("#how").hidden = false;
       document.querySelector("#directory-places").hidden = false;
       for (const button of document.querySelectorAll("[data-travel]")) button.addEventListener("click", () => {
+        experiments.close();
+        if (dialog.open) dialog.close();
         game.visit(button.dataset.travel);
         document.querySelector(".menu").open = false;
         document.querySelector("#plaza canvas").focus();
       });
-      if (!dialog.open) {
+      if (!dialog.open && !experiments.current) {
         document.querySelector(".menu").open = false;
         document.querySelector("#plaza canvas").focus();
       }

@@ -947,35 +947,23 @@
         {
           "name": "study",
           "x": 88,
-          "y": 128,
+          "y": 112,
           "width": 32,
-          "height": 22,
+          "height": 16,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
+          "properties": [],
           "id": 10
         },
         {
           "name": "university",
           "x": 274,
-          "y": 128,
+          "y": 112,
           "width": 36,
-          "height": 22,
+          "height": 16,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
+          "properties": [],
           "id": 11
         }
       ],

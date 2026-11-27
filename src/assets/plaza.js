@@ -1,8 +1,8 @@
 import { navigation, cameraZoom } from "./plaza-map.js";
 
-export async function startPlaza({ asset, dialog, interact, state }) {
+export async function startPlaza({ asset, dialog, interact, state, positionDialogue, experiments }) {
   const [courtyard, plazaNavigation, outside, study, layout] = await Promise.all([
-    "plaza-art/courtyard.tmj", "plaza-navigation.tmj", "plaza-art/outside.tmj", "plaza-art/interior.tmj", "plaza-art/walker-layout.json",
+    "plaza-art/courtyard.tmj", "plaza-navigation.tmj", "plaza-art/outside.tmj", "plaza-art/interior.tmj", "plaza-art/walker-motion.json",
   ].map(async (name) => {
     const response = await fetch(asset(name), { signal: AbortSignal.timeout(20000) });
     if (!response.ok) throw new Error(`Unable to load ${name}: ${response.status}`);
@@ -27,12 +27,18 @@ export async function startPlaza({ asset, dialog, interact, state }) {
   const events = new AbortController();
   const on = (target, type, listener) => target.addEventListener(type, listener, { signal: events.signal });
   const interactButton = document.querySelector("#interact");
+  const runButton = document.querySelector("#run");
   const nearby = document.querySelector("#nearby");
   const host = document.querySelector("#plaza");
   const names = Object.fromEntries([...document.querySelectorAll("[data-action], [data-travel]")].map((button) => [button.dataset.action || button.dataset.travel, button.textContent]));
-  let game, scene, walker, shadow, water, shade, lampGlow, lampPool, fish, splash, daylight, areaId = "plaza", position;
+  let game, scene, walker, shadow, water, shade, lampGlow, lampPool, studyGlow, studyShade, robotArm, robotFloor, robotPart, robotTray, fish, splash, daylight, areaId = "plaza", position;
   let seenJump = state.pondJump, jumpTime = Infinity;
-  const clearInput = () => { pressed.clear(); held.clear(); };
+  let shiftHeld = false;
+  const running = () => shiftHeld || runButton.getAttribute("aria-pressed") === "true";
+  const clearInput = () => {
+    pressed.clear(); held.clear(); shiftHeld = false;
+    runButton.setAttribute("aria-pressed", "false");
+  };
   const feet = (object) => object.properties?.find((property) => property.name === "feetY")?.value ?? object.y + object.height;
   document.querySelector("#playable").hidden = false;
   document.querySelector("#controls").hidden = false;
@@ -51,18 +57,31 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       const tree = areas[areaId].objects.get("tree");
       if (tree) tree.setAlpha(position.y < tree.depth && position.x + 10 > tree.x && position.x - 10 < tree.x + tree.width && position.y > tree.y ? 0.45 : 1);
       const near = areas[areaId].rules.nearby(position);
-      const disabled = !near;
-      const label = near ? names[near.name] : interactButton.dataset.idle;
+      const disabled = !near && !dialog.open;
+      const label = dialog.open ? interactButton.dataset.speech : near ? names[near.name] : interactButton.dataset.idle;
       if (interactButton.disabled !== disabled) interactButton.disabled = disabled;
       if (interactButton.textContent !== label) interactButton.textContent = label;
-      if (near?.name === "lamp" || near?.name === "light") {
-        const value = String(near.name === "lamp" ? state.lampOn : state.lightsOn);
+      if (!dialog.open && ["lamp", "light", "studyLamp"].includes(near?.name)) {
+        const value = String(near.name === "lamp" ? state.lampOn : near.name === "studyLamp" ? state.studyLampOn : state.lightsOn);
         if (interactButton.getAttribute("aria-pressed") !== value) interactButton.setAttribute("aria-pressed", value);
       } else if (interactButton.hasAttribute("aria-pressed")) interactButton.removeAttribute("aria-pressed");
       const message = near ? `${names[near.name]}. ${nearby.dataset.near}` : nearby.dataset.far;
       if (nearby.textContent !== message) nearby.textContent = message;
       for (const id of ["notebook", "sensor"]) areas.study.objects.get(id).setVisible(areaId === "study" && !state.inventory.has(id));
-      shade.setVisible(areaId === "study" && !state.lightsOn);
+      shade.setVisible(areaId === "study" && (!state.lightsOn || !state.studyLampOn));
+      shade.setAlpha(!state.lightsOn ? (state.studyLampOn ? 0.48 : 0.68) : 0.2);
+      studyGlow.setVisible(areaId === "study" && state.studyLampOn);
+      studyShade.setVisible(areaId === "study" && !state.studyLampOn);
+      const experiment = experiments.current;
+      const robot = experiment?.id === "robot" && areaId === "study";
+      for (const sprite of [robotArm, robotFloor, robotPart, robotTray]) sprite.setVisible(robot);
+      if (robot) {
+        const angle = experiment.selection === 1 ? 0.7 : 0;
+        const scale = experiment.selection === 2 ? -0.65 : 1;
+        robotArm.setRotation(angle).setScale(scale, 1);
+        const tip = { x: 315 - 22 * scale * Math.cos(angle) + 6 * Math.sin(angle), y: 180 - 22 * scale * Math.sin(angle) - 6 * Math.cos(angle) };
+        robotPart.setPosition(...(experiment.complete ? [330, 185] : experiment.holding ? [tip.x, tip.y + 2] : [292, 185]));
+      }
       lampGlow.setVisible(areaId === "plaza" && state.lampOn);
       lampPool.setVisible(areaId === "plaza" && state.lampOn);
       daylight.setVisible(areaId === "study");
@@ -76,7 +95,25 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       const art = areas[areaId].art;
       const camera = scene.cameras.main;
       camera.setViewport(0, 0, scene.scale.width, scene.scale.height);
-      camera.setZoom(cameraZoom(scene.scale.width, scene.scale.height, art.width * 16, art.height * 16));
+      const cover = cameraZoom(scene.scale.width, scene.scale.height, art.width * 16, art.height * 16);
+      if (experiments.current) {
+        const board = experiments.current.id === "board";
+        camera.setZoom(Math.max(cover, Math.min(6, Math.floor(Math.min(scene.scale.width / 120, scene.scale.height / 120)))));
+        camera.centerOn(board ? 192 : 305, board ? 70 : 181);
+      } else camera.setZoom(cover);
+    }
+
+    function experiment(id) {
+      clearInput();
+      const camera = scene.cameras.main;
+      if (id) {
+        if (areaId !== "study") visit("study");
+        document.querySelector(".menu").open = false;
+        camera.stopFollow();
+      } else camera.startFollow(walker, true, 1, 1, 0, 20);
+      resize();
+      refresh();
+      fitHost();
     }
 
     function fitHost() {
@@ -92,12 +129,11 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       const spawn = area.spawns[spawnName];
       position = { x: spawn.x, y: spawn.y, facing: spawn.facing };
       walker.anims.stop();
-      walker.setFrame(layout.directions.indexOf(position.facing) * 7);
+      walker.setFrame(layout.directions.indexOf(position.facing) * layout.columns);
       scene.cameras.main.setBounds(0, 0, area.art.width * 16, area.art.height * 16);
       document.querySelector("#location").textContent = names[id];
       host.setAttribute("aria-label", names[id]);
       game.canvas.setAttribute("aria-label", names[id]);
-      document.querySelector("#feedback").textContent = "";
       jumpTime = Infinity;
       fish.setVisible(false);
       splash.setVisible(false);
@@ -120,11 +156,11 @@ export async function startPlaza({ asset, dialog, interact, state }) {
     }
 
     function activate(opener) {
+      if (dialog.open || experiments.current) return;
       const near = areas[areaId].rules.nearby(position);
       if (!near) return;
       clearInput();
-      if (areas[near.name]) visit(near.name);
-      else interact(near.name, opener);
+      interact(near.name, opener);
       refresh();
     }
 
@@ -147,7 +183,7 @@ export async function startPlaza({ asset, dialog, interact, state }) {
         }
       }
       for (const image of images) this.load.image(image, asset(`plaza-art/${image}`));
-      this.load.spritesheet("walker", asset("plaza-art/walker-sheet.png"), { frameWidth: layout.cell[0], frameHeight: layout.cell[1] });
+      this.load.spritesheet("walker", asset("plaza-art/walker-grounded.png"), { frameWidth: layout.cell[0], frameHeight: layout.cell[1] });
     }
 
     function create() {
@@ -176,10 +212,14 @@ export async function startPlaza({ asset, dialog, interact, state }) {
             }
           }
         }
-        layout.directions.forEach((direction, row) => this.anims.create({
-          key: direction, repeat: -1, frameRate: 1000 / layout.frameMs[0],
-          frames: this.anims.generateFrameNumbers("walker", { start: row * 7 + 1, end: row * 7 + 6 }),
-        }));
+        for (const [gait, cycle] of Object.entries(layout.cycles)) {
+          layout.directions.forEach((direction, row) => this.anims.create({
+            key: `${gait}-${direction}`, repeat: -1, frameRate: cycle.frameRate,
+            frames: this.anims.generateFrameNumbers("walker", {
+              start: row * layout.columns + cycle.start, end: row * layout.columns + cycle.end,
+            }),
+          }));
+        }
         shadow = this.add.image(0, 0, "walker-shadow.png").setOrigin(0).setDepth(-200);
         walker = this.add.sprite(0, 0, "walker", 0).setOrigin(0.5, 44 / 48).setName("walker");
         lampGlow = this.add.image(264, 163, "lamp-glow.png").setDepth(500).setAlpha(0.8).setName("lamp-glow");
@@ -187,6 +227,41 @@ export async function startPlaza({ asset, dialog, interact, state }) {
         fish = this.add.image(318, 145, "fish.png").setDepth(500).setName("fish");
         splash = this.add.image(330, 145, "splash.png").setDepth(500).setName("splash");
         shade = this.add.rectangle(0, 0, 384, 256, 0x10192f, 0.62).setOrigin(0).setDepth(1500);
+        studyGlow = this.add.image(96, 167, "lamp-glow.png").setScale(0.65).setDepth(1550).setAlpha(0.35).setName("study-lamp-glow");
+        const room = this.textures.createCanvas("study-composition", 384, 256);
+        const atlas = this.textures.get("interior-tiles.png").getSourceImage();
+        const terrain = study.tilesets[0];
+        study.layers.find(layer => layer.name === "ground").data.forEach((gid, i) => {
+          const tile = gid - terrain.firstgid;
+          room.context.drawImage(atlas, tile % terrain.columns * 16, Math.floor(tile / terrain.columns) * 16, 16, 16, i % 24 * 16, Math.floor(i / 24) * 16, 16, 16);
+        });
+        // Replace the baked light cone with unlit pixels from the same floor and tabletop rows.
+        const unlit = this.textures.createCanvas("study-lamp-off", 22, 15);
+        const cone = new Path2D();
+        cone.moveTo(6, 1); cone.lineTo(13, 0); cone.lineTo(22, 14); cone.lineTo(0, 14); cone.closePath();
+        unlit.context.clip(cone);
+        for (let row = 0; row < 15; row++) unlit.context.drawImage(room.canvas, 114, 160 + row, 1, 1, 0, row, 22, 1);
+        unlit.refresh();
+        studyShade = this.add.image(88, 160, "study-lamp-off").setOrigin(0).setDepth(1490).setName("study-lamp-shade");
+        // The articulated arm uses only pixels from the approved generated room.
+        const arm = this.textures.createCanvas("robot-arm", 40, 32);
+        const outline = [[2,17],[3,16],[9,11],[9,9],[13,7],[21,3],[25,1],[29,1],[32,3],[33,5],[33,12],[31,13],[31,22],[30,25],[27,27],[23,26],[20,23],[22,20],[24,18],[26,9],[14,13],[12,14],[11,18],[8,22],[6,24],[6,22],[9,18],[9,16],[6,18],[3,21],[2,20]];
+        const path = new Path2D();
+        outline.forEach(([x, y], i) => i ? path.lineTo(x, y) : path.moveTo(x, y));
+        path.closePath();
+        arm.context.fill(path);
+        arm.context.lineWidth = 2;
+        arm.context.stroke(path);
+        arm.context.globalCompositeOperation = "source-in";
+        arm.context.drawImage(room.canvas, 288, 155, 40, 32, 0, 0, 40, 32);
+        arm.refresh();
+        const floor = this.textures.createCanvas("robot-floor", 40, 27);
+        floor.context.drawImage(room.canvas, 288, 128, 40, 27, 0, 0, 40, 27);
+        floor.refresh();
+        robotFloor = this.add.image(288, 155, "robot-floor").setOrigin(0).setDepth(1100);
+        robotArm = this.add.image(315, 180, "robot-arm").setOrigin(27 / 40, 25 / 32).setDepth(1102).setName("robot-arm");
+        robotTray = this.add.rectangle(330, 185, 10, 6, 0x153a37).setStrokeStyle(1, 0xddbb6d).setDepth(1101);
+        robotPart = this.add.image(292, 185, "sensor.png").setScale(0.6).setDepth(1103).setName("robot-part");
         daylight = this.add.image(192, 232, "door-light.png").setDepth(1600).setAlpha(0.5).setName("daylight");
         this.cameras.main.startFollow(walker, true, 1, 1, 0, 20);
         this.scale.on("resize", resize);
@@ -203,23 +278,31 @@ export async function startPlaza({ asset, dialog, interact, state }) {
         canvas.setAttribute("aria-describedby", "instructions");
         const keys = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right", w: "up", s: "down", a: "left", d: "right" };
         on(canvas, "keydown", (event) => {
-          if (event.altKey || event.ctrlKey || event.metaKey || event.isComposing || dialog.open) return;
+          if (event.altKey || event.ctrlKey || event.metaKey || event.isComposing || dialog.open || experiments.current) return;
+          shiftHeld = event.shiftKey;
           const direction = keys[event.key] || keys[event.key.toLowerCase()];
           if (direction) { event.preventDefault(); pressed.set(event.code, direction); }
           else if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
+            event.stopPropagation();
             if (!event.repeat) activate(canvas);
           } else if (event.key === "Escape") { clearInput(); document.querySelector(".menu summary").focus(); }
         });
-        on(window, "keyup", (event) => pressed.delete(event.code));
-        on(canvas, "blur", () => pressed.clear());
+        on(window, "keyup", (event) => {
+          pressed.delete(event.code);
+          shiftHeld = document.activeElement === canvas && event.shiftKey;
+        });
+        on(canvas, "blur", () => { pressed.clear(); shiftHeld = false; });
         on(window, "blur", clearInput);
         on(document, "visibilitychange", clearInput);
         on(dialog, "close", clearInput);
         on(document.querySelector(".menu"), "toggle", clearInput);
+        on(runButton, "click", () => {
+          if (!dialog.open && !experiments.current) runButton.setAttribute("aria-pressed", String(runButton.getAttribute("aria-pressed") !== "true"));
+        });
         for (const button of document.querySelectorAll("[data-direction]")) {
           on(button, "pointerdown", (event) => {
-            if (dialog.open || (event.pointerType === "mouse" && event.button !== 0)) return;
+            if (dialog.open || experiments.current || (event.pointerType === "mouse" && event.button !== 0)) return;
             button.setPointerCapture(event.pointerId);
             step(button.dataset.direction, 2);
             held.set(event.pointerId, button.dataset.direction);
@@ -228,15 +311,30 @@ export async function startPlaza({ asset, dialog, interact, state }) {
           on(button, "pointerup", release);
           on(button, "pointercancel", release);
           on(button, "lostpointercapture", release);
-          on(button, "click", (event) => { if (!dialog.open && event.detail === 0) step(button.dataset.direction, 4); });
+          on(button, "click", (event) => { if (!dialog.open && !experiments.current && event.detail === 0) step(button.dataset.direction, 4); });
         }
         on(interactButton, "click", () => activate(interactButton));
-        this.events.on("shutdown", () => { events.abort(); sizeObserver.disconnect(); });
+        const placeDialogue = () => {
+          const camera = scene.cameras.main;
+          const head = camera.matrixCombined.transformPoint(position.x, position.y - 32);
+          const feet = camera.matrixCombined.transformPoint(position.x, position.y);
+          const bounds = canvas.getBoundingClientRect();
+          const surface = document.querySelector("#board-surface");
+          if (experiments.current?.id === "board") {
+            const corner = camera.matrixCombined.transformPoint(142, 33);
+            surface.style.left = `${Math.round(corner.x)}px`;
+            surface.style.top = `${Math.round(corner.y)}px`;
+            surface.style.width = `${100 * camera.zoom}px`;
+            surface.style.height = `${48 * camera.zoom}px`;
+          }
+          positionDialogue({ x: bounds.left + head.x, top: bounds.top + head.y, bottom: bounds.top + feet.y, minY: bounds.top + 12 });
+        };
+        game.events.on("postrender", placeDialogue);
+        this.events.on("shutdown", () => { events.abort(); sizeObserver.disconnect(); game.events.off("postrender", placeDialogue); });
         this.moveDirection = () => [...held.values()].at(-1) || [...pressed.values()].at(-1);
-        interactButton.dataset.idle = interactButton.textContent;
         visit("plaza");
         clearTimeout(timer);
-        resolve({ visit });
+        resolve({ visit, experiment });
       } catch (error) { clearTimeout(timer); fail(error); }
     }
 
@@ -253,11 +351,12 @@ export async function startPlaza({ asset, dialog, interact, state }) {
       const splashing = areaId === "plaza" && (motion.matches ? jumpTime < 1000 : jumpTime >= 900 && jumpTime < 1250);
       splash.setVisible(splashing);
       if (splashing) splash.setAlpha(motion.matches ? 1 : 1 - (jumpTime - 900) / 350);
-      const direction = !dialog.open && !document.hidden && this.moveDirection();
-      if (direction && step(direction, Math.min(delta, 50) * 0.06) && !motion.matches) walker.play(position.facing, true);
+      const direction = !dialog.open && !experiments.current && !document.hidden && this.moveDirection();
+      const gait = running() ? "run" : "walk";
+      if (direction && step(direction, Math.min(delta, 50) * layout.cycles[gait].speed / 1000) && !motion.matches) walker.play(`${gait}-${position.facing}`, true);
       else {
         walker.anims.stop();
-        walker.setFrame(layout.directions.indexOf(position.facing) * 7);
+        walker.setFrame(layout.directions.indexOf(position.facing) * layout.columns);
       }
       refresh();
     }

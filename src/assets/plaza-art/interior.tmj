@@ -9,7 +9,7 @@
   "tilewidth": 16,
   "tileheight": 16,
   "nextlayerid": 8,
-  "nextobjectid": 19,
+  "nextobjectid": 34,
   "tilesets": [
     {
       "firstgid": 1,
@@ -36,14 +36,14 @@
         {
           "id": 0,
           "image": "notebook.png",
-          "imagewidth": 15,
-          "imageheight": 18
+          "imagewidth": 10,
+          "imageheight": 10
         },
         {
           "id": 1,
           "image": "sensor.png",
-          "imagewidth": 19,
-          "imageheight": 15
+          "imagewidth": 11,
+          "imageheight": 8
         }
       ]
     }
@@ -452,10 +452,10 @@
       "objects": [
         {
           "name": "notebook",
-          "x": 99,
-          "y": 149,
-          "width": 15,
-          "height": 18,
+          "x": 122,
+          "y": 177,
+          "width": 10,
+          "height": 10,
           "rotation": 0,
           "visible": true,
           "properties": [],
@@ -464,10 +464,10 @@
         },
         {
           "name": "sensor",
-          "x": 296,
-          "y": 163,
-          "width": 19,
-          "height": 15,
+          "x": 282,
+          "y": 184,
+          "width": 11,
+          "height": 8,
           "rotation": 0,
           "visible": true,
           "properties": [],
@@ -917,47 +917,113 @@
         },
         {
           "name": "reading-table",
-          "x": 27,
-          "y": 136,
-          "width": 92,
-          "height": 75,
+          "x": 76,
+          "y": 169,
+          "width": 59,
+          "height": 39,
           "rotation": 0,
           "visible": true,
           "properties": [],
           "id": 6
         },
         {
-          "name": "computer-table",
-          "x": 270,
-          "y": 100,
-          "width": 105,
-          "height": 26,
+          "name": "reading-chair",
+          "x": 95,
+          "y": 188,
+          "width": 20,
+          "height": 28,
           "rotation": 0,
           "visible": true,
           "properties": [],
           "id": 7
         },
         {
-          "name": "robot-bench",
-          "x": 287,
-          "y": 160,
-          "width": 88,
-          "height": 52,
+          "name": "computer-table",
+          "x": 268,
+          "y": 93,
+          "width": 76,
+          "height": 32,
           "rotation": 0,
           "visible": true,
           "properties": [],
           "id": 8
         },
         {
-          "name": "robot-arm",
-          "x": 308,
-          "y": 124,
-          "width": 60,
-          "height": 36,
+          "name": "computer-stool",
+          "x": 296,
+          "y": 111,
+          "width": 16,
+          "height": 17,
           "rotation": 0,
           "visible": true,
           "properties": [],
           "id": 9
+        },
+        {
+          "name": "robot-bench",
+          "x": 275,
+          "y": 181,
+          "width": 59,
+          "height": 35,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 10
+        },
+        {
+          "name": "robot-arm",
+          "x": 290,
+          "y": 156,
+          "width": 32,
+          "height": 25,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 11
+        },
+        {
+          "name": "welding-bench",
+          "x": 111,
+          "y": 113,
+          "width": 65,
+          "height": 42,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 12
+        },
+        {
+          "name": "welding-arm",
+          "x": 138,
+          "y": 89,
+          "width": 35,
+          "height": 24,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 13
+        },
+        {
+          "name": "tool-cart",
+          "x": 43,
+          "y": 125,
+          "width": 30,
+          "height": 41,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 14
+        },
+        {
+          "name": "parts-rack",
+          "x": 232,
+          "y": 197,
+          "width": 36,
+          "height": 41,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 15
         }
       ],
       "visible": false,
@@ -971,123 +1037,180 @@
       "type": "objectgroup",
       "objects": [
         {
+          "name": "studyLamp",
+          "x": 76,
+          "y": 169,
+          "width": 22,
+          "height": 19,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 16
+        },
+        {
           "name": "paper",
-          "x": 38,
-          "y": 212,
-          "width": 67,
+          "x": 98,
+          "y": 169,
+          "width": 19,
+          "height": 39,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 17
+        },
+        {
+          "name": "paper",
+          "x": 76,
+          "y": 188,
+          "width": 22,
           "height": 20,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
-          "id": 10
+          "properties": [],
+          "id": 18
+        },
+        {
+          "name": "paper",
+          "x": 95,
+          "y": 208,
+          "width": 20,
+          "height": 8,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 19
         },
         {
           "name": "notebook",
-          "x": 120,
-          "y": 147,
-          "width": 22,
-          "height": 45,
+          "x": 117,
+          "y": 169,
+          "width": 18,
+          "height": 39,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "left"
-            }
-          ],
-          "id": 11
+          "properties": [],
+          "id": 20
         },
         {
           "name": "sensor",
-          "x": 267,
-          "y": 168,
-          "width": 20,
-          "height": 36,
+          "x": 275,
+          "y": 181,
+          "width": 15,
+          "height": 35,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "right"
-            }
-          ],
-          "id": 12
+          "properties": [],
+          "id": 21
         },
         {
           "name": "robot",
-          "x": 306,
-          "y": 212,
-          "width": 62,
-          "height": 20,
+          "x": 290,
+          "y": 156,
+          "width": 32,
+          "height": 25,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
-          "id": 13
+          "properties": [],
+          "id": 22
+        },
+        {
+          "name": "robot",
+          "x": 290,
+          "y": 181,
+          "width": 44,
+          "height": 35,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 23
         },
         {
           "name": "computer",
-          "x": 270,
-          "y": 127,
-          "width": 37,
-          "height": 30,
+          "x": 268,
+          "y": 93,
+          "width": 76,
+          "height": 32,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
-          "id": 14
+          "properties": [],
+          "id": 24
+        },
+        {
+          "name": "computer",
+          "x": 296,
+          "y": 125,
+          "width": 16,
+          "height": 3,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 25
         },
         {
           "name": "board",
           "x": 145,
-          "y": 100,
+          "y": 84,
           "width": 95,
-          "height": 28,
+          "height": 12,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "up"
-            }
-          ],
-          "id": 15
+          "properties": [],
+          "id": 26
         },
         {
           "name": "light",
-          "x": 25,
+          "x": 19,
           "y": 108,
-          "width": 25,
+          "width": 6,
           "height": 27,
           "rotation": 0,
           "visible": true,
-          "properties": [
-            {
-              "name": "facing",
-              "type": "string",
-              "value": "left"
-            }
-          ],
-          "id": 16
+          "properties": [],
+          "id": 27
+        },
+        {
+          "name": "welding",
+          "x": 111,
+          "y": 113,
+          "width": 65,
+          "height": 42,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 28
+        },
+        {
+          "name": "welding",
+          "x": 138,
+          "y": 89,
+          "width": 35,
+          "height": 24,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 29
+        },
+        {
+          "name": "tools",
+          "x": 43,
+          "y": 125,
+          "width": 30,
+          "height": 41,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 30
+        },
+        {
+          "name": "parts",
+          "x": 232,
+          "y": 197,
+          "width": 36,
+          "height": 41,
+          "rotation": 0,
+          "visible": true,
+          "properties": [],
+          "id": 31
         }
       ],
       "visible": false,
@@ -1115,7 +1238,7 @@
               "value": "up"
             }
           ],
-          "id": 17
+          "id": 32
         }
       ],
       "visible": false,
@@ -1143,7 +1266,7 @@
               "value": "down"
             }
           ],
-          "id": 18
+          "id": 33
         }
       ],
       "visible": false,
