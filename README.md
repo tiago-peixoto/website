@@ -187,7 +187,8 @@ The post appears in the journal and on the home page with no other edit.
 
 Build the standalone preview below and open it in a named `chrome-devtools-axi` session.
 Run `chrome-devtools-axi run < tools/check-interactions-browser.js` on a fresh English preview.
-The script checks the enter gate, pickup timing and cancellation, all 21 study approaches, both games, keyboard controls, touch controls, and the lamp.
+The script checks the enter gate, pickup timing and cancellation, 21 study approaches, both games, keyboard controls, touch controls, and the lamp.
+It does not approach the welding workbench, tool cart or parts rack, whose reachable sides `check-plaza.js` checks in `npm test`.
 Repeat at 390 by 844, 1280 by 720, and 1920 by 1080.
 
 After `npm run build`, run `node tools/plaza-preview.mjs /absolute/path/play.html` to generate the standalone review.

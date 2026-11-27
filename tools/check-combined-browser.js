@@ -1,4 +1,4 @@
-// Run after check-walker-browser.js through chrome-devtools-axi on the combined preview.
+// Run after check-walker-browser.js through chrome-devtools-axi on a play.html written by tools/plaza-preview.mjs.
 console.log(JSON.stringify(await page.eval(async () => {
   const w = document.querySelector('iframe').contentWindow, d = w.document;
   const assert = (value, message) => { if (!value) throw new Error(message); };
