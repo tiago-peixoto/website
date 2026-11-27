@@ -35,6 +35,7 @@ console.log(JSON.stringify(await page.eval(async () => {
     for(let i=0;i<50&&!scene;i++) await wait();
   } finally { proto.preUpdate = original; }
   assert(scene, 'scene started');
+  assert(d.querySelector('#interact').disabled && d.querySelector('#interact').textContent !== d.querySelector('#interact').dataset.speech, 'with nothing near, the action button does not keep the speech label');
   const walker=scene.children.getByName('walker');
   const assets = w.eval('previewAssets'), rules=w.eval('navigation')(await (await w.fetch(assets['plaza-art/interior.tmj'])).json());
   const queue=[{x:192,y:222,route:[]}], seen=new Set(['192,222']), routes={};

@@ -332,7 +332,6 @@ export async function startPlaza({ asset, dialog, interact, state, positionDialo
         game.events.on("postrender", placeDialogue);
         this.events.on("shutdown", () => { events.abort(); sizeObserver.disconnect(); game.events.off("postrender", placeDialogue); });
         this.moveDirection = () => [...held.values()].at(-1) || [...pressed.values()].at(-1);
-        interactButton.dataset.idle = interactButton.textContent;
         visit("plaza");
         clearTimeout(timer);
         resolve({ visit, experiment });

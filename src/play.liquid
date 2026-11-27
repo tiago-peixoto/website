@@ -95,7 +95,7 @@ eleventyExcludeFromCollections: true
   <div id="controls" hidden>
     <p id="location" role="status" aria-label="{{ p.location }}"></p>
     <p id="nearby" role="status" data-near="{{ p.near }}" data-far="{{ p.far }}">{{ p.far }}</p>
-    <button id="interact" data-speech="{{ d.action }}" disabled>{{ p.open }}</button>
+    <button id="interact" data-idle="{{ p.open }}" data-speech="{{ d.action }}" disabled>{{ p.open }}</button>
     <button id="run" aria-pressed="false">{{ p.run }}</button>
     <div class="pad" role="group" aria-label="{{ p.touch }}">
       <button data-direction="left" aria-label="{{ p.left }}">←</button>
