@@ -52,7 +52,7 @@ console.log(JSON.stringify(await page.eval(async () => {
     await wait();
     assert(d.querySelector('#interact').textContent === d.querySelector(`[data-action="${id}"]`).textContent, `${id}/${facing} target reachable`);
   };
-  const expected={paper:['up','down','left','right'],notebook:['up','down','left'],sensor:['up','down','right'],robot:['up','down','left','right'],computer:['up','left','right'],board:['up'],light:['left'],studyLamp:['down','right']};
+  const expected={paper:['up','down','left','right'],notebook:['up','down','left'],sensor:['up','down','right'],robot:['up','down','left','right'],computer:['up','left','right'],board:['up'],light:['left'],studyLamp:['down','right'],welding:['up','down','left','right'],tools:['up','down','left','right'],parts:['up','down','left','right']};
   const checks=[];
   for(const [id, facings] of Object.entries(expected)) for(const facing of facings) {
     await approach(id,facing);action();
