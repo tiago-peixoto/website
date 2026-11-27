@@ -78,7 +78,7 @@ The room remains 384 by 256 pixels.
 
 Collision rectangles follow the final furniture positions and include separate chair and stool footprints.
 The eleven interactions follow the furniture surfaces and accept every reachable facing direction.
-The paper station, robot and computer each use two target rectangles to cover their separate exposed surfaces.
+The paper station uses three target rectangles, and the robot, computer and welding workbench each use two, to cover their separate exposed surfaces.
 The entry point and exit remain unchanged.
 The notebook and sensor artwork moves with the smaller desks, so both pickup images have new coordinates.
 The doorway light is unchanged.

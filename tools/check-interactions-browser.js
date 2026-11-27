@@ -87,6 +87,9 @@ console.log(JSON.stringify(await page.eval(async () => {
   await close();await approach('robot','up');action();await finish();
   const before={x:walker.x,y:walker.y},arm=scene.children.getByName('robot-arm'),part=scene.children.getByName('robot-part');
   assert(arm.visible && scene.cameras.main.zoom>=3 && covers(),'robot is in the scene with a closer view that covers the canvas');
+  const grip=d.querySelector('#challenge-action').textContent;
+  for(const pressed of ['Enter',' ']) assert(key(pressed,d.querySelector('[data-adjust="right"]')),`${pressed} on an arrow button keeps the button's own click`);
+  assert(d.querySelector('#challenge-action').textContent===grip,'a key on an arrow button does not grip');
   key('ArrowRight');key(' ');
   assert(d.querySelector('#challenge-progress').textContent.includes('1'),'cannot grip middle position');
   key('ArrowLeft');key(' ');await wait();const partStart=part.x;
