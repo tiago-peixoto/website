@@ -87,8 +87,9 @@ The ray stops at intervening blocked tiles or obstacles.
 Objects support every reachable side, while walls and adjacent furniture still block inaccessible sides.
 Items on a table use separate parts of its footprint so they remain reachable from the exposed edges.
 Exit rectangles also specify the outgoing direction, so arriving at an edge does not immediately send the walker back.
-`tools/export-university.py` exports these maps from the approved native images in `tools/university-art/`.
-The study room uses `interior-workshop-source.png`, an original ImageGen edit of the reviewed smaller furniture.
+`tools/export-university.py` exports these maps from the approved images in `tools/university-art/`.
+The outside map uses the native `outside.png`.
+The study room uses `interior-workshop-source.png`, an original ImageGen edit of the reviewed smaller furniture, reduced to 384 by 256 pixels.
 Its welding workbench, tool cart and parts rack each have English and Portuguese speech through the existing conversation mechanism.
 The exporter adds their collision and interaction surfaces while preserving the central aisle and existing approaches.
 `interior-workshop-prompt.txt` records the generation and clearance correction.
@@ -173,7 +174,8 @@ The post appears in the journal and on the home page with no other edit.
 - `src/play.liquid`, `src/_data/plaza.json`, and `src/_data/dialogue.json` hold the bilingual plaza interface and conversations.
 - `src/assets/plaza.css`, `plaza-entry.js`, `plaza.js`, and `plaza-map.js` hold the plaza styles, entry screen, Phaser scene, and collision rules.
 - `src/assets/plaza-state.js` holds session state changes for lights, pond interactions and item pickup.
-- `src/assets/plaza-dialogue.js` controls speech, focus, placement and challenge controls.
+- `src/assets/plaza-dialogue.js` controls speech, focus and balloon placement.
+- `src/assets/plaza-experiments.js` controls the two mini-game panels, their keys and their buttons.
 - `src/assets/plaza-challenges.js` holds the two finite challenge rules.
 - `check-plaza.js` checks the maps, every walkable position, every reachable interaction side, occlusion, automatic exits, toggles, challenge endings, transcripts, integer viewport coverage and shared university wording.
 - `src/assets/sprites/` holds the burgundy character sheet and green beetle as lossless WebP images.

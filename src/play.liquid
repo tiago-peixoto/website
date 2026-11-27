@@ -131,7 +131,7 @@ eleventyExcludeFromCollections: true
   </section>
   <p id="speech-hint" class="note">{{ d.hint }}</p>
 </dialog>
-  <span id="challenge-labels" hidden data-finished="{{ d.finished }}" data-finish="{{ d.finish }}" data-select="{{ d.select }}" data-input="{{ p.input }}" data-progress="{{ d.progress }}" data-of="{{ d.of }}"{% assign kinds = "board,robot" | split: "," %}{% for kind in kinds %}{% for item in d[kind] %} data-{{ kind }}-{{ item[0] }}="{{ item[1] | escape }}"{% endfor %}{% endfor %}></span>
+  <span id="challenge-labels" hidden data-finished="{{ d.finished }}" data-progress="{{ d.progress }}" data-of="{{ d.of }}"{% assign kinds = "board,robot" | split: "," %}{% for kind in kinds %}{% for item in d[kind] %} data-{{ kind }}-{{ item[0] }}="{{ item[1] | escape }}"{% endfor %}{% endfor %}></span>
 <p id="pickup-status" class="sr-only" role="status"></p>
 <div id="messages" hidden data-study-lamp-on="{{ p.studyLampOn }}" data-study-lamp-off="{{ p.studyLampOff }}" data-lights-on="{{ p.lightsOn }}" data-lights-off="{{ p.lightsOff }}" data-lamp-on="{{ p.lampOn }}" data-lamp-off="{{ p.lampOff }}" data-pond-jump="{{ p.pondJump }}" data-picked="{{ p.picked }}" data-already-picked="{{ p.alreadyPicked }}"></div>
 </body>

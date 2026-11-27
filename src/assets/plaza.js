@@ -95,11 +95,12 @@ export async function startPlaza({ asset, dialog, interact, state, positionDialo
       const art = areas[areaId].art;
       const camera = scene.cameras.main;
       camera.setViewport(0, 0, scene.scale.width, scene.scale.height);
+      const cover = cameraZoom(scene.scale.width, scene.scale.height, art.width * 16, art.height * 16);
       if (experiments.current) {
         const board = experiments.current.id === "board";
-        camera.setZoom(Math.max(1, Math.min(6, Math.floor(Math.min(scene.scale.width / 120, scene.scale.height / 120)))));
+        camera.setZoom(Math.max(cover, Math.min(6, Math.floor(Math.min(scene.scale.width / 120, scene.scale.height / 120)))));
         camera.centerOn(board ? 192 : 305, board ? 70 : 181);
-      } else camera.setZoom(cameraZoom(scene.scale.width, scene.scale.height, art.width * 16, art.height * 16));
+      } else camera.setZoom(cover);
     }
 
     function experiment(id) {
@@ -283,6 +284,7 @@ export async function startPlaza({ asset, dialog, interact, state, positionDialo
           if (direction) { event.preventDefault(); pressed.set(event.code, direction); }
           else if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
+            event.stopPropagation();
             if (!event.repeat) activate(canvas);
           } else if (event.key === "Escape") { clearInput(); document.querySelector(".menu summary").focus(); }
         });

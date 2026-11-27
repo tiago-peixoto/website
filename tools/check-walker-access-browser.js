@@ -1,13 +1,12 @@
-// Run on a fresh play.html. Simulate the reduced-motion media preference before game entry.
+// Run on a fresh play.html written by tools/plaza-preview.mjs. Simulate the reduced-motion media preference before game entry.
 console.log(JSON.stringify(await page.eval(async () => {
   const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
   const check = (ok, message) => { if (!ok) throw Error(message); };
   const until = async condition => { for (let i = 0; i < 250; i++) { if (condition()) return; await wait(20); } throw Error('condition timed out'); };
-  const select = document.querySelector('#language');
-  select.value = 'pt-BR'; select.dispatchEvent(new Event('change'));
+  document.querySelector('iframe').contentDocument.querySelector('[hreflang]').click();
   await until(() => document.querySelector('iframe').contentDocument.documentElement.lang === 'pt-BR');
   const w = document.querySelector('iframe').contentWindow, d = w.document;
-  await until(() => d.querySelector('#enter'));
+  await until(() => d.querySelector('#enter')?.hidden === false);
   const originalMedia = w.matchMedia.bind(w);
   w.matchMedia = query => {
     const media = originalMedia(query);

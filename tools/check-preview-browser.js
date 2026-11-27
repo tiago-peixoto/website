@@ -53,9 +53,7 @@ for (const lang of ["en", "pt-BR"]) {
   }));
   if (lang === "en") {
     await page.eval(() => {
-      const select = document.querySelector('#language');
-      if (select) { select.value = 'pt-BR'; select.dispatchEvent(new Event('change')); }
-      else document.querySelector('iframe').contentDocument.querySelector('[hreflang]').click();
+      document.querySelector('iframe').contentDocument.querySelector('[hreflang]').click();
     });
     const changed = await page.eval(async () => {
       for (let i = 0; i < 100; i++) {

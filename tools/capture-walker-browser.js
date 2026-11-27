@@ -1,3 +1,4 @@
+// Run on a play.html written by tools/plaza-preview.mjs after entering the game.
 // Freeze a run reached through the actual keyboard handler for screenshot inspection.
 console.log(JSON.stringify(await page.eval(async () => {
   const w = document.querySelector('iframe').contentWindow, d = w.document;

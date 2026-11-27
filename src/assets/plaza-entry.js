@@ -78,6 +78,7 @@ if (typeof dialog.show === "function") {
         state,
         experiments,
       });
+      if (experiments.current) game.experiment(experiments.current.id);
       loading.textContent = "";
       enter.hidden = true;
       document.querySelector("#how").hidden = false;
@@ -89,7 +90,7 @@ if (typeof dialog.show === "function") {
         document.querySelector(".menu").open = false;
         document.querySelector("#plaza canvas").focus();
       });
-      if (!dialog.open) {
+      if (!dialog.open && !experiments.current) {
         document.querySelector(".menu").open = false;
         document.querySelector("#plaza canvas").focus();
       }

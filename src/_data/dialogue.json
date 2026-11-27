@@ -6,7 +6,6 @@
     "again": "Try again",
     "progress": "Step",
     "of": "of",
-    "imagined": "A tiny imagined experiment. No timer, no saved scores.",
     "lines": {
       "lamp": ["I'll start with the simplest thing that works. A light switch seems like a reasonable candidate.", "There. Not every problem needs an architecture diagram."],
       "pond": ["I wrote about games that made me anxious when I wasn't playing. A surprisingly effective way to ruin a nice afternoon.", "Here, I'll just watch the fish. No energy meter. I can leave whenever I like."],
@@ -34,14 +33,8 @@
     },
     "robot": {
       "prompt": "Move the part from the bench to the tray.",
-      "approach": "Move to part",
       "grip": "Close gripper",
-      "carry": "Move to tray",
       "release": "Open gripper",
-      "bench": "Bench",
-      "gripper": "Gripper",
-      "tray": "Tray",
-      "part": "Part",
       "wrong": "I'll grip at the left end, then release at the right end.",
       "correct": "Good. One small move at a time.",
       "done": "On the tray, in one piece. I'll call that a successful experiment.",
@@ -53,8 +46,7 @@
     "previousPosition": "Previous position",
     "nextPosition": "Next position",
     "action": "Space · Action",
-    "finished": "Space to return. Replay is optional.",
-    "select": "Select"
+    "finished": "Space to return. Replay is optional."
   },
   "pt-BR": {
     "transcript": "Todas as conversas, sem caminhar",
@@ -63,7 +55,6 @@
     "again": "Tentar de novo",
     "progress": "Etapa",
     "of": "de",
-    "imagined": "Um pequeno experimento imaginado. Sem cronômetro nem pontuação salva.",
     "lines": {
       "lamp": ["Vou começar pela coisa mais simples que funciona. Um interruptor parece um candidato razoável.", "Pronto. Nem todo problema precisa de um diagrama de arquitetura."],
       "pond": ["Escrevi sobre jogos que me deixavam ansioso quando eu não estava jogando. Um jeito bem eficiente de estragar uma tarde boa.", "Aqui, vou só olhar os peixes. Sem barra de energia. Posso ir embora quando quiser."],
@@ -91,14 +82,8 @@
     },
     "robot": {
       "prompt": "Leve a peça da bancada até a bandeja.",
-      "approach": "Ir até a peça",
       "grip": "Fechar a garra",
-      "carry": "Ir até a bandeja",
       "release": "Abrir a garra",
-      "bench": "Bancada",
-      "gripper": "Garra",
-      "tray": "Bandeja",
-      "part": "Peça",
       "wrong": "Vou pegar a peça na ponta esquerda e soltar na ponta direita.",
       "correct": "Certo. Um pequeno movimento por vez.",
       "done": "Na bandeja, inteira. Vou chamar isso de experimento bem-sucedido.",
@@ -110,7 +95,6 @@
     "previousPosition": "Posição anterior",
     "nextPosition": "Próxima posição",
     "action": "Espaço · Ação",
-    "finished": "Espaço para voltar. Repetir é opcional.",
-    "select": "Selecionar"
+    "finished": "Espaço para voltar. Repetir é opcional."
   }
 }

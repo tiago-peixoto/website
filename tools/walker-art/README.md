@@ -5,7 +5,8 @@ All artwork is original ImageGen artwork.
 No photographed or franchise character was used.
 `face-v4-source.png` contains the generated eye and chin edit.
 `v4-prompts.txt` records its prompt and reference.
-Earlier generated sources and prompts remain as provenance.
+`walk-prompt.txt`, `run-prompt.txt` and `v3-prompts.txt` record the earlier prompts as provenance.
+The earlier generated images they name are not in this repository, because no exporter or check reads them.
 
 `round-2-sheet.png` is the exact exported sheet from commit `1691c9ad48a3bcb9af44f9fb720748c46ba4492e`.
 `round-3-sheet.png` is the exact exported sheet from commit `020191a0ebf6036af00e19c5845f6b854f91285a`.
@@ -66,17 +67,10 @@ The check accepts all eight starting phases and rejects all eight reversals for 
 It detects temporal reversal independently of the contact-frame arm check.
 These geometric checks support visual review rather than measuring subjective animation quality.
 
-After `npm run build`, run `node tools/walker-preview.mjs /absolute/review/directory`.
-The builder writes a self-contained `index.html` with all three revisions and the complete playable game.
-It also writes `part.html` and `play.html` for isolated inspection.
-The complete review contains 192 numbered frames and 48 animated views.
-Each cycle has its feedback and one keep-or-iterate question.
-One final decision card consolidates the review.
-The strips scroll within their cards at phone widths.
-Reduced motion starts the comparison paused.
-Pause and Next frame support still inspection.
-The game retains both languages and the inherited notebook correction.
+After `npm run build`, run `node tools/plaza-preview.mjs /absolute/path/play.html`.
+The builder writes one self-contained page with the complete playable game in both languages.
 
-Run `chrome-devtools-axi run < tools/check-walker-review-browser.js` on the complete review.
 Run `chrome-devtools-axi run < tools/check-walker-browser.js` on a fresh `play.html`.
 The game check covers all eight animations, both speeds, controls, collision and travel.
+Run `chrome-devtools-axi run < tools/check-walker-access-browser.js` on another fresh `play.html`.
+It checks the Portuguese page and both speeds with the reduced-motion preference simulated.

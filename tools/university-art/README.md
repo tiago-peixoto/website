@@ -2,7 +2,6 @@
 
 `outside.png` and `interior.png` are the approved original generated compositions at 384 by 256 pixels.
 They use the approved round-two 64-color environment palette.
-The original walker remains unchanged.
 Both compositions were approved on 26 November 2026.
 
 Public photographs informed shapes, materials, colors and vegetation only.
@@ -33,15 +32,18 @@ The exporter gives each sprite its final display dimensions, so the scene never 
 The scene places the doorway light at the bottom threshold and draws it over the room shade so sunlight remains visible with the lights off.
 The same generated halo supplies the lamp's bulb glow and its flattened pool of light.
 
-## Interior furniture scale proposal
+## Interior furniture scale
 
-`interior-scale-source.png` is the original ImageGen edit generated on 26 November 2026 for the furniture scale review.
-`interior-scale-prompt.txt` preserves both prompts and the reference roles.
+The smaller furniture scale was approved on 26 November 2026.
+`interior-scale-prompt.txt` preserves both prompts of the ImageGen edit that produced it, and the reference roles.
+That generated image is not in this repository, because no exporter or check reads it.
+`interior-workshop-source.png` is a later ImageGen edit of that image, which adds the welding workbench, tool cart and parts rack.
+`interior-workshop-prompt.txt` records its prompts.
+`interior-tabletop-patch.png` replaces the painted open book with empty tabletop, and `interior-tabletop-prompt.txt` records its prompt.
 The original approved `interior.png` remains available for comparison.
-This proposal is not yet approved.
 No photograph, franchise art or new character was supplied.
 
-`../export-university.py` reduces the new source to 384 by 256 pixels using nearest-neighbor sampling, then maps it to the existing outside scene's 64-color palette without dithering.
+`../export-university.py` reduces `interior-workshop-source.png` to 384 by 256 pixels using nearest-neighbor sampling, applies the tabletop patch, then maps the result to the outside scene's 64-color palette without dithering.
 [Pillow documents the resize filter and palette-based quantization](https://pillow.readthedocs.io/en/stable/reference/Image.html).
 The exporter separates the notebook and sensor, rebuilds the 16-pixel terrain tiles, and asserts that reconstruction matches the reduced composition exactly.
 [Tiled documents the pixel dimensions and object alignment used by the map](https://doc.mapeditor.org/en/stable/reference/json-map-format/).
@@ -51,7 +53,7 @@ Furniture uses a 14-pixel chair seat height, close to the walker's hips, and a 2
 The reading desk's front edge is about 16 pixels above its feet.
 Projected bounds below include tabletop depth, so they are not physical furniture heights.
 
-| Prop | Original bounds, pixels | Proposed bounds, pixels |
+| Prop | Original bounds, pixels | Approved bounds, pixels |
 | --- | --- | --- |
 | Reading chair | 28 x 44 | 20 x 28 |
 | Reading desk | 92 x 62 | 59 x 40 |
@@ -75,8 +77,8 @@ These fixtures keep their original scale and position within a few generated pix
 The room remains 384 by 256 pixels.
 
 Collision rectangles follow the final furniture positions and include separate chair and stool footprints.
-The seven interactions follow the new furniture surfaces and accept every reachable facing direction.
+The eleven interactions follow the furniture surfaces and accept every reachable facing direction.
 The paper station, robot and computer each use two target rectangles to cover their separate exposed surfaces.
 The entry point and exit remain unchanged.
 The notebook and sensor artwork moves with the smaller desks, so both pickup images have new coordinates.
-The runtime, walker, controls, language content and doorway light are unchanged.
+The doorway light is unchanged.

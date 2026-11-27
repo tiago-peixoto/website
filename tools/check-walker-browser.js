@@ -1,4 +1,4 @@
-// Run through chrome-devtools-axi run on the standalone play.html review.
+// Run through chrome-devtools-axi run on a fresh play.html written by tools/plaza-preview.mjs.
 console.log(JSON.stringify(await page.eval(async () => {
   const w = document.querySelector('iframe').contentWindow, d = w.document;
   const check = (value, message) => { if (!value) throw new Error(message); };

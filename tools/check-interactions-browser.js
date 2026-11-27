@@ -65,8 +65,16 @@ console.log(JSON.stringify(await page.eval(async () => {
     await finish();checks.push(`${id}/${facing}`);
   }
   assert(d.querySelector('#inventory-count').textContent==='2','both items survive travel');
+  await close();await approach('paper','up');d.querySelector('canvas').focus();key(' ');
+  assert(d.querySelector('dialog').open,'Space on the canvas opens speech');
+  assert(d.querySelector('#speech-typed').textContent.length<d.querySelector('#speech-readable').textContent.length,'the opening key press leaves the first line typing');
+  key(' ');
+  assert(d.querySelector('#speech-typed').textContent===d.querySelector('#speech-readable').textContent,'the next key press reveals the line');
+  await finish();
   await close();await approach('board','up');action();await finish();
   assert(!d.querySelector('dialog').open,'board has no dialogue or modal');
+  const covers=()=>scene.cameras.main.zoom*384>=scene.scale.width&&scene.cameras.main.zoom*256>=scene.scale.height;
+  assert(covers(),'board view covers the canvas');
   const surface=d.querySelector('#board-surface'), r=surface.getBoundingClientRect();
   assert(r.left>=0&&r.right<=w.innerWidth&&r.top>=0&&r.bottom<=d.querySelector('#experiment').getBoundingClientRect().top, 'answers lie within scene');
   key(' ');assert(d.querySelector('#challenge-progress').textContent.includes('1'), 'wrong answer preserves progress');
@@ -78,7 +86,7 @@ console.log(JSON.stringify(await page.eval(async () => {
   assert(!d.querySelector('#challenge-again').hidden,'direct board taps solve replay');
   await close();await approach('robot','up');action();await finish();
   const before={x:walker.x,y:walker.y},arm=scene.children.getByName('robot-arm'),part=scene.children.getByName('robot-part');
-  assert(arm.visible && scene.cameras.main.zoom>=3,'robot is in the scene with a closer view');
+  assert(arm.visible && scene.cameras.main.zoom>=3 && covers(),'robot is in the scene with a closer view that covers the canvas');
   key('ArrowRight');key(' ');
   assert(d.querySelector('#challenge-progress').textContent.includes('1'),'cannot grip middle position');
   key('ArrowLeft');key(' ');await wait();const partStart=part.x;

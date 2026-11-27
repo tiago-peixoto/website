@@ -12,8 +12,9 @@ def rectangle(name, box, **properties):
                 properties=[dict(name=k, type='string', value=v) for k, v in properties.items()])
 
 for name in ['outside', 'interior']:
-    scene = Image.open(ROOT / f'tools/university-art/{name}.png').convert('RGBA')
-    if name == 'interior':
+    if name == 'outside':
+        scene = Image.open(ROOT / 'tools/university-art/outside.png').convert('RGBA')
+    else:
         palette = Image.open(ROOT / 'tools/university-art/outside.png').convert('RGB').quantize(colors=64)
         scene = Image.open(ROOT / 'tools/university-art/interior-workshop-source.png').convert('RGB')
         scene = scene.resize((384, 256), Image.Resampling.NEAREST)

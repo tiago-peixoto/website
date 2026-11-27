@@ -37,7 +37,6 @@ canvas:focus-visible { outline-color: #ddbb6d; outline-offset: -3px; }
 #fallback, #controls { margin: 0; padding: .5rem 1rem; border-top: 2px solid #20283a; }
 #controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
 #location { margin: 0; font-weight: 700; }
-.calculation { display: flex; flex-wrap: wrap; gap: .5rem; font-family: ui-monospace, monospace; }
 #nearby { flex: 1 1 12rem; margin: 0; font-size: .85rem; font-weight: 700; }
 #enter { background: #8d3f55; color: #fff; margin-bottom: .75rem; }
 #enter:hover { background: #713045; }
@@ -47,7 +46,6 @@ canvas:focus-visible { outline-color: #ddbb6d; outline-offset: -3px; }
 dialog { width: min(32rem, calc(100% - 2rem)); max-height: calc(100svh - 2rem); padding: 2rem; color: #20283a; background: #f3e9cd; border: 3px solid #20283a; box-shadow: 5px 5px 0 #8d3f55; }
 dialog::backdrop { background: #20283abf; }
 dialog h2 { font-size: 2rem; margin: .75rem 0; }
-dialog form { margin-top: 2rem; }
 @media (max-width: 760px) {
   header { font-size: .85rem; }
   header span { display: none; }
